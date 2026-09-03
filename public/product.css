@@ -706,7 +706,7 @@ body.intro-active {
    ========================================================================== */
 .minimal-scrolly-container {
   position: relative;
-  z-index: 5;
+  z-index: 12;
   width: 100%;
 }
 
@@ -729,22 +729,127 @@ body.intro-active {
   justify-content: flex-end;
 }
 
+/* Background Video Dim Overlay (Directly behind Cards, in front of Canvas Video) */
+.card-dim-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  background: rgba(10, 14, 23, 0.45);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s ease;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+body.is-card-focused .card-dim-backdrop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   SMOOTH CENTER-GLIDE CARD ZOOM EFFECT
+   ========================================================================== */
+/* ==========================================================================
+   SMOOTH CENTER-GLIDE CARD ZOOM EFFECT (CINEMATIC MOTION)
+   ========================================================================== */
 .side-card {
+  position: relative;
   width: 100%;
   max-width: 440px;
   padding: 40px 36px;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.65);
   border-radius: 28px;
   box-shadow: var(--card-shadow);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  cursor: pointer;
+  transform-origin: center center;
+  transition: transform 0.72s cubic-bezier(0.19, 1, 0.22, 1),
+              box-shadow 0.72s cubic-bezier(0.19, 1, 0.22, 1),
+              border-color 0.45s ease,
+              background 0.45s ease,
+              opacity 0.5s ease,
+              filter 0.5s ease;
+  user-select: none;
+  will-change: transform, box-shadow;
 }
 
 .side-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 40px 80px -15px rgba(10, 14, 23, 0.09);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 35px 70px -10px rgba(10, 14, 23, 0.14), 0 0 24px rgba(2, 132, 199, 0.2);
+  border-color: rgba(2, 132, 199, 0.45);
+}
+
+/* Subtle living glow animation when centered */
+@keyframes cardBreathingAura {
+  0%, 100% {
+    box-shadow: 0 45px 120px -10px rgba(10, 14, 23, 0.38), 0 0 40px rgba(2, 132, 199, 0.3);
+    border-color: rgba(2, 132, 199, 0.75);
+  }
+  50% {
+    box-shadow: 0 50px 135px -8px rgba(10, 14, 23, 0.45), 0 0 60px rgba(2, 132, 199, 0.55);
+    border-color: rgba(56, 189, 248, 0.9);
+  }
+}
+
+/* ACTIVE CENTERED ZOOMED STATE (Glides from left/right to exact center) */
+.side-card.is-centered-zoom {
+  z-index: 50 !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(40px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+  border-color: rgba(2, 132, 199, 0.75) !important;
+  box-shadow: 0 45px 120px -10px rgba(10, 14, 23, 0.4), 0 0 45px rgba(2, 132, 199, 0.35) !important;
+  animation: cardBreathingAura 3.6s ease-in-out infinite alternate;
+  cursor: zoom-out !important;
+}
+
+/* Soften other cards while one card is in the center spotlight */
+body.is-card-focused .side-card:not(.is-centered-zoom) {
+  opacity: 0.25;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* Card Zoom Indicator Badge */
+.card-zoom-indicator {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(10, 14, 23, 0.05);
+  border: 1px solid rgba(10, 14, 23, 0.08);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+  transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none;
+}
+
+.side-card:hover .card-zoom-indicator {
+  background: rgba(2, 132, 199, 0.12);
+  border-color: rgba(2, 132, 199, 0.35);
+  color: var(--accent-cyan);
+  transform: scale(1.05);
+}
+
+.side-card.is-centered-zoom .card-zoom-indicator {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 2px 12px rgba(2, 132, 199, 0.5);
+  transform: scale(1.05);
 }
 
 .scene-kicker {

@@ -61,3 +61,66 @@ export async function createBentonScene(canvasId) {
     },
   };
 }
+
+export async function createBgSplineScene(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+
+  const spline = new Application(canvas);
+
+  try {
+    await spline.load('assets/models/bg_scene.splinecode?v=' + Date.now());
+    canvas.classList.add('is-visible');
+    if (spline.play) spline.play();
+  } catch (err) {
+    console.warn('Local bg spline load fallback to online CDN:', err);
+    try {
+      await spline.load('https://prod.spline.design/MG1LWxb8Jo7FVHqW/scene.splinecode');
+      canvas.classList.add('is-visible');
+      if (spline.play) spline.play();
+    } catch (e) {
+      console.error('Spline background load error:', e);
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    if (spline && spline.setSize) {
+      spline.setSize(window.innerWidth, window.innerHeight);
+    }
+  });
+
+  // Forward Global Window Pointer & Mouse movements to background canvas
+  // so the 3D scene responds to mouse even when layered in the very back
+  window.addEventListener('pointermove', (e) => {
+    canvas.dispatchEvent(new PointerEvent('pointermove', {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      screenX: e.screenX,
+      screenY: e.screenY,
+      pageX: e.pageX,
+      pageY: e.pageY,
+      bubbles: true,
+      cancelable: true,
+      pointerType: e.pointerType || 'mouse'
+    }));
+  }, { passive: true });
+
+  window.addEventListener('mousemove', (e) => {
+    canvas.dispatchEvent(new MouseEvent('mousemove', {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      screenX: e.screenX,
+      screenY: e.screenY,
+      pageX: e.pageX,
+      pageY: e.pageY,
+      bubbles: true,
+      cancelable: true
+    }));
+  }, { passive: true });
+
+  return spline;
+}

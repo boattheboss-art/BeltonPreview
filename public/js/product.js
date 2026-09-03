@@ -664,14 +664,108 @@
 
   window.addEventListener('resize', resizeCanvas);
 
-  // Smooth Nav links
+  // ==========================================================================
+  // SMOOTH CENTER-GLIDE CARD ZOOM
+  // ==========================================================================
+  const sideCards = document.querySelectorAll('.side-card');
+  const dimBackdrop = document.getElementById('cardDimBackdrop');
+  let activeZoomedCard = null;
+
+  function closeZoomedCard() {
+    if (!activeZoomedCard) return;
+
+    activeZoomedCard.style.transform = '';
+    activeZoomedCard.classList.remove('is-centered-zoom');
+    const ind = activeZoomedCard.querySelector('.card-zoom-indicator');
+    if (ind) ind.innerHTML = '<span>⛶</span><span>ZOOM</span>';
+
+    document.body.classList.remove('is-card-focused');
+    activeZoomedCard = null;
+
+    if (typeof playSfx === 'function' && typeof sfxOpen !== 'undefined') {
+      playSfx(sfxOpen);
+    }
+  }
+
+  function zoomCardToCenter(card) {
+    if (activeZoomedCard === card) {
+      closeZoomedCard();
+      return;
+    }
+
+    if (activeZoomedCard) {
+      closeZoomedCard();
+    }
+
+    // Measure card current position on screen
+    const rect = card.getBoundingClientRect();
+    const cardCenterX = rect.left + rect.width / 2;
+    const cardCenterY = rect.top + rect.height / 2;
+    const screenCenterX = window.innerWidth / 2;
+    const screenCenterY = window.innerHeight / 2;
+
+    // Delta needed to bring the center of the card to the dead-center of the screen
+    const deltaX = screenCenterX - cardCenterX;
+    const deltaY = screenCenterY - cardCenterY;
+
+    // Smoothly apply translation to center and scale up by 1.24x
+    card.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1.24)`;
+    card.classList.add('is-centered-zoom');
+
+    const ind = card.querySelector('.card-zoom-indicator');
+    if (ind) ind.innerHTML = '<span>✕</span><span>CLOSE</span>';
+
+    document.body.classList.add('is-card-focused');
+    activeZoomedCard = card;
+
+    if (typeof playSfx === 'function' && typeof sfxClick !== 'undefined') {
+      playSfx(sfxClick);
+    }
+  }
+
+  sideCards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a') || e.target.closest('button')) return;
+      zoomCardToCenter(card);
+    });
+  });
+
+  if (dimBackdrop) {
+    dimBackdrop.addEventListener('click', closeZoomedCard);
+  }
+
+  // Click outside card to unzoom
+  document.addEventListener('click', (e) => {
+    if (activeZoomedCard && !e.target.closest('.side-card')) {
+      closeZoomedCard();
+    }
+  });
+
+  // ESC key to unzoom
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (activeZoomedCard) {
+        closeZoomedCard();
+      }
+      closeSaoMenu();
+    }
+  });
+
+  // Auto close zoom on resize so coordinates never misalign
+  window.addEventListener('resize', () => {
+    if (activeZoomedCard) closeZoomedCard();
+  });
+
+  // Smooth Nav links (only for internal #hash links)
   document.querySelectorAll('.nav-item').forEach((link) => {
     link.addEventListener('click', (e) => {
-      e.preventDefault();
       const href = link.getAttribute('href');
-      const targetEl = document.querySelector(href);
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: 'smooth' });
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const targetEl = document.querySelector(href);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     });
   });

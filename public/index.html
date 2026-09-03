@@ -34,7 +34,10 @@
     </div>
   </div>
 
-  <!-- STEP 2: Background "BELTON" Typography (z-0 pointer-events-none) -->
+  <!-- STEP 0: Fullscreen Spline 3D Background Environment (z-index 0 / behind everything) -->
+  <canvas id="bgSplineCanvas" class="bg-spline-canvas" aria-hidden="true"></canvas>
+
+  <!-- STEP 2: Background "BELTON" Typography (z-1 pointer-events-none) -->
   <div id="bgBeltonText" class="bg-belton-container" aria-hidden="true">
     <span class="belton-letter" data-index="0">B</span>
     <span class="belton-letter" data-index="1">E</span>

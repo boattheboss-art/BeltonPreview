@@ -4,7 +4,7 @@
  * - Validates: Username 'admin', Password '60632'
  * - Redirects to belton_live_preview (http://localhost:8080)
  */
-import { createBentonScene, prefetchAsset } from './robot3d.js';
+import { createBentonScene, createBgSplineScene, prefetchAsset } from './robot3d.js';
 import { soundEngine } from './audio.js';
 
 if (document.readyState === 'loading') {
@@ -37,6 +37,11 @@ function init() {
   const authSuccessCard = document.getElementById('authSuccessCard');
 
   let scene = null;
+
+  // ═════════════════════════════════════════════════════════════════
+  // STEP 0: FULLSCREEN 3D SPLINE BACKGROUND INITIALIZATION (z-0)
+  // ═════════════════════════════════════════════════════════════════
+  createBgSplineScene('bgSplineCanvas');
 
   // ═════════════════════════════════════════════════════════════════
   // STEP 1: PRE-FETCH 3D ASSET INTO BROWSER MEMORY (NON-BLOCKING)

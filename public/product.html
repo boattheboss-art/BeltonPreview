@@ -35,11 +35,14 @@
   </div>
 
   <!-- FIXED 3D VIEWPORT (LOCKED IN DEAD CENTER) -->
-  <div class="fixed-viewport-stage" id="viewportStage">
-    <div class="stage-ambient-glow" id="ambientGlow"></div>
-    <canvas id="scrubCanvas" class="scrub-canvas"></canvas>
-    <div class="stage-gradient-overlay"></div>
-  </div>
+    <div class="fixed-viewport-stage" id="viewportStage">
+      <div class="stage-ambient-glow" id="ambientGlow"></div>
+      <canvas id="scrubCanvas" class="scrub-canvas"></canvas>
+      <div class="stage-gradient-overlay"></div>
+    </div>
+
+  <!-- Background Video Dim Overlay (z-index 8: Behind Cards, Above Video) -->
+  <div id="cardDimBackdrop" class="card-dim-backdrop" title="คลิกเพื่อปิด"></div>
 
   <!-- SAO HOLOGRAPHIC PRODUCT SELECTOR (TOP-LEFT CLICK-TRIGGER) -->
   <div class="sao-menu-wrapper" id="saoMenuWrapper">
@@ -166,6 +169,7 @@
     <!-- SCENE 1: HERO (Card on LEFT - Center 100% Unobstructed) -->
     <section class="story-scene split-left-scene hero-split-scene" id="overview">
       <div class="side-card left-card hero-intro-card">
+        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
         <span class="scene-kicker" id="heroKicker">AUTONOMOUS KINETIC ARCHITECTURE</span>
         <h1 class="hero-heading" id="heroTitle">BELTON<span class="brand-dash"> — </span>APFA</h1>
         <p class="hero-subtext" id="heroDesc">
@@ -181,6 +185,7 @@
     <!-- SCENE 2: MATERIALS (Card on RIGHT, Center 100% Open) -->
     <section class="story-scene split-right-scene" id="materials">
       <div class="side-card right-card">
+        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec1Kicker">01 // MONOCOQUE METALLURGY</span>
         <h2 class="scene-heading" id="sec1Title">Aerospace-grade suspension.</h2>
         <p class="scene-description" id="sec1Desc">
@@ -202,6 +207,7 @@
     <!-- SCENE 3: MAGLEV (Card on LEFT, Center 100% Open) -->
     <section class="story-scene split-left-scene" id="maglev">
       <div class="side-card left-card">
+        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec2Kicker">02 // CONTACTLESS ROTATION</span>
         <h2 class="scene-heading" id="sec2Title">Concentric precision raceway.</h2>
         <p class="scene-description" id="sec2Desc">
@@ -223,6 +229,7 @@
     <!-- SCENE 4: FLUX CORE (Card on RIGHT, Center 100% Open) -->
     <section class="story-scene split-right-scene" id="flux">
       <div class="side-card right-card">
+        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec3Kicker">03 // VOICE COIL MOTOR</span>
         <h2 class="scene-heading" id="sec3Title">Gold-anodized yoke frame.</h2>
         <p class="scene-description" id="sec3Desc">
@@ -244,6 +251,7 @@
     <!-- SCENE 5: TELEMETRY (Card on LEFT, Center 100% Open) -->
     <section class="story-scene split-left-scene" id="telemetry">
       <div class="side-card left-card">
+        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec4Kicker">04 // SIGNAL ARCHITECTURE</span>
         <h2 class="scene-heading" id="sec4Title">Flex-rigid pre-amp circuit.</h2>
         <p class="scene-description" id="sec4Desc">

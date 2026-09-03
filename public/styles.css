@@ -120,7 +120,30 @@ body.is-locked {
 }
 
 /* ==========================================================================
-   STEP 2: BACKGROUND "BELTON" TYPOGRAPHY (z-0, GPU COMPOSITED)
+   STEP 0: FULLSCREEN SPLINE 3D BACKGROUND (VERY BACK LAYER z-0)
+   ========================================================================== */
+.bg-spline-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+  contain: strict;
+  isolation: isolate;
+  backface-visibility: hidden;
+}
+
+.bg-spline-canvas.is-visible {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   STEP 2: BACKGROUND "BELTON" TYPOGRAPHY (z-1, GPU COMPOSITED)
    ========================================================================== */
 .bg-belton-container {
   position: fixed;
@@ -133,7 +156,7 @@ body.is-locked {
   justify-content: center;
   align-items: center;
   gap: clamp(0.4rem, 2.5vw, 2.2rem);
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
   user-select: none;
   contain: layout paint;
