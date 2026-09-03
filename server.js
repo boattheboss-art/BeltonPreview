@@ -25,6 +25,14 @@ app.get('/product', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'product.html'));
 });
 
+app.get('/manufacturing', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'manufacturing.html'));
+});
+
+app.get('/lab', (req, res) => {
+    res.redirect('/manufacturing');
+});
+
 process.on('uncaughtException', (err) => console.error('uncaughtException:', err));
 process.on('unhandledRejection', (err) => console.error('unhandledRejection:', err));
 

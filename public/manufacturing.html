@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BELTON — Corporate Legacy & Precision Engineering</title>
+  <meta name="description" content="The story of Belton Technology Group: From 1988 coil winding pioneers to the world's leading manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA)." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="manufacturing.css" />
+
+  <!-- Audio Sfx -->
+  <audio id="sfxClick" src="sao_click.wav" preload="auto"></audio>
+  <audio id="sfxOpen" src="sao_open.wav" preload="auto"></audio>
+
+  <!-- Auth Guard -->
+  <script>
+    if (sessionStorage.getItem('belton_logged_in') !== 'true') {
+      sessionStorage.setItem('belton_return_to', '/manufacturing');
+      window.location.href = '/';
+    }
+  </script>
+
+  <script src="js/manufacturing.js" defer></script>
+</head>
+<body class="lab-body">
+
+  <!-- Minimalist Ambient Background Mesh & Lighting -->
+  <div class="lab-ambient-bg">
+    <div class="ambient-glow top-glow"></div>
+    <div class="ambient-glow bottom-glow"></div>
+    <div class="grid-subtle-overlay"></div>
+  </div>
+
+  <!-- FLOATING LUXURY PILL NAVBAR -->
+  <header class="navbar-wrapper" id="mainNavbar">
+    <nav class="minimal-nav-pill">
+      <a href="/" class="nav-brand">✦ BELTON <span class="nav-brand-sub">LEGACY & LAB</span></a>
+      <div class="nav-links-group">
+        <a href="/" class="nav-item">Home</a>
+        <a href="/product" class="nav-item">⚙️ PRODUCT</a>
+      </div>
+      <button class="nav-action-pill" onclick="sessionStorage.removeItem('belton_logged_in'); window.location.href='/'" title="ออกจากระบบ และกลับสู่หน้าแรก">
+        ออกจากระบบ
+      </button>
+    </nav>
+  </header>
+
+  <!-- MAIN SCROLLABLE CONTENT -->
+  <main class="lab-container">
+
+    <!-- HERO SECTION: THE BELTON GENESIS -->
+    <section class="lab-hero-section">
+      <div class="hero-badge">
+        <span class="beacon-pulse"></span>
+        <span>ESTABLISHED 1988 // GLOBAL PRECISION LEADER</span>
+      </div>
+
+      <h1 class="lab-hero-title">
+        THE ARCHITECTS OF <br/><span class="highlight-text">SUB-MICRON MOTION</span>
+      </h1>
+      <p class="lab-hero-subtitle">
+        จากผู้บุกเบิกขดลวดแม่เหล็กขนาดจิ๋วในปี 1988 สู่ผู้นำอันดับ 1 ของโลกในการผลิต <strong>Actuator Pivot Flex Assembly (APFA)</strong> หัวใจสำคัญที่ขับเคลื่อนระบบจัดเก็บข้อมูล Hard Disk Drive และอุตสาหกรรมอวกาศทั่วโลก
+      </p>
+
+      <!-- STATS STRIP -->
+      <div class="hero-stats-strip">
+        <div class="stat-card">
+          <span class="stat-num">1988</span>
+          <span class="stat-label">Year Founded (Over 35+ Years)</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">#1 GLOBAL</span>
+          <span class="stat-label">World Supplier of HDD APFA</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">NAVAPARK</span>
+          <span class="stat-label">Belton Industrial (Thailand) Hub</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">iPERFECT</span>
+          <span class="stat-label">Core Engineering Philosophy</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORPORATE HISTORY & HERITAGE CHRONOLOGY -->
+    <section class="heritage-section">
+      <div class="section-tag-row">
+        <span class="tag-line"></span>
+        <span class="tag-text">CORPORATE TIMELINE // 1988 TO PRESENT</span>
+        <span class="tag-line"></span>
+      </div>
+
+      <div class="timeline-grid">
+        <!-- Milestone 1 -->
+        <div class="timeline-card">
+          <span class="tl-year">1988 — 1991</span>
+          <h3 class="tl-title">The Spark & The Coil</h3>
+          <p class="tl-desc">
+            ก่อตั้งขึ้นจากการเชี่ยวชาญด้านการพันขดลวดความแม่นยำสูง (Precision Coil Winding) ซึ่งกลายมาเป็นสัญลักษณ์โลโก้รูปขดลวดของ BELTON และเป็นรากฐานของ Voice Coil Motor (VCM) ทั้งหมด
+          </p>
+        </div>
+
+        <!-- Milestone 2 -->
+        <div class="timeline-card highlight">
+          <span class="tl-year">2000</span>
+          <h3 class="tl-title">Belton Industrial (Thailand)</h3>
+          <p class="tl-desc">
+            ขยายฐานการผลิตสู่ประเทศไทย ก่อตั้ง <strong>Belton Industrial (Thailand) Ltd.</strong> ที่นิคมอุตสาหกรรมนวนคร (Navanakorn) กลายเป็นศูนย์กลางการผลิตและวิจัยที่ใหญ่ที่สุดในเอเชียตะวันออกเฉียงใต้
+          </p>
+        </div>
+
+        <!-- Milestone 3 -->
+        <div class="timeline-card">
+          <span class="tl-year">2008 — 2012</span>
+          <h3 class="tl-title">Global Expansion & iPERFECT</h3>
+          <p class="tl-desc">
+            ขยายโรงงานพื้นที่กว่า 23,000 ตร.ม. ในไทย และเปิดตัวปรัชญาการผลิต <strong>iPERFECT</strong> พร้อมร่วมทุนเชิงยุทธศาสตร์กับ Totoku Electric (Beltontotoku) พัฒนาเทคโนโลยีอัลตราคาปาซิเตอร์และอุปกรณ์การแพทย์
+          </p>
+        </div>
+
+        <!-- Milestone 4 -->
+        <div class="timeline-card highlight">
+          <span class="tl-year">2021 — PRESENT</span>
+          <h3 class="tl-title">Rojana Advanced Surface Tech</h3>
+          <p class="tl-desc">
+            เปิดโรงงานใหม่แห่งล่าสุด (Rojana - R3) ในไทย ยกระดับเทคโนโลยีการชุบผิวระดับนาโน (Advanced Surface Treatment) และ Cleanroom มาตรฐานระดับอวกาศเพื่อรองรับ AI Data Center ทั่วโลก
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORE BUSINESS PILLARS -->
+    <section class="pillars-section">
+      <div class="section-tag-row">
+        <span class="tag-line"></span>
+        <span class="tag-text">CORE INDUSTRIAL PILLARS // WHAT WE BUILD</span>
+        <span class="tag-line"></span>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon">💽</div>
+          <h3 class="pillar-name">APFA (Actuator Pivot Flex Assembly)</h3>
+          <p class="pillar-desc">
+            ชิ้นส่วนแขนกลหัวอ่านฮาร์ดดิสก์ที่มีความซับซ้อนและละเอียดอ่อนที่สุดในโลก ทำหน้าที่ควบคุมหัวอ่านข้อมูลให้ลอยอยู่เหนือจานดิสก์ด้วยความเร็วรอบมหาศาล โดยมีความคลาดเคลื่อนไม่เกินระดับเส้นผม
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">⚡</div>
+          <h3 class="pillar-name">VCM Magnetic Coils & Ultracapacitors</h3>
+          <p class="pillar-desc">
+            การผลิตขดลวดสนามแม่เหล็กเหนี่ยวนำสูงนับล้านชิ้นต่อสัปดาห์ สำหรับระบบขับเคลื่อนความแม่นยำสูง อุปกรณ์การแพทย์ ยานยนต์พลังงานสะอาด และพันธมิตรอุปกรณ์จัดเก็บพลังงานระดับโลก
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">🔬</div>
+          <h3 class="pillar-name">Sub-Micron CNC & Surface Treatment</h3>
+          <p class="pillar-desc">
+            การขึ้นรูปชิ้นส่วนด้วย CNC 5 แกนบนแท่นหินแกรนิตลอยตัว พร้อมกระบวนการชุบผิวสุญญากาศแบบ Cleanroom Class 100 เพื่อป้องกันการเกิดปฏิกิริยาออกไซด์ 100%
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: THE 4 STAGES OF CREATION -->
+    <section class="stages-section">
+      <div class="section-tag-row">
+        <span class="tag-line"></span>
+        <span class="tag-text">MANUFACTURING CRAFTSMANSHIP // 4 STAGES</span>
+        <span class="tag-line"></span>
+      </div>
+
+      <!-- STAGE 01 -->
+      <div class="stage-row" id="stage1">
+        <div class="stage-info-col">
+          <span class="stage-step-num">STAGE 01 // METALLURGY</span>
+          <h2 class="stage-heading">Aerospace Duralumin 7075-T6</h2>
+          <p class="stage-desc">
+            คัดสรรแท่งอะลูมิเนียมอัลลอยด์บริสุทธิ์สูง Duralumin 7075-T6 ผ่านการอบความร้อนและคลายแรงตึงเครียดของผลึกภายใน เพื่อให้ชิ้นงานทนต่อแรงเหวี่ยงหนีศูนย์กลางได้ที่ความเร็วรอบเกิน 148,000 RPM
+          </p>
+          <div class="metric-tags">
+            <div class="metric-pill"><span>Tensile Strength</span><strong>572 MPa</strong></div>
+            <div class="metric-pill"><span>Density</span><strong>2.81 g/cm³</strong></div>
+            <div class="metric-pill"><span>Hardness</span><strong>150 HB</strong></div>
+          </div>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="interactive-panel material-crystal-panel">
+            <div class="panel-header">
+              <span class="panel-status-dot"></span>
+              <span>CRYSTALLINE GRAIN TELEMETRY // 7075-T6</span>
+            </div>
+            <div class="crystal-grid-visual">
+              <div class="crystal-core"></div>
+              <div class="crystal-ring ring-1"></div>
+              <div class="crystal-ring ring-2"></div>
+            </div>
+            <div class="panel-footer-readout">
+              <span>GRAIN BOUNDARY: STABILIZED</span>
+              <span>ZERO VOID PURITY: 99.98%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 02 -->
+      <div class="stage-row reverse" id="stage2">
+        <div class="stage-info-col">
+          <span class="stage-step-num">STAGE 02 // SUB-MICRON MILLING</span>
+          <h2 class="stage-heading">5-Axis High-Speed Diamond Tooling</h2>
+          <p class="stage-desc">
+            แท่นเครื่องจักรกลึงระดับไมครอน ควบคุมการสั่นสะเทือนด้วยระบบลมไฮโดรลิกลอยตัว ตัดเฉือนขึ้นรูปครีบเบลดของตัว Actuator Comb ด้วยใบมีดเพชรเดี่ยวความเร็วรอบ 60,000 RPM ผิวเรียบเนียนระดับกระจกเงา
+          </p>
+          <div class="metric-tags">
+            <div class="metric-pill"><span>Spindle Speed</span><strong>60,000 RPM</strong></div>
+            <div class="metric-pill"><span>Surface Roughness</span><strong>Ra &lt; 0.05 µm</strong></div>
+            <div class="metric-pill"><span>Tolerance</span><strong>±0.001 mm</strong></div>
+          </div>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="interactive-panel cnc-stream-panel">
+            <div class="panel-header">
+              <span class="panel-status-dot live"></span>
+              <span>LIVE CNC G-CODE COORDINATE TELEMETRY</span>
+            </div>
+            <div class="cnc-feed-content">
+              <div class="cnc-axis-row">
+                <span class="axis-lbl">X-AXIS</span>
+                <span class="axis-val" id="cncX">+14.821 mm</span>
+              </div>
+              <div class="cnc-axis-row">
+                <span class="axis-lbl">Y-AXIS</span>
+                <span class="axis-val" id="cncY">-04.092 mm</span>
+              </div>
+              <div class="cnc-axis-row">
+                <span class="axis-lbl">Z-AXIS</span>
+                <span class="axis-val" id="cncZ">+01.104 mm</span>
+              </div>
+              <div class="cnc-axis-row">
+                <span class="axis-lbl">FEEDRATE</span>
+                <span class="axis-val" id="cncFeed">12,400 mm/min</span>
+              </div>
+            </div>
+            <div class="toolpath-mini-canvas">
+              <div class="laser-cutting-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 03: INTERACTIVE BEFORE/AFTER SLIDER -->
+      <div class="stage-row" id="stage3">
+        <div class="stage-info-col">
+          <span class="stage-step-num">STAGE 03 // SURFACE CHEMISTRY</span>
+          <h2 class="stage-heading">Vacuum Gold & Brass Anodizing</h2>
+          <p class="stage-desc">
+            กระบวนการชุบผิวเคลือบสารทองเหลืองสุญญากาศ (Plasma Anodizing) ที่โรงงาน Rojana-R3 ของเบลตัน ป้องกันการสึกกร่อนจากสภาพแวดล้อมได้ 100% พร้อมเสริมการเหนี่ยวนำสนามแม่เหล็กไฟฟ้าสูงสุด
+          </p>
+          <p class="stage-hint">
+            👈 <strong>ลากแถบสไลเดอร์ด้านขวา</strong> เพื่อดูความต่างระหว่างชิ้นงานก่อนชุบ vs หลังชุบทองคำสุญญากาศ
+          </p>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="before-after-wrapper" id="beforeAfterSlider">
+            <div class="ba-layer ba-before">
+              <div class="ba-art raw-metal-art">
+                <div class="art-chassis silver"></div>
+                <span class="ba-badge before-badge">01 // RAW DURALUMIN</span>
+              </div>
+            </div>
+            <div class="ba-layer ba-after" id="baAfterLayer">
+              <div class="ba-art gold-metal-art">
+                <div class="art-chassis gold"></div>
+                <span class="ba-badge after-badge">02 // GOLD ANODIZED</span>
+              </div>
+            </div>
+            <div class="ba-handle" id="baHandle">
+              <div class="handle-line"></div>
+              <div class="handle-thumb">⛶</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 04 -->
+      <div class="stage-row reverse" id="stage4">
+        <div class="stage-info-col">
+          <span class="stage-step-num">STAGE 04 // CLEANROOM MICRO-ASSEMBLY</span>
+          <h2 class="stage-heading">Dual Laser Riveting & Kapton Bonding</h2>
+          <p class="stage-desc">
+            ในห้องปลอดฝุ่น Class 100 แผงวงจรความยืดหยุ่นสูง Kapton Polyimide Ribbon (FCOF) จะถูกประกบเข้ากับตัวแกน Actuator และยิงยึดด้วยแสงเลเซอร์คู่ขนาด 1064 nm เพื่อความแม่นยำระดับนาโนเมตร
+          </p>
+          <div class="metric-tags">
+            <div class="metric-pill"><span>Laser Wavelength</span><strong>1064 nm</strong></div>
+            <div class="metric-pill"><span>Cleanroom Class</span><strong>ISO 5 / Class 100</strong></div>
+            <div class="metric-pill"><span>Laser Alignment</span><strong>±0.0002 mm</strong></div>
+          </div>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="interactive-panel cleanroom-panel">
+            <div class="panel-header">
+              <span class="panel-status-dot clean"></span>
+              <span>ENVIRONMENT: ISO 5 // CLASS 100 AIR</span>
+            </div>
+            <div class="particle-counter-display">
+              <span class="counter-num">00.0</span>
+              <span class="counter-unit">PARTICLES / FT³ (&gt;0.5µm)</span>
+            </div>
+            <div class="laser-status-row">
+              <span class="laser-pulse-dot"></span>
+              <span class="laser-status-txt">DUAL FIBER LASER: ARMED & CALIBRATED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: INTERACTIVE METROLOGY BAY -->
+    <section class="tolerance-lab-section">
+      <div class="section-tag-row">
+        <span class="tag-line"></span>
+        <span class="tag-text">INTERACTIVE METROLOGY BAY</span>
+        <span class="tag-line"></span>
+      </div>
+
+      <div class="tolerance-lab-card">
+        <div class="scanner-header">
+          <div class="scanner-title-group">
+            <span class="scanner-badge">LASER INTERFEROMETER VERIFICATION</span>
+            <h3 class="scanner-heading">Sub-Micron Tolerance Scanner</h3>
+            <p class="scanner-desc">
+              ทดสอบการวัดค่าความแม่นยำของชิ้นส่วน APFA ด้วยลำแสงเลเซอร์ตามมาตรฐานการตรวจสอบคุณภาพของ BELTON
+            </p>
+          </div>
+          <button id="startScanBtn" class="btn-scan-action">
+            <span class="btn-icon">⚡</span>
+            <span>START LASER SCAN</span>
+          </button>
+        </div>
+
+        <div class="inspection-bay-visual" id="inspectionBay">
+          <div class="scanning-laser-beam" id="scannerLaserBeam"></div>
+          <div class="schematic-target-visual">
+            <div class="schematic-crosshair ch-1"></div>
+            <div class="schematic-crosshair ch-2"></div>
+            <div class="schematic-crosshair ch-3"></div>
+            <div class="schematic-target-core">
+              <div class="core-apfa-shape"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspection-results-grid">
+          <div class="result-cell">
+            <span class="res-lbl">POINT A // BLADE PITCH</span>
+            <span class="res-val" id="resPitch">--.---- mm</span>
+          </div>
+          <div class="result-cell">
+            <span class="res-lbl">POINT B // RUNOUT RUNAWAY</span>
+            <span class="res-val" id="resRunout">--.---- mm</span>
+          </div>
+          <div class="result-cell">
+            <span class="res-lbl">POINT C // FLUX GAP</span>
+            <span class="res-val" id="resGap">--.---- mm</span>
+          </div>
+          <div class="result-cell status-cell">
+            <span class="res-lbl">VERIFICATION STATUS</span>
+            <span class="res-status" id="resStatus">STANDBY (AWAITING SCAN)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: THE iPERFECT PHILOSOPHY & MANIFESTO -->
+    <section class="manifesto-section">
+      <span class="hero-badge" style="margin-bottom: 20px;">
+        <span>BELTON "iPERFECT" CORE VALUES</span>
+      </span>
+      <blockquote class="manifesto-quote">
+        "Integrity • People • Excellence • Respect • Flexibility • Execution • Customer Focus • Teamwork"
+      </blockquote>
+      <span class="manifesto-author">— BELTON TECHNOLOGY GROUP (SINCE 1988)</span>
+
+      <div class="manifesto-actions">
+        <a href="/product" class="btn-pill-action primary">
+          <span>Explore Finished Products</span>
+          <span>→</span>
+        </a>
+        <a href="/" class="btn-pill-action secondary">
+          <span>Return to Home</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
