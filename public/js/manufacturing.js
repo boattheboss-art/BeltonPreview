@@ -1,7 +1,7 @@
-/**
+﻿/**
  * BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-GRADE INTERACTION ENGINE
- * - Left-Aligned HUD with Unobstructed 3D Kinetic Physics Viewport
- * - Spline Object Cleaner (hides template placeholder text in 3D scene)
+ * - Natural Mouse Wheel Page Scrolling (Fixes Spline scroll hijacking)
+ * - Deep 3D Template Artifact Cleaner (Eliminates blue buttons, shapes, and texts)
  * - Scroll-Triggered Motion Graphics via IntersectionObserver
  * - Stage 03 Before / After Draggable Slider
  * - Live CNC Coordinate Telemetry Stream (Activated on Scroll)
@@ -11,6 +11,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initNaturalWheelScroll();
   initSplineSceneCleaner();
   initScrollTriggeredBoxes();
   initBeforeAfterSlider();
@@ -29,53 +30,128 @@ function playSfx(audio) {
 }
 
 // ==========================================================================
-// 1. SPLINE 3D SCENE CLEANER & PHYSICS UNBLOCKER
+// 1. NATURAL MOUSE WHEEL SCROLLING (FIXES SPLINE SCROLL INTERCEPTION)
+// ==========================================================================
+function initNaturalWheelScroll() {
+  const heroStage = document.getElementById('hero3DStage');
+  if (!heroStage) return;
+
+  // Use CAPTURE phase to intercept wheel before Spline shadow DOM cancels it
+  window.addEventListener('wheel', (e) => {
+    const path = e.composedPath ? e.composedPath() : [];
+    if (heroStage.contains(e.target) || path.includes(heroStage)) {
+      window.scrollBy({
+        top: e.deltaY,
+        left: 0,
+        behavior: 'auto'
+      });
+    }
+  }, { capture: true, passive: true });
+}
+
+// ==========================================================================
+// 2. SPLINE 3D SCENE CLEANER (ELIMINATES BLUE PILL BUTTONS & TEMPLATE TEXT)
 // ==========================================================================
 function initSplineSceneCleaner() {
   const viewer = document.getElementById('nanaSplineViewer');
   if (!viewer) return;
 
-  function cleanObjects() {
-    try {
-      const app = viewer._app;
-      if (app && app.scene) {
-        app.scene.traverse((obj) => {
-          if (!obj) return;
-          // Hide any TextGeometry
-          if (obj.geometry && (obj.geometry.type === 'TextGeometry' || obj.geometry.type === 'ShapeGeometry')) {
-            obj.visible = false;
-          }
-          if (obj.name) {
-            const n = obj.name.toLowerCase();
-            if (n.includes('text') || n.includes('button') || n.includes('title') || n.includes('subtitle') || n.includes('cta') || n.includes('heading') || n.includes('discover') || n.includes('future')) {
-              obj.visible = false;
-            }
-          }
-        });
+  const targetNames = [
+    'rectangle 3',
+    'rectangle 4',
+    'shape',
+    'dis',
+    'text 3',
+    'text 4',
+    'text',
+    'button',
+    'title',
+    'subtitle',
+    'discover',
+    'future',
+    'contact'
+  ];
+
+  const targetUuids = [
+    'ebf570cf-b992-42c7-8ad4-78ff18c901d5', // Rectangle 4 (solid blue button)
+    'db40c3c7-215e-47a8-bb6a-a87198e1e015', // Rectangle 3 (outline blue button)
+    'fa194c9c-3804-4bdc-995b-588dfdecac2f', // Shape (arrow chevron)
+    'b443010f-f3ab-4fdf-b32a-158a7a528468', // dis (Discover)
+    '517ef7ec-b248-481d-8cd6-9ff7155f0761', // Text 3
+    'edb14036-bebd-4c1c-9726-4e06a34cf44b', // Text 4
+    '18228d8d-f233-429b-86d9-399ea4e18fe8', // Text Title
+    'f9f5a5d7-0e2e-45af-96e8-a873456413ff', // Material
+    'c3756221-d98d-49a8-b23c-c9d0d7e1e194'  // Material
+  ];
+
+  function banishObject(obj) {
+    if (!obj) return;
+    const name = (obj.name || '').toLowerCase();
+    const id = (obj.id || obj.uuid || '').toLowerCase();
+
+    const matchesName = targetNames.some(t => name.includes(t));
+    const matchesUuid = targetUuids.includes(id);
+    const isTextGeo = obj.geometry && (
+      obj.geometry.type === 'TextGeometry' || 
+      obj.geometry.type === 'ShapeGeometry'
+    );
+
+    if (matchesName || matchesUuid || isTextGeo) {
+      obj.visible = false;
+      if (obj.scale && typeof obj.scale.set === 'function') {
+        obj.scale.set(0, 0, 0);
       }
-      if (app && app.getAllObjects) {
-        const objs = app.getAllObjects();
-        objs.forEach(obj => {
-          if (!obj || !obj.name) return;
-          const n = obj.name.toLowerCase();
-          if (n.includes('text') || n.includes('button') || n.includes('title') || n.includes('subtitle') || n.includes('heading') || n.includes('cta') || n.includes('discover') || n.includes('future')) {
-            obj.visible = false;
-          }
-        });
+      if (obj.position && typeof obj.position.set === 'function') {
+        obj.position.set(99999, 99999, 99999);
       }
-    } catch (err) {
-      console.warn('Spline cleaner notice:', err);
     }
   }
 
-  viewer.addEventListener('load', cleanObjects);
-  // Interval checks during initial 2.5s in case objects are loaded asynchronously
-  const interval = setInterval(cleanObjects, 300);
-  setTimeout(() => clearInterval(interval), 2800);
+  function executeClean() {
+    try {
+      // 1. Spline Web Component API findObjectByName
+      targetNames.forEach(async (name) => {
+        if (typeof viewer.findObjectByName === 'function') {
+          try {
+            const o = await viewer.findObjectByName(name);
+            if (o) banishObject(o);
+          } catch (_) {}
+        }
+      });
+
+      // 2. Spline Web Component API findObjectById
+      targetUuids.forEach(async (uuid) => {
+        if (typeof viewer.findObjectById === 'function') {
+          try {
+            const o = await viewer.findObjectById(uuid);
+            if (o) banishObject(o);
+          } catch (_) {}
+        }
+      });
+
+      // 3. Direct Three.js Scene Traversal
+      const app = viewer._app;
+      if (app && app.scene && typeof app.scene.traverse === 'function') {
+        app.scene.traverse(banishObject);
+      }
+
+      if (app && typeof app.getAllObjects === 'function') {
+        app.getAllObjects().forEach(banishObject);
+      }
+    } catch (err) {
+      // silent
+    }
+  }
+
+  viewer.addEventListener('load', executeClean);
+  
+  // Also poll during load stages
+  const timer = setInterval(executeClean, 150);
+  setTimeout(() => clearInterval(timer), 4000);
 }
 
 // ==========================================================================
-// 2. APPLE-STYLE SCROLL-TRIGGERED MOTION OBSERVER
+// 3. APPLE-STYLE SCROLL-TRIGGERED MOTION OBSERVER
 // ==========================================================================
 function initScrollTriggeredBoxes() {
   const triggerBoxes = document.querySelectorAll('.scroll-trigger-box');
@@ -113,7 +189,7 @@ function initScrollTriggeredBoxes() {
 }
 
 // ==========================================================================
-// 3. BEFORE / AFTER INTERACTIVE SLIDER (CHAPTER 03)
+// 4. BEFORE / AFTER INTERACTIVE SLIDER (CHAPTER 03)
 // ==========================================================================
 function initBeforeAfterSlider() {
   const container = document.getElementById('beforeAfterSlider');
@@ -166,7 +242,7 @@ function initBeforeAfterSlider() {
 }
 
 // ==========================================================================
-// 4. CNC G-CODE COORDINATE TELEMETRY STREAM (CHAPTER 02)
+// 5. CNC G-CODE COORDINATE TELEMETRY STREAM (CHAPTER 02)
 // ==========================================================================
 function startCncCoordinateStream() {
   const elX = document.getElementById('cncX');
@@ -201,7 +277,7 @@ function startCncCoordinateStream() {
 }
 
 // ==========================================================================
-// 5. CLEANROOM PARTICLE COUNTDOWN ANIMATION (CHAPTER 04)
+// 6. CLEANROOM PARTICLE COUNTDOWN ANIMATION (CHAPTER 04)
 // ==========================================================================
 function startCleanroomParticleCountdown() {
   const counterEl = document.getElementById('cleanCounter');
@@ -231,7 +307,7 @@ function startCleanroomParticleCountdown() {
 }
 
 // ==========================================================================
-// 6. INTERACTIVE LASER METROLOGY SCANNER
+// 7. INTERACTIVE LASER METROLOGY SCANNER
 // ==========================================================================
 function initLaserToleranceScanner() {
   const startBtn = document.getElementById('startScanBtn');
