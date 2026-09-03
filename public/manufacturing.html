@@ -55,11 +55,11 @@
   </header>
 
   <!-- =========================================================================
-       HERO: 3D SPLINE CENTERPIECE SHOWCASE (IMMEDIATE ON-LOAD ANIMATION)
+       HERO: 3D SPLINE SHOWCASE (SPLIT LAYOUT: LEFT TEXT, RIGHT 3D MODEL)
        ========================================================================= -->
   <section class="spline-hero-showcase initial-load-animate" id="hero3DStage">
     
-    <!-- Real 3D Spline Canvas Container -->
+    <!-- Fullscreen 3D Spline Canvas (Mouse interactions 100% free) -->
     <div class="spline-viewport-frame">
       <spline-viewer 
         id="nanaSplineViewer" 
@@ -68,23 +68,50 @@
       </spline-viewer>
     </div>
 
-    <!-- Apple-Style Floating Glass HUD Overlay -->
-    <div class="spline-hero-hud">
-      <div class="hero-badge hero-anim-item">
-        <span class="beacon-pulse"></span>
-        <span>ESTABLISHED 1988 / 3D KINETIC ARCHITECTURE</span>
+    <!-- Apple-Style Left HUD Column (Text positioned strictly on the left) -->
+    <div class="hero-split-container">
+      <div class="hero-left-col">
+        <div class="hero-badge hero-anim-item">
+          <span class="beacon-pulse"></span>
+          <span>ESTABLISHED 1988 / 3D KINETIC ARCHITECTURE</span>
+        </div>
+
+        <h1 class="lab-hero-title hero-anim-item">
+          <span class="highlight-brand">BENTON</span><br/>
+          THE ARCHITECTS OF SUB-MICRON MOTION
+        </h1>
+
+        <p class="lab-hero-subtitle hero-anim-item">
+          From precision micro-coil winding pioneers in 1988 to the tier-one global manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA). Click, grab, and interact directly with the 3D kinetic cubes on the right.
+        </p>
+
+        <div class="hero-actions-row hero-anim-item">
+          <a href="#chapter1" class="btn-hero-primary" onclick="playSfx(sfxClick)">
+            <span>Explore Heritage</span>
+            <span class="btn-arrow">-&gt;</span>
+          </a>
+          <div class="interactive-hint-badge">
+            <span class="hint-dot"></span>
+            <span>Interactive 3D Physics Active</span>
+          </div>
+        </div>
       </div>
 
-      <h1 class="lab-hero-title hero-anim-item">
-        <span class="highlight-brand">BENTON</span><br/>
-        THE ARCHITECTS OF SUB-MICRON MOTION
-      </h1>
-      <p class="lab-hero-subtitle hero-anim-item">
-        From precision micro-coil winding pioneers in 1988 to the tier-one global manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA). Drag or move cursor to interact with the 3D model.
-      </p>
+      <!-- Right Column is empty to let 3D model be 100% visible and interactive -->
+      <div class="hero-right-spacer"></div>
+    </div>
 
-      <!-- STATS STRIP -->
-      <div class="hero-stats-strip hero-anim-item">
+    <!-- Floating Scroll Indicator -->
+    <div class="hero-bottom-scroll-hint hero-anim-item">
+      <span>SCROLL TO EXPLORE HERITAGE</span>
+      <div class="scroll-line-indicator"></div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP SECTION (TRANSITION INTO CHAPTERS) -->
+  <section class="stats-transition-section">
+    <div class="stats-container">
+      <div class="hero-stats-strip scroll-trigger-box">
         <div class="stat-card">
           <span class="stat-num">1988</span>
           <span class="stat-label">Year Founded (35+ Years of Mastery)</span>
@@ -101,12 +128,6 @@
           <span class="stat-num">iPERFECT</span>
           <span class="stat-label">Zero-Defect Quality Standard</span>
         </div>
-      </div>
-
-      <!-- Scroll Hint -->
-      <div class="scroll-down-prompt hero-anim-item">
-        <span class="prompt-text">SCROLL TO EXPLORE HERITAGE</span>
-        <div class="scroll-line-indicator"></div>
       </div>
     </div>
   </section>

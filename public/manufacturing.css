@@ -1,7 +1,7 @@
 ﻿/* ==========================================================================
    BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-INSPIRED LUXURY CSS
    Typography: Apple SF Pro / Inter System Font
-   Authentic 3D Spline Centerpiece & Scroll-Triggered Motion Graphics
+   Left-Aligned HUD with 100% Unobstructed 3D Physics Viewport
    ========================================================================== */
 
 :root {
@@ -167,7 +167,7 @@ html, body {
 }
 
 /* ==========================================================================
-   HERO: 3D SPLINE SHOWCASE STAGE (100VH IMMERSIVE)
+   HERO: 3D SPLINE SHOWCASE (SPLIT LAYOUT: LEFT TEXT, RIGHT 3D MODEL)
    ========================================================================== */
 .spline-hero-showcase {
   position: relative;
@@ -175,12 +175,11 @@ html, body {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center;
   overflow: hidden;
-  padding: 120px 24px 60px;
+  padding: 100px 32px 50px;
 }
 
-/* Viewport for Spline Canvas */
+/* Fullscreen 3D Viewport Frame */
 .spline-viewport-frame {
   position: absolute;
   inset: 0;
@@ -195,37 +194,55 @@ html, body {
   display: block;
 }
 
-/* Glass HUD Overlay positioned in front of 3D Canvas */
-.spline-hero-hud {
+/* Split Container: Left Column for Text, Right Column empty for 3D */
+.hero-split-container {
   position: relative;
   z-index: 10;
-  max-width: 1140px;
+  width: 100%;
+  max-width: 1320px;
   margin: 0 auto;
-  text-align: center;
-  pointer-events: none; /* Let 3D mouse rotation pass through */
+  display: grid;
+  grid-template-columns: minmax(360px, 560px) 1fr;
+  align-items: center;
+  gap: 40px;
+  pointer-events: none; /* Let all mouse movement pass straight to 3D canvas! */
 }
 
-.spline-hero-hud .hero-anim-item {
-  pointer-events: auto; /* Buttons & cards clickable */
+/* Left HUD Column: Frosted Glass Shield */
+.hero-left-col {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 36px;
+  padding: 44px 40px;
+  box-shadow: 0 28px 60px -15px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  pointer-events: auto; /* Clickable buttons inside */
+}
+
+.hero-right-spacer {
+  pointer-events: none; /* 100% free and open for 3D physics interaction */
+  min-height: 450px;
 }
 
 /* Apple Immediate Load Animation */
 .initial-load-animate .hero-anim-item {
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(28px);
   animation: heroCascadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .initial-load-animate .hero-badge { animation-delay: 0.1s; }
-.initial-load-animate .lab-hero-title { animation-delay: 0.25s; }
-.initial-load-animate .lab-hero-subtitle { animation-delay: 0.4s; }
-.initial-load-animate .hero-stats-strip { animation-delay: 0.55s; }
-.initial-load-animate .scroll-down-prompt { animation-delay: 0.7s; }
+.initial-load-animate .lab-hero-title { animation-delay: 0.22s; }
+.initial-load-animate .lab-hero-subtitle { animation-delay: 0.34s; }
+.initial-load-animate .hero-actions-row { animation-delay: 0.46s; }
+.initial-load-animate .hero-bottom-scroll-hint { animation-delay: 0.6s; }
 
 @keyframes heroCascadeUp {
   from {
     opacity: 0;
-    transform: translateY(32px);
+    transform: translateY(28px);
   }
   to {
     opacity: 1;
@@ -239,15 +256,14 @@ html, body {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 980px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.06);
   font-family: var(--mono-font);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 1.5px;
   color: var(--text-secondary);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .beacon-pulse {
@@ -259,12 +275,12 @@ html, body {
 }
 
 .lab-hero-title {
-  font-size: clamp(2.8rem, 5.5vw, 4.8rem);
+  font-size: clamp(2.4rem, 4vw, 3.8rem);
   font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 1.06;
+  line-height: 1.08;
   color: var(--text-primary);
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
 
 .highlight-brand {
@@ -276,21 +292,124 @@ html, body {
 }
 
 .lab-hero-subtitle {
-  font-size: clamp(1.05rem, 1.4vw, 1.22rem);
+  font-size: 1.02rem;
   font-weight: 400;
   color: var(--text-secondary);
-  max-width: 760px;
-  margin: 0 auto 50px;
   line-height: 1.65;
   letter-spacing: -0.01em;
+  margin-bottom: 30px;
 }
 
-/* Stats Strip */
+/* Hero Actions Row */
+.hero-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: #1d1d1f;
+  color: #ffffff;
+  font-family: var(--apple-font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 980px;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+}
+
+.btn-hero-primary:hover {
+  background: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+}
+
+.btn-arrow {
+  font-family: var(--mono-font);
+}
+
+.interactive-hint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono-font);
+  font-size: 0.68rem;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.08);
+  padding: 8px 14px;
+  border-radius: 980px;
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+.hint-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0284c7;
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+
+/* Bottom Floating Scroll Hint */
+.hero-bottom-scroll-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+  pointer-events: none;
+  font-family: var(--mono-font);
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+.scroll-line-indicator {
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(180deg, var(--accent-cyan), transparent);
+  animation: scrollPulse 1.8s infinite;
+}
+
+@keyframes scrollPulse {
+  0% { transform: scaleY(0.4); opacity: 0.3; }
+  50% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0.4); opacity: 0.3; }
+}
+
+/* ==========================================================================
+   STATS STRIP TRANSITION SECTION
+   ========================================================================== */
+.stats-transition-section {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 20px 28px 60px;
+}
+
+.stats-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .hero-stats-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
-  margin-bottom: 40px;
 }
 
 .stat-card {
@@ -326,34 +445,6 @@ html, body {
   letter-spacing: -0.01em;
 }
 
-/* Scroll Down Prompt */
-.scroll-down-prompt {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.prompt-text {
-  font-family: var(--mono-font);
-  font-size: 0.65rem;
-  letter-spacing: 2px;
-  color: var(--text-muted);
-}
-
-.scroll-line-indicator {
-  width: 1px;
-  height: 28px;
-  background: linear-gradient(180deg, var(--accent-cyan), transparent);
-  animation: scrollPulse 1.8s infinite;
-}
-
-@keyframes scrollPulse {
-  0% { transform: scaleY(0.4); opacity: 0.3; }
-  50% { transform: scaleY(1); opacity: 1; }
-  100% { transform: scaleY(0.4); opacity: 0.3; }
-}
-
 /* ==========================================================================
    CONTAINER & SCROLL-TRIGGERED BOXES (BELOW THE FOLD STANDBY)
    ========================================================================== */
@@ -363,7 +454,7 @@ html, body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 28px 100px;
+  padding: 0 28px 100px;
 }
 
 .stages-section {
@@ -1092,11 +1183,23 @@ html, body {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .hero-split-container {
+    grid-template-columns: 1fr;
+  }
+  .hero-right-spacer {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .spline-hero-showcase {
-    padding: 100px 16px 40px;
+    padding: 90px 16px 30px;
   }
-
+  .hero-left-col {
+    padding: 30px 24px;
+    border-radius: 24px;
+  }
   .stage-row, .stage-row.reverse {
     grid-template-columns: 1fr;
     gap: 36px;

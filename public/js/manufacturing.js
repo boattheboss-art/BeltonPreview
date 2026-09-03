@@ -1,5 +1,7 @@
 ﻿/**
  * BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-GRADE INTERACTION ENGINE
+ * - Left-Aligned HUD with Unobstructed 3D Kinetic Physics Viewport
+ * - Spline Object Cleaner (hides template placeholder text in 3D scene)
  * - Scroll-Triggered Motion Graphics via IntersectionObserver
  * - Stage 03 Before / After Draggable Slider
  * - Live CNC Coordinate Telemetry Stream (Activated on Scroll)
@@ -9,6 +11,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initSplineSceneCleaner();
   initScrollTriggeredBoxes();
   initBeforeAfterSlider();
   initLaserToleranceScanner();
@@ -26,7 +29,35 @@ function playSfx(audio) {
 }
 
 // ==========================================================================
-// 1. APPLE-STYLE SCROLL-TRIGGERED MOTION OBSERVER
+// 1. SPLINE 3D SCENE CLEANER & PHYSICS UNBLOCKER
+// ==========================================================================
+function initSplineSceneCleaner() {
+  const viewer = document.getElementById('nanaSplineViewer');
+  if (!viewer) return;
+
+  // Once Spline finishes loading, hide embedded template text/buttons inside 3D
+  viewer.addEventListener('load', (e) => {
+    try {
+      const app = viewer._app || (e && e.detail && e.detail.app);
+      if (app && app.getAllObjects) {
+        const objs = app.getAllObjects();
+        objs.forEach(obj => {
+          if (!obj || !obj.name) return;
+          const n = obj.name.toLowerCase();
+          // Target template texts, buttons, and placeholder subtitles
+          if (n.includes('text') || n.includes('button') || n.includes('title') || n.includes('subtitle') || n.includes('heading') || n.includes('cta') || n.includes('label')) {
+            obj.visible = false;
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('Spline cleaner notice:', err);
+    }
+  });
+}
+
+// ==========================================================================
+// 2. APPLE-STYLE SCROLL-TRIGGERED MOTION OBSERVER
 // ==========================================================================
 function initScrollTriggeredBoxes() {
   const triggerBoxes = document.querySelectorAll('.scroll-trigger-box');
@@ -64,7 +95,7 @@ function initScrollTriggeredBoxes() {
 }
 
 // ==========================================================================
-// 2. BEFORE / AFTER INTERACTIVE SLIDER (CHAPTER 03)
+// 3. BEFORE / AFTER INTERACTIVE SLIDER (CHAPTER 03)
 // ==========================================================================
 function initBeforeAfterSlider() {
   const container = document.getElementById('beforeAfterSlider');
@@ -117,7 +148,7 @@ function initBeforeAfterSlider() {
 }
 
 // ==========================================================================
-// 3. CNC G-CODE COORDINATE TELEMETRY STREAM (CHAPTER 02)
+// 4. CNC G-CODE COORDINATE TELEMETRY STREAM (CHAPTER 02)
 // ==========================================================================
 function startCncCoordinateStream() {
   const elX = document.getElementById('cncX');
@@ -152,7 +183,7 @@ function startCncCoordinateStream() {
 }
 
 // ==========================================================================
-// 4. CLEANROOM PARTICLE COUNTDOWN ANIMATION (CHAPTER 04)
+// 5. CLEANROOM PARTICLE COUNTDOWN ANIMATION (CHAPTER 04)
 // ==========================================================================
 function startCleanroomParticleCountdown() {
   const counterEl = document.getElementById('cleanCounter');
@@ -182,7 +213,7 @@ function startCleanroomParticleCountdown() {
 }
 
 // ==========================================================================
-// 5. INTERACTIVE LASER METROLOGY SCANNER
+// 6. INTERACTIVE LASER METROLOGY SCANNER
 // ==========================================================================
 function initLaserToleranceScanner() {
   const startBtn = document.getElementById('startScanBtn');
