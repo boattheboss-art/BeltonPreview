@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photorealistic 3D HDD Actuator & Head Stack Assembly Teardown</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Three.js, OrbitControls, and GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      background-color: #141518;
+      color: #e2e8f0;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Glassmorphism Panels */
+    .glass-panel {
+      background: rgba(20, 22, 27, 0.86);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.7);
+    }
+    
+    .glass-card {
+      background: rgba(24, 27, 34, 0.92);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Custom Range Slider */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: #2b2f3a;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #e28236;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -7px;
+      box-shadow: 0 0 14px rgba(226, 130, 54, 0.9);
+      border: 2px solid #ffffff;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.22);
+      background: #f59e0b;
+    }
+
+    /* Pulse Pin Hotspot */
+    .pin-hotspot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .pin-core {
+      width: 12px;
+      height: 12px;
+      background: #e28236;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #e28236;
+    }
+    .pin-ring {
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid rgba(226, 130, 54, 0.7);
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.5); opacity: 1; }
+      80%, 100% { transform: scale(2.3); opacity: 0; }
+    }
+
+    /* SVG Connecting Line */
+    #hud-svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 25;
+    }
+  </style>
+</head>
+<body class="w-screen h-screen relative bg-[#141518] select-none">
+
+  <!-- 3D Canvas -->
+  <div id="canvas-container" class="absolute inset-0 z-0 cursor-grab active:cursor-grabbing"></div>
+
+  <!-- SVG Overlay -->
+  <svg id="hud-svg-layer">
+    <path id="leader-line" d="" fill="none" stroke="#e28236" stroke-width="1.8" stroke-dasharray="4 3" opacity="0.95" />
+    <circle id="leader-end" cx="0" cy="0" r="3.5" fill="#e28236" />
+  </svg>
+
+  <!-- Dynamic 3D Pin Hotspot -->
+  <div id="pin-hotspot" class="pin-hotspot opacity-0 z-30">
+    <div class="pin-ring"></div>
+    <div class="pin-core"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="absolute top-5 left-6 right-6 z-20 flex items-center justify-between pointer-events-none">
+    <div class="flex items-center space-x-3 pointer-events-auto">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/25 border border-white/20">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-base font-bold tracking-tight text-white flex items-center">
+            HDD Head Stack & Actuator Assembly
+          </h1>
+          <span class="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded">Macro Photo Accurate</span>
+        </div>
+        <p class="text-xs text-slate-400 font-mono">1:1 Physical Teardown • High-Resolution PBR Shaders</p>
+      </div>
+    </div>
+
+    <!-- Quick Toolbars -->
+    <div class="flex items-center space-x-2 pointer-events-auto">
+      <div class="glass-panel px-1.5 py-1 rounded-xl flex items-center space-x-1 text-xs">
+        <button onclick="setCameraView('reference')" class="px-2.5 py-1.5 rounded-lg text-orange-300 bg-orange-500/15 border border-orange-500/30 font-medium">Ref Angle</button>
+        <button onclick="setCameraView('iso')" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition active:scale-95 font-medium">Isometric</button>
+        <button onclick="setCameraView('top')" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition active:scale-95 font-medium">Top View</button>
+        <button onclick="setCameraView('side')" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition active:scale-95 font-medium">Side View</button>
+      </div>
+
+      <div class="glass-panel p-1 rounded-xl flex items-center space-x-1">
+        <button id="theme-btn" onclick="toggleTheme()" class="px-3 py-1.5 rounded-lg text-xs font-mono flex items-center space-x-1.5 text-slate-300 hover:text-white hover:bg-white/10 transition">
+          <span class="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></span>
+          <span id="theme-label">DARK GRID</span>
+        </button>
+        <button id="wireframe-btn" onclick="toggleWireframe()" class="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition">
+          X-RAY
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HUD Spec Information Card -->
+  <div id="hud-spec-card" class="glass-card absolute top-24 right-8 z-30 w-90 p-5 rounded-2xl transition-all duration-300 transform translate-x-0 opacity-95 pointer-events-auto border border-white/15">
+    <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2.5">
+      <div class="flex items-center space-x-2">
+        <span class="w-1.5 h-3.5 bg-orange-500 rounded-sm"></span>
+        <span id="card-layer-id" class="text-xs font-mono font-semibold text-orange-400 tracking-wider">LAYER 01 / 06</span>
+      </div>
+      <span class="text-[11px] font-mono text-slate-400">PHYSICAL TEARDOWN</span>
+    </div>
+
+    <h2 id="card-part-name" class="text-lg font-bold text-white tracking-tight mb-2">Actuator E-Block Comb (8-Layer)</h2>
+
+    <div class="space-y-2.5 text-xs">
+      <div>
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-0.5">MATERIAL</div>
+        <p id="card-material" class="text-slate-200 font-medium">Extruded & CNC-Milled Duralumin + Multi-trace Flexible Stiffener</p>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-0.5">FUNCTION & SPECS</div>
+        <p id="card-function" class="text-slate-300 leading-relaxed">
+          8-tier precision comb with milled stiffener cavity, dual rivet ports, and side multi-channel trace flex pad.
+        </p>
+      </div>
+
+      <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-slate-400">
+        <span>TOLERANCE: <b class="text-slate-200">±0.001 mm</b></span>
+        <span>STATUS: <b class="text-emerald-400">MACRO MATCHED</b></span>
+      </div>
+    </div>
+
+    <!-- Quick Isolate Buttons -->
+    <div class="mt-4 pt-3 border-t border-white/10">
+      <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2">EXPLODED MODULES</div>
+      <div class="grid grid-cols-2 gap-1.5 text-[11px] font-mono" id="quick-part-list">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Exploded View Controller Panel -->
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[92%] max-w-2xl glass-panel p-4 rounded-2xl pointer-events-auto">
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center space-x-2">
+        <button id="play-btn" onclick="toggleAutoPlay()" class="w-8 h-8 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 flex items-center justify-center transition border border-orange-500/30 active:scale-95">
+          <svg id="play-icon" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+        <span class="text-xs font-mono font-medium text-slate-200 uppercase tracking-wider">TEARDOWN SEPARATION</span>
+      </div>
+      <div class="flex items-center space-x-3 text-xs font-mono">
+        <span class="text-slate-400">ASSEMBLED</span>
+        <span id="slider-val" class="font-bold text-orange-400 text-sm w-12 text-right">0%</span>
+        <span class="text-slate-400">EXPLODED</span>
+      </div>
+    </div>
+
+    <!-- Scrubber Slider -->
+    <div class="relative flex items-center py-1">
+      <input type="range" id="explode-slider" min="0" max="100" value="0" step="0.5" class="w-full" />
+    </div>
+
+    <!-- Bottom Helper Text -->
+    <div class="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+      <div class="flex items-center space-x-4">
+        <span class="flex items-center space-x-1"><kbd class="px-1.5 py-0.5 bg-white/10 rounded text-[10px] text-slate-300">Drag</kbd> Rotate 3D</span>
+        <span class="flex items-center space-x-1"><kbd class="px-1.5 py-0.5 bg-white/10 rounded text-[10px] text-slate-300">Scroll</kbd> Zoom</span>
+        <span class="flex items-center space-x-1"><kbd class="px-1.5 py-0.5 bg-white/10 rounded text-[10px] text-slate-300">Click</kbd> Inspect Part</span>
+      </div>
+      <button onclick="resetExplode()" class="hover:text-orange-400 transition text-slate-400">Reset View</button>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       Macro-Accurate Photorealistic 3D Engine
+       ========================================================================== */
+
+    let scene, camera, renderer, controls;
+    let gridHelper, ambientLight, keyLight, fillLight, rimLight, floorSpot;
+    let rootModelGroup = new THREE.Group();
+    let interactiveModules = {};
+    let allMeshes = [];
+    let hoveredKey = null;
+    let selectedKey = "arm_stack";
+    let isWireframe = false;
+    let isDarkTheme = true;
+    let isAutoPlaying = false;
+    let autoPlayTween = null;
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const MODULE_GROUPS = {
+      "arm_stack": {
+        id: "01 / 06",
+        name: "Actuator E-Block Comb (8-Tier)",
+        material: "CNC Duralumin + Side Trace Stiffener",
+        specs: "8-blade CNC-milled comb with recessed stiffener cavity, dual rivet ports, and side multi-channel trace flex pad.",
+        offset: new THREE.Vector3(-2.2, 0, 1.2)
+      },
+      "pivot_bearing": {
+        id: "02 / 06",
+        name: "Pivot Hub & 3-Aperture Cluster",
+        material: "Chamfered Stainless Steel Ring + Concentric Well",
+        specs: "Precision turned bearing housing with concentric raceway and triad of 3 laser-drilled balance holes.",
+        offset: new THREE.Vector3(0, 2.8, 0)
+      },
+      "voice_coil": {
+        id: "03 / 06",
+        name: "Voice Coil Core (Dark Triangular Plate)",
+        material: "Sintered Magnet Core + Dual Balancing Ports",
+        specs: "Dark charcoal triangular electromagnetic plate with dual precision alignment ports.",
+        offset: new THREE.Vector3(1.8, 0, -1.8)
+      },
+      "vcm_top_shroud": {
+        id: "04 / 06",
+        name: "Gold-Anodized Chamfered VCM Yoke Bezel",
+        material: "High-Luster Polished Gold/Brass Alloy",
+        specs: "Two-tone gold-anodized yoke frame with facet chamfers directing high-density magnetic flux.",
+        offset: new THREE.Vector3(1.8, 2.4, -1.8)
+      },
+      "flex_cable": {
+        id: "05 / 06",
+        name: "Wide S-Curved Polyimide FPC Ribbon",
+        material: "Translucent Amber Kapton + Copper Micro-Traces",
+        specs: "Sweeping S-curve ribbon carrying high-speed differential signals into the strain-relief clamp.",
+        offset: new THREE.Vector3(1.0, 0.7, 0.8)
+      },
+      "connector_block": {
+        id: "06 / 06",
+        name: "Flex-Rigid Pre-Amp PCB & 28-Pin Header",
+        material: "Glossy Amber PCB + Pre-Amp IC + 28 Gold Pins",
+        specs: "Curved copper PCB artwork with Pre-Amp IC, exposed ground ring washers, and angled 45° 28-pin SMD connector.",
+        offset: new THREE.Vector3(3.6, 0, 1.8)
+      }
+    };
+
+    /* ==========================================================================
+       Procedural Macro-Accurate High-Res Textures
+       ========================================================================== */
+    function generateBrushedMetalTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#e8e5db';
+      ctx.fillRect(0, 0, 512, 512);
+
+      for (let i = 0; i < 5000; i++) {
+        const x = Math.random() * 512;
+        const y = Math.random() * 512;
+        const len = 30 + Math.random() * 80;
+        const alpha = 0.03 + Math.random() * 0.07;
+        ctx.strokeStyle = Math.random() > 0.5 ? `rgba(255,255,255,${alpha})` : `rgba(30,30,30,${alpha})`;
+        ctx.lineWidth = 0.5 + Math.random() * 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + len, y);
+        ctx.stroke();
+      }
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function generatePCBArtworkTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 1024;
+      const ctx = canvas.getContext('2d');
+
+      // Amber/orange glossy polyimide PCB base
+      ctx.fillStyle = '#d97828';
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      // Sweeping copper circuit traces
+      ctx.strokeStyle = '#f5ab62';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+
+      for (let i = 0; i < 18; i++) {
+        const yStart = 150 + i * 42;
+        ctx.beginPath();
+        ctx.moveTo(100, yStart);
+        ctx.bezierCurveTo(400, yStart - 50, 600, yStart + 80, 920, yStart);
+        ctx.stroke();
+      }
+
+      // Copper ground pours
+      ctx.fillStyle = '#be6118';
+      ctx.beginPath();
+      ctx.arc(320, 320, 180, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Gold rectangular solder pad array for the 28 pins
+      ctx.fillStyle = '#ffd15c';
+      for (let r = 0; r < 2; r++) {
+        for (let p = 0; p < 14; p++) {
+          ctx.fillRect(520 + p * 28, 480 + r * 45, 18, 30);
+        }
+      }
+
+      // Silver grounding ring washers
+      ctx.fillStyle = '#d6d9e0';
+      ctx.beginPath();
+      ctx.arc(820, 220, 60, 0, Math.PI * 2);
+      ctx.arc(860, 800, 60, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#1c1e22';
+      ctx.beginPath();
+      ctx.arc(820, 220, 32, 0, Math.PI * 2);
+      ctx.arc(860, 800, 32, 0, Math.PI * 2);
+      ctx.fill();
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.anisotropy = 16;
+      return tex;
+    }
+
+    function generateCombSideTracesTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      // Copper/orange flex base
+      ctx.fillStyle = '#c96f26';
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Horizontal micro-traces matching the 8 tiers
+      for (let i = 0; i < 16; i++) {
+        const y = 20 + i * 30;
+        ctx.fillStyle = '#e8a356';
+        ctx.fillRect(0, y, 512, 12);
+        ctx.fillStyle = '#8f460d';
+        ctx.fillRect(0, y + 12, 512, 4);
+      }
+
+      // Silver grounding bracket square
+      ctx.fillStyle = '#ccd0d9';
+      ctx.fillRect(380, 180, 80, 80);
+      ctx.fillStyle = '#222';
+      ctx.fillRect(405, 205, 30, 30);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      return tex;
+    }
+
+    const brushedTex = generateBrushedMetalTexture();
+    const pcbArtTex = generatePCBArtworkTexture();
+    const combSideTex = generateCombSideTracesTexture();
+
+    const palette = {
+      aluminum: new THREE.MeshStandardMaterial({
+        color: 0xe0ddd0,
+        metalness: 0.82,
+        roughness: 0.22,
+        map: brushedTex
+      }),
+      cavityMilled: new THREE.MeshStandardMaterial({
+        color: 0xc4c1b4,
+        metalness: 0.75,
+        roughness: 0.35
+      }),
+      pivotRing: new THREE.MeshStandardMaterial({
+        color: 0xede9dc,
+        metalness: 0.92,
+        roughness: 0.15
+      }),
+      pivotWell: new THREE.MeshStandardMaterial({
+        color: 0xdfd49e,
+        metalness: 0.65,
+        roughness: 0.28
+      }),
+      goldVCMBezel: new THREE.MeshStandardMaterial({
+        color: 0xf0c85d, // Rich polished gold/brass luster
+        metalness: 0.95,
+        roughness: 0.18
+      }),
+      vcmDarkCore: new THREE.MeshStandardMaterial({
+        color: 0x32343a, // Matte charcoal core
+        metalness: 0.88,
+        roughness: 0.35
+      }),
+      silverWing: new THREE.MeshStandardMaterial({
+        color: 0xd6d3c7,
+        metalness: 0.85,
+        roughness: 0.25
+      }),
+      combSideFlex: new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        map: combSideTex,
+        metalness: 0.4,
+        roughness: 0.3
+      }),
+      fpcRibbon: new THREE.MeshStandardMaterial({
+        color: 0xe07e2c,
+        metalness: 0.3,
+        roughness: 0.28,
+        side: THREE.DoubleSide
+      }),
+      pcbGlossy: new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        map: pcbArtTex,
+        metalness: 0.25,
+        roughness: 0.22
+      }),
+      blackPlastic: new THREE.MeshStandardMaterial({
+        color: 0x1a1c20,
+        metalness: 0.5,
+        roughness: 0.45
+      }),
+      goldPins: new THREE.MeshStandardMaterial({
+        color: 0xf5d36e,
+        metalness: 0.95,
+        roughness: 0.12
+      }),
+      silverWasher: new THREE.MeshStandardMaterial({
+        color: 0xd8dbe0,
+        metalness: 0.96,
+        roughness: 0.15
+      }),
+      highlight: new THREE.MeshStandardMaterial({
+        color: 0xff9900,
+        emissive: 0xff7700,
+        emissiveIntensity: 0.55,
+        metalness: 0.7,
+        roughness: 0.25
+      })
+    };
+
+    function init() {
+      const container = document.getElementById('canvas-container');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x141518);
+
+      camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+      camera.position.set(6.4, 7.8, 8.2);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(width, height);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      container.appendChild(renderer.domElement);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.06;
+      controls.target.set(0.6, 0.1, -0.3);
+      controls.maxDistance = 25;
+      controls.minDistance = 2.5;
+
+      // Studio Grid Floor
+      gridHelper = new THREE.GridHelper(32, 32, 0x4f5869, 0x242832);
+      gridHelper.position.y = -1.6;
+      scene.add(gridHelper);
+
+      // Studio Multi-Point Lighting
+      ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambientLight);
+
+      keyLight = new THREE.DirectionalLight(0xfff7ee, 1.5);
+      keyLight.position.set(10, 16, 10);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 2048;
+      keyLight.shadow.mapSize.height = 2048;
+      keyLight.shadow.bias = -0.0005;
+      scene.add(keyLight);
+
+      fillLight = new THREE.DirectionalLight(0xb4ccff, 0.85);
+      fillLight.position.set(-12, 10, -10);
+      scene.add(fillLight);
+
+      rimLight = new THREE.DirectionalLight(0xffdfa8, 0.7);
+      rimLight.position.set(2, -5, 8);
+      scene.add(rimLight);
+
+      floorSpot = new THREE.SpotLight(0xffeedd, 0.8, 20, Math.PI / 4, 0.5);
+      floorSpot.position.set(0, 8, 0);
+      scene.add(floorSpot);
+
+      scene.add(rootModelGroup);
+
+      // Build Macro Photo Accurate Model
+      buildMacroPhotoModel();
+
+      // Populate Quick Part List in HUD
+      populateQuickPartList();
+
+      // Event Listeners
+      window.addEventListener('resize', onWindowResize);
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('click', onMouseClick);
+      
+      const slider = document.getElementById('explode-slider');
+      slider.addEventListener('input', (e) => {
+        applyExplosion(parseFloat(e.target.value));
+      });
+
+      selectPart("arm_stack");
+      applyExplosion(0);
+
+      animate();
+    }
+
+    /* ==========================================================================
+       Construct Exact Geometry from Macro Photograph
+       ========================================================================== */
+    function buildMacroPhotoModel() {
+      // 1. ACTUATOR E-BLOCK COMB (8 Tiers with Milled Recessed Cavity & Rivet Ports)
+      const armGroup = new THREE.Group();
+      armGroup.name = "arm_stack";
+
+      const numTiers = 8;
+      const tierGap = 0.19;
+
+      for (let i = 0; i < numTiers; i++) {
+        const yOffset = (i - (numTiers - 1) / 2) * tierGap;
+
+        // Solid aerodynamic blade profile
+        const bladeShape = new THREE.Shape();
+        bladeShape.moveTo(0, 0);
+        bladeShape.lineTo(-1.6, 0.42);
+        bladeShape.quadraticCurveTo(-2.6, 0.56, -3.4, 0.46);
+        bladeShape.lineTo(-4.0, 0.2);
+        bladeShape.lineTo(-4.15, 0.0);
+        bladeShape.lineTo(-4.0, -0.2);
+        bladeShape.lineTo(-3.4, -0.36);
+        bladeShape.quadraticCurveTo(-2.6, -0.40, -1.6, -0.28);
+        bladeShape.lineTo(0, -0.6);
+        bladeShape.closePath();
+
+        const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, {
+          depth: 0.065,
+          bevelEnabled: true,
+          bevelSegments: 4,
+          bevelSize: 0.02,
+          bevelThickness: 0.02
+        });
+        bladeGeo.rotateX(Math.PI / 2);
+
+        const bladeMesh = new THREE.Mesh(bladeGeo, palette.aluminum);
+        bladeMesh.position.set(0, yOffset, 0);
+        bladeMesh.castShadow = true;
+        bladeMesh.receiveShadow = true;
+        armGroup.add(bladeMesh);
+
+        // On the top arm tier: Render the distinct Elongated Recessed Milled Cavity (Pocket)
+        if (i === numTiers - 1) {
+          const pocketGeo = new THREE.BoxGeometry(1.2, 0.04, 0.32);
+          const pocketMesh = new THREE.Mesh(pocketGeo, palette.cavityMilled);
+          pocketMesh.position.set(-2.2, yOffset + 0.035, 0.08);
+          armGroup.add(pocketMesh);
+
+          // Two side-by-side silver rivet ports
+          const r1 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.06, 16), palette.silverWasher);
+          r1.position.set(-3.2, yOffset + 0.04, 0.12);
+          armGroup.add(r1);
+
+          const r2 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.06, 16), palette.silverWasher);
+          r2.position.set(-3.2, yOffset + 0.04, -0.02);
+          armGroup.add(r2);
+        }
+
+        // Tiny suspension mounting tips at the end of each tier
+        const tipGeo = new THREE.BoxGeometry(0.25, 0.015, 0.08);
+        const tipMesh = new THREE.Mesh(tipGeo, palette.silverWasher);
+        tipMesh.position.set(-4.22, yOffset, 0);
+        armGroup.add(tipMesh);
+      }
+
+      // Extended Copper/Orange Flex Stiffener Pad wrapping the side of all 8 tiers
+      const combSidePad = new THREE.Mesh(new THREE.BoxGeometry(1.4, numTiers * tierGap + 0.12, 0.22), palette.combSideFlex);
+      combSidePad.position.set(-0.95, 0, 0.54);
+      combSidePad.rotation.y = -Math.PI * 0.08;
+      combSidePad.castShadow = true;
+      armGroup.add(combSidePad);
+
+      // Diagonal silver axle / bracket pin behind the comb
+      const axlePin = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.65, 16), palette.silverWasher);
+      axlePin.position.set(0.25, 0.1, 0.65);
+      axlePin.rotation.x = Math.PI / 4;
+      axlePin.rotation.z = Math.PI / 6;
+      armGroup.add(axlePin);
+
+      registerModule("arm_stack", armGroup);
+
+      // 2. PIVOT BEARING HUB & 3-APERTURE CLUSTER
+      const pivotGroup = new THREE.Group();
+      pivotGroup.name = "pivot_bearing";
+
+      // Polished Stainless Steel outer chamfered ring
+      const pivotRimGeo = new THREE.CylinderGeometry(0.82, 0.82, 1.6, 48);
+      const pivotRim = new THREE.Mesh(pivotRimGeo, palette.pivotRing);
+      pivotRim.castShadow = true;
+      pivotGroup.add(pivotRim);
+
+      // Deep Concentric Turning Well
+      const pivotWellGeo = new THREE.CylinderGeometry(0.64, 0.64, 1.65, 48);
+      const pivotWell = new THREE.Mesh(pivotWellGeo, palette.pivotWell);
+      pivotWell.position.set(0, 0.05, 0);
+      pivotGroup.add(pivotWell);
+
+      // Center Pin
+      const pivotCenter = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 1.72, 32), palette.aluminum);
+      pivotCenter.position.set(0, 0.08, 0);
+      pivotGroup.add(pivotCenter);
+
+      // Triad of 3 Black Circular Holes (Cluster directly next to pivot in photo)
+      const triadHoles = [
+        { x: -0.45, z: 0.58, r: 0.13 },
+        { x: -0.22, z: 0.66, r: 0.10 },
+        { x: -0.66, z: 0.46, r: 0.085 }
+      ];
+      triadHoles.forEach(h => {
+        const holeMesh = new THREE.Mesh(new THREE.CylinderGeometry(h.r, h.r, 1.7, 24), palette.blackPlastic);
+        holeMesh.position.set(h.x, 0, h.z);
+        pivotGroup.add(holeMesh);
+      });
+
+      registerModule("pivot_bearing", pivotGroup);
+
+      // 3. VOICE COIL (Dark Charcoal Triangular Plate Core)
+      const vcmGroup = new THREE.Group();
+      vcmGroup.name = "voice_coil";
+
+      const vcmCoreShape = new THREE.Shape();
+      vcmCoreShape.moveTo(0.5, -0.4);
+      vcmCoreShape.lineTo(2.3, -1.15);
+      vcmCoreShape.quadraticCurveTo(2.7, 0, 2.3, 1.15);
+      vcmCoreShape.lineTo(0.5, 0.4);
+      vcmCoreShape.closePath();
+
+      const vcmCoreGeo = new THREE.ExtrudeGeometry(vcmCoreShape, {
+        depth: 0.24,
+        bevelEnabled: true,
+        bevelSegments: 4,
+        bevelSize: 0.03,
+        bevelThickness: 0.03
+      });
+      vcmCoreGeo.rotateX(Math.PI / 2);
+
+      const vcmCoreMesh = new THREE.Mesh(vcmCoreGeo, palette.vcmDarkCore);
+      vcmCoreMesh.position.set(0.4, 0, 0);
+      vcmCoreMesh.castShadow = true;
+      vcmGroup.add(vcmCoreMesh);
+
+      // Two precision drilled circular balance holes
+      const vcmHole1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.35, 20), palette.blackPlastic);
+      vcmHole1.position.set(1.9, 0, -0.28);
+      vcmGroup.add(vcmHole1);
+
+      const vcmHole2 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.35, 20), palette.blackPlastic);
+      vcmHole2.position.set(1.9, 0, 0.28);
+      vcmGroup.add(vcmHole2);
+
+      registerModule("voice_coil", vcmGroup);
+
+      // 4. GOLD-ANODIZED CHAMFERED VCM YOKE BEZEL & SILVER WINGS
+      const topVcmGroup = new THREE.Group();
+      topVcmGroup.name = "vcm_top_shroud";
+
+      // Faceted Gold/Brass Yoke Bezel (Matching the sparkling gold chamfer in the photo!)
+      const goldBezelShape = new THREE.Shape();
+      goldBezelShape.moveTo(0.4, -0.5);
+      goldBezelShape.lineTo(2.4, -1.35);
+      goldBezelShape.quadraticCurveTo(3.0, 0, 2.4, 1.35);
+      goldBezelShape.lineTo(0.4, 0.5);
+      goldBezelShape.closePath();
+
+      const innerWindow = new THREE.Path();
+      innerWindow.moveTo(0.8, -0.35);
+      innerWindow.lineTo(2.1, -1.0);
+      innerWindow.quadraticCurveTo(2.4, 0, 2.1, 1.0);
+      innerWindow.lineTo(0.8, 0.35);
+      innerWindow.closePath();
+      goldBezelShape.holes.push(innerWindow);
+
+      const goldBezelGeo = new THREE.ExtrudeGeometry(goldBezelShape, {
+        depth: 0.18,
+        bevelEnabled: true,
+        bevelSegments: 4,
+        bevelSize: 0.045,
+        bevelThickness: 0.045
+      });
+      goldBezelGeo.rotateX(Math.PI / 2);
+
+      const goldBezelMesh = new THREE.Mesh(goldBezelGeo, palette.goldVCMBezel);
+      goldBezelMesh.position.set(0.4, 0.22, 0);
+      goldBezelMesh.castShadow = true;
+      topVcmGroup.add(goldBezelMesh);
+
+      // Silver outer chassis contour wings
+      const wingGeo = new THREE.BoxGeometry(0.4, 0.12, 0.6);
+      const wing1 = new THREE.Mesh(wingGeo, palette.silverWing);
+      wing1.position.set(2.4, 0.12, -1.3);
+      wing1.rotation.y = -Math.PI * 0.2;
+      topVcmGroup.add(wing1);
+
+      const wing2 = new THREE.Mesh(wingGeo, palette.silverWing);
+      wing2.position.set(2.4, 0.12, 1.3);
+      wing2.rotation.y = Math.PI * 0.2;
+      topVcmGroup.add(wing2);
+
+      registerModule("vcm_top_shroud", topVcmGroup);
+
+      // 5. FLEXIBLE PRINTED CIRCUIT (FPC S-CURVED RIBBON CABLE)
+      const flexGroup = new THREE.Group();
+      flexGroup.name = "flex_cable";
+
+      const ribbonCurve = new THREE.CubicBezierCurve3(
+        new THREE.Vector3(0.1, 0.05, 0.7),
+        new THREE.Vector3(0.5, -0.1, 1.8),
+        new THREE.Vector3(1.6, -0.05, 1.7),
+        new THREE.Vector3(2.2, 0.0, 1.4)
+      );
+
+      const ribbonPoints = ribbonCurve.getPoints(48);
+      const ribbonGeo = new THREE.BufferGeometry();
+      const vertices = [];
+      const uvs = [];
+      const ribbonHeight = 0.58;
+
+      for (let i = 0; i < ribbonPoints.length; i++) {
+        const pt = ribbonPoints[i];
+        vertices.push(pt.x, pt.y + ribbonHeight / 2, pt.z);
+        vertices.push(pt.x, pt.y - ribbonHeight / 2, pt.z);
+        uvs.push(i / ribbonPoints.length, 1);
+        uvs.push(i / ribbonPoints.length, 0);
+      }
+
+      const indices = [];
+      for (let i = 0; i < ribbonPoints.length - 1; i++) {
+        const a = i * 2;
+        const b = i * 2 + 1;
+        const c = (i + 1) * 2;
+        const d = (i + 1) * 2 + 1;
+        indices.push(a, b, c);
+        indices.push(c, b, d);
+      }
+
+      ribbonGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      ribbonGeo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+      ribbonGeo.setIndex(indices);
+      ribbonGeo.computeVertexNormals();
+
+      const ribbonMesh = new THREE.Mesh(ribbonGeo, palette.fpcRibbon);
+      ribbonMesh.castShadow = true;
+      flexGroup.add(ribbonMesh);
+
+      // Molded black strain relief clamp
+      const strainBracket = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.72, 0.28), palette.blackPlastic);
+      strainBracket.position.set(2.15, 0.0, 1.45);
+      strainBracket.rotation.y = -Math.PI * 0.15;
+      flexGroup.add(strainBracket);
+
+      registerModule("flex_cable", flexGroup);
+
+      // 6. FLEX-RIGID PRE-AMP PCB & 28-PIN HEADER (Exact Macro-Photo Circuit Layout)
+      const connGroup = new THREE.Group();
+      connGroup.name = "connector_block";
+
+      // Molded Orange & Black Chassis Assembly
+      const housingShape = new THREE.Shape();
+      housingShape.moveTo(0, 0);
+      housingShape.lineTo(1.8, -0.3);
+      housingShape.lineTo(2.2, 0.8);
+      housingShape.lineTo(1.6, 1.9);
+      housingShape.lineTo(-0.2, 1.6);
+      housingShape.closePath();
+
+      const connHousingGeo = new THREE.ExtrudeGeometry(housingShape, {
+        depth: 0.55,
+        bevelEnabled: true,
+        bevelSegments: 4,
+        bevelSize: 0.045,
+        bevelThickness: 0.045
+      });
+      connHousingGeo.rotateX(Math.PI / 2);
+
+      const connHousing = new THREE.Mesh(connHousingGeo, palette.pcbGlossy);
+      connHousing.position.set(2.4, 0.1, 0.6);
+      connHousing.castShadow = true;
+      connHousing.receiveShadow = true;
+      connGroup.add(connHousing);
+
+      // Pre-Amp IC Chip (surface mount black package)
+      const icChip = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.04, 0.48), palette.blackPlastic);
+      icChip.position.set(3.15, 0.39, 1.35);
+      connGroup.add(icChip);
+
+      // Two Exposed Silver Grounding Washers (top-right & bottom-right of PCB)
+      const washer1 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.65, 24), palette.silverWasher);
+      washer1.position.set(3.2, 0.15, 0.95);
+      connGroup.add(washer1);
+
+      const washer2 = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.65, 24), palette.silverWasher);
+      washer2.position.set(4.2, 0.15, 1.8);
+      connGroup.add(washer2);
+
+      // Angled 45° 28-Pin SMD Multi-Connector Header
+      const pinBlockGroup = new THREE.Group();
+      pinBlockGroup.position.set(3.8, 0.38, 1.35);
+      pinBlockGroup.rotation.y = -Math.PI * 0.28; // 45 deg angle matching photo
+
+      const pinMatrixBase = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.18, 0.45), palette.blackPlastic);
+      pinBlockGroup.add(pinMatrixBase);
+
+      const lockingRail = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.14, 0.14), palette.blackPlastic);
+      lockingRail.position.set(0, 0.14, 0.08);
+      pinBlockGroup.add(lockingRail);
+
+      // 28 Gold Pins
+      const singlePinGeo = new THREE.BoxGeometry(0.04, 0.22, 0.04);
+      for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 14; col++) {
+          const pin = new THREE.Mesh(singlePinGeo, palette.goldPins);
+          pin.position.set(-0.68 + col * 0.105, 0.16, -0.12 + row * 0.18);
+          pinBlockGroup.add(pin);
+        }
+      }
+
+      connGroup.add(pinBlockGroup);
+
+      // Black Underbody Clamps
+      const clamp1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.45, 0.22), palette.blackPlastic);
+      clamp1.position.set(2.8, -0.05, 2.1);
+      connGroup.add(clamp1);
+
+      const clamp2 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.45, 0.22), palette.blackPlastic);
+      clamp2.position.set(3.8, -0.05, 0.7);
+      connGroup.add(clamp2);
+
+      registerModule("connector_block", connGroup);
+
+      // Model Orientation Matching Photo
+      rootModelGroup.rotation.y = Math.PI * 0.22;
+      rootModelGroup.position.set(0, 0, 0);
+    }
+
+    function registerModule(key, group) {
+      group.userData = {
+        key: key,
+        info: MODULE_GROUPS[key],
+        initialPosition: group.position.clone()
+      };
+      
+      group.traverse((child) => {
+        if (child.isMesh) {
+          child.userData.moduleKey = key;
+          child.userData.originalMaterial = child.material;
+          allMeshes.push(child);
+        }
+      });
+
+      interactiveModules[key] = group;
+      rootModelGroup.add(group);
+    }
+
+    /* ==========================================================================
+       Explosion Logic
+       ========================================================================== */
+    function applyExplosion(percent) {
+      const factor = percent / 100;
+      document.getElementById('slider-val').innerText = `${Math.round(percent)}%`;
+
+      Object.keys(interactiveModules).forEach(key => {
+        const group = interactiveModules[key];
+        const info = MODULE_GROUPS[key];
+        if (info && info.offset) {
+          group.position.x = info.offset.x * factor;
+          group.position.y = info.offset.y * factor;
+          group.position.z = info.offset.z * factor;
+        }
+      });
+
+      updateHUDLeaderLine();
+    }
+
+    function resetExplode() {
+      if (autoPlayTween) autoPlayTween.kill();
+      isAutoPlaying = false;
+      updatePlayButtonUI();
+      
+      const slider = document.getElementById('explode-slider');
+      gsap.to(slider, {
+        value: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        onUpdate: () => applyExplosion(slider.value)
+      });
+
+      setCameraView('reference');
+      selectPart('arm_stack');
+    }
+
+    function toggleAutoPlay() {
+      isAutoPlaying = !isAutoPlaying;
+      updatePlayButtonUI();
+
+      const slider = document.getElementById('explode-slider');
+
+      if (isAutoPlaying) {
+        let target = slider.value >= 98 ? 0 : 100;
+        autoPlayTween = gsap.to(slider, {
+          value: target,
+          duration: 4.5,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+          onUpdate: () => applyExplosion(slider.value)
+        });
+      } else {
+        if (autoPlayTween) autoPlayTween.kill();
+      }
+    }
+
+    function updatePlayButtonUI() {
+      const icon = document.getElementById('play-icon');
+      if (isAutoPlaying) {
+        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      } else {
+        icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      }
+    }
+
+    /* ==========================================================================
+       Interactivity: Hover, Click, Raycasting & HUD
+       ========================================================================== */
+    function onMouseMove(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(allMeshes);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        const key = hit.userData.moduleKey;
+        if (key && key !== hoveredKey) {
+          hoveredKey = key;
+          highlightModule(key);
+        }
+      } else {
+        if (hoveredKey && hoveredKey !== selectedKey) {
+          unhighlightModule(hoveredKey);
+          hoveredKey = null;
+        }
+      }
+      
+      updateHUDLeaderLine();
+    }
+
+    function onMouseClick(event) {
+      if (event.target.closest('.glass-panel') || event.target.closest('.glass-card')) return;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(allMeshes);
+
+      if (intersects.length > 0) {
+        const key = intersects[0].object.userData.moduleKey;
+        if (key) {
+          selectPart(key);
+        }
+      }
+    }
+
+    function highlightModule(key) {
+      allMeshes.forEach(mesh => {
+        if (mesh.userData.moduleKey === key) {
+          mesh.material = palette.highlight;
+        } else {
+          mesh.material = mesh.userData.originalMaterial;
+        }
+      });
+    }
+
+    function unhighlightModule(key) {
+      allMeshes.forEach(mesh => {
+        if (mesh.userData.moduleKey === key) {
+          mesh.material = mesh.userData.originalMaterial;
+        }
+      });
+    }
+
+    function selectPart(key) {
+      selectedKey = key;
+      const data = MODULE_GROUPS[key];
+      if (!data) return;
+
+      document.getElementById('card-layer-id').innerText = `LAYER ${data.id}`;
+      document.getElementById('card-part-name').innerText = data.name;
+      document.getElementById('card-material').innerText = data.material;
+      document.getElementById('card-function').innerText = data.specs;
+
+      document.querySelectorAll('#quick-part-list button').forEach(btn => {
+        if (btn.dataset.key === key) {
+          btn.className = "px-2 py-1 rounded bg-orange-500 text-black font-semibold text-left truncate";
+        } else {
+          btn.className = "px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 text-left truncate";
+        }
+      });
+
+      highlightModule(key);
+
+      const targetGroup = interactiveModules[key];
+      if (targetGroup) {
+        const worldPos = new THREE.Vector3();
+        targetGroup.getWorldPosition(worldPos);
+        
+        gsap.to(controls.target, {
+          x: worldPos.x,
+          y: worldPos.y,
+          z: worldPos.z,
+          duration: 0.9,
+          ease: "power2.out"
+        });
+      }
+
+      updateHUDLeaderLine();
+    }
+
+    /* ==========================================================================
+       Dynamic SVG Connecting Line & 3D Hotspot Pin Tracker
+       ========================================================================== */
+    function updateHUDLeaderLine() {
+      const activeKey = selectedKey || hoveredKey || "arm_stack";
+      const targetGroup = interactiveModules[activeKey];
+      if (!targetGroup) return;
+
+      const worldPos = new THREE.Vector3();
+      targetGroup.getWorldPosition(worldPos);
+      
+      const screenPos = worldPos.clone().project(camera);
+      const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+      const y = (-(screenPos.y * 0.5) + 0.5) * window.innerHeight;
+
+      if (screenPos.z > 1) {
+        document.getElementById('pin-hotspot').style.opacity = '0';
+        document.getElementById('leader-line').setAttribute('d', '');
+        return;
+      }
+
+      const pin = document.getElementById('pin-hotspot');
+      pin.style.left = `${x}px`;
+      pin.style.top = `${y}px`;
+      pin.style.opacity = '1';
+
+      const card = document.getElementById('hud-spec-card');
+      const cardRect = card.getBoundingClientRect();
+      const cardTargetX = cardRect.left;
+      const cardTargetY = cardRect.top + 40;
+
+      const pathData = `M ${x} ${y} L ${cardTargetX - 20} ${y} L ${cardTargetX} ${cardTargetY}`;
+      document.getElementById('leader-line').setAttribute('d', pathData);
+      
+      const leaderEnd = document.getElementById('leader-end');
+      leaderEnd.setAttribute('cx', x);
+      leaderEnd.setAttribute('cy', y);
+    }
+
+    /* ==========================================================================
+       Camera Views & Presets
+       ========================================================================== */
+    function setCameraView(view) {
+      let targetPos = new THREE.Vector3();
+      let targetLook = new THREE.Vector3(0.6, 0.1, -0.3);
+
+      switch(view) {
+        case 'reference':
+          targetPos.set(6.4, 7.8, 8.2);
+          break;
+        case 'iso':
+          targetPos.set(8.5, 7.0, 7.5);
+          break;
+        case 'top':
+          targetPos.set(0.6, 12.5, -0.3);
+          break;
+        case 'side':
+          targetPos.set(11.5, 2.0, -0.3);
+          break;
+      }
+
+      gsap.to(camera.position, {
+        x: targetPos.x,
+        y: targetPos.y,
+        z: targetPos.z,
+        duration: 1.2,
+        ease: "power3.inOut"
+      });
+
+      gsap.to(controls.target, {
+        x: targetLook.x,
+        y: targetLook.y,
+        z: targetLook.z,
+        duration: 1.2,
+        ease: "power3.inOut"
+      });
+    }
+
+    /* ==========================================================================
+       Theme & Visual Mode Toggles
+       ========================================================================== */
+    function toggleTheme() {
+      isDarkTheme = !isDarkTheme;
+      const label = document.getElementById('theme-label');
+      
+      if (isDarkTheme) {
+        scene.background = new THREE.Color(0x141518);
+        gridHelper.material.color.setHex(0x4f5869);
+        ambientLight.intensity = 0.9;
+        label.innerText = "DARK GRID";
+      } else {
+        scene.background = new THREE.Color(0xf3f4f6);
+        gridHelper.material.color.setHex(0x94a3b8);
+        ambientLight.intensity = 1.25;
+        label.innerText = "LIGHT STUDIO";
+      }
+    }
+
+    function toggleWireframe() {
+      isWireframe = !isWireframe;
+      const btn = document.getElementById('wireframe-btn');
+
+      allMeshes.forEach((mesh) => {
+        if (mesh.material) {
+          mesh.material.wireframe = isWireframe;
+        }
+      });
+
+      if (isWireframe) {
+        btn.classList.add('bg-orange-500/20', 'text-orange-300', 'border', 'border-orange-500/30');
+      } else {
+        btn.classList.remove('bg-orange-500/20', 'text-orange-300', 'border', 'border-orange-500/30');
+      }
+    }
+
+    function populateQuickPartList() {
+      const container = document.getElementById('quick-part-list');
+      container.innerHTML = '';
+
+      Object.keys(MODULE_GROUPS).forEach((key, index) => {
+        const item = MODULE_GROUPS[key];
+        const btn = document.createElement('button');
+        btn.dataset.key = key;
+        btn.innerText = `${index + 1}. ${item.name.split(' ')[0]}...`;
+        btn.title = item.name;
+        btn.className = "px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 text-left truncate transition";
+        btn.onclick = () => selectPart(key);
+        container.appendChild(btn);
+      });
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      updateHUDLeaderLine();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      updateHUDLeaderLine();
+      renderer.render(scene, camera);
+    }
+
+    window.onload = () => {
+      init();
+    };
+  </script>
+</body>
+</html>

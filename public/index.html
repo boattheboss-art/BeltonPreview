@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BELTON — Intelligent Automation for the Next Generation</title>
+  <meta name="description" content="BELTON — Intelligent Automation for the Next Generation. Dark Sci-Fi 3D Platform." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Import Map -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- STEP 1: SPINNING STAR LOADING SCREEN (No progress bar) -->
+  <div id="sitePreloader" class="site-preloader">
+    <div class="preloader-star-wrapper">
+      <svg class="preloader-star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+      </svg>
+      <div class="preloader-glow-ring"></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Background "BELTON" Typography (z-0 pointer-events-none) -->
+  <div id="bgBeltonText" class="bg-belton-container" aria-hidden="true">
+    <span class="belton-letter" data-index="0">B</span>
+    <span class="belton-letter" data-index="1">E</span>
+    <span class="belton-letter" data-index="2">L</span>
+    <span class="belton-letter" data-index="3">T</span>
+    <span class="belton-letter" data-index="4">O</span>
+    <span class="belton-letter" data-index="5">N</span>
+  </div>
+
+  <!-- STEP 3: Fullscreen Spline 3D Robot Component (z-10 floating in front of text) -->
+  <canvas id="bentonCanvas" class="hero-canvas" aria-label="3D BELTON Robot Showcase"></canvas>
+
+  <!-- Top Floating Pill Navigation (z-50) -->
+  <header id="siteHeader" class="site-header">
+    <nav class="nav-container" aria-label="Main Navigation">
+      <a href="#" class="nav-logo" aria-label="BELTON Home">
+        <span class="nav-logo-icon">✦</span>
+        <span class="nav-logo-text">BELTON</span>
+      </a>
+
+      <ul id="navLinks" class="nav-links">
+        <li><a href="/" class="nav-link active">Home</a></li>
+        <li><a href="/explorer" class="nav-link nav-link-highlight" id="nav3dModelLink">
+          <span class="nav-pulse-dot"></span>
+          <span>💽 3D MODEL</span>
+        </a></li>
+        <li><a href="/product" class="nav-link nav-link-highlight" id="navProductLink">
+          <span>⚙️ PRODUCT</span>
+        </a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button id="audioToggleBtn" class="audio-toggle-pill" aria-label="Toggle Audio" title="Sound Effects">
+          <span>🔊</span>
+        </button>
+        <button id="navGetStartedBtn" class="btn-get-started">Login</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Content Wrapper (z-20) -->
+  <div class="content-wrapper">
+    <!-- Hero Section -->
+    <main id="hero" class="hero-section">
+      <!-- 4-Point Sparkle Stars in corners -->
+      <svg class="sparkle-star top-left" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+      </svg>
+      <svg class="sparkle-star bottom-right" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+      </svg>
+
+      <!-- Hero Subtitle & Single Login CTA -->
+      <div id="heroOverlayContent" class="hero-overlay-content">
+        <p class="hero-subtitle">Intelligent Automation for the Next Generation.</p>
+        <div class="hero-cta-group">
+          <button id="heroLoginBtn" class="btn-pill-cyan">Login</button>
+        </div>
+        <div id="scrollDownBtn" class="hero-scroll-indicator" aria-label="Scroll Down">
+          ↓
+        </div>
+      </div>
+    </main>
+
+    <!-- Bento Grid Section -->
+    <section id="features" class="section-features">
+      <div class="section-header">
+        <span class="section-tag">// ARCHITECTURE MATRIX</span>
+        <h2 class="section-heading">Core Capabilities</h2>
+      </div>
+
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">Real-Time Synthesis</h3>
+          <p class="card-desc">Sub-millisecond inference pipeline optimized for mission-critical neural workloads.</p>
+        </div>
+
+        <div class="bento-card">
+          <div class="card-icon">🛡️</div>
+          <h3 class="card-title">Encrypted Substrates</h3>
+          <p class="card-desc">Zero-trust cryptographic isolation across all nodes and agentic interfaces.</p>
+        </div>
+
+        <div class="bento-card">
+          <div class="card-icon">🌐</div>
+          <h3 class="card-title">Decentralized Mesh</h3>
+          <p class="card-desc">Self-healing edge topologies ensuring uninterrupted operational uptime.</p>
+        </div>
+
+        <div class="bento-card span-2">
+          <div class="card-icon">🧠</div>
+          <h3 class="card-title">Autonomous Perception & Cybernetics</h3>
+          <p class="card-desc">Multi-modal sensory arrays synchronized with high-precision kinematic controllers for superhuman automation precision.</p>
+        </div>
+
+        <div class="bento-card">
+          <div class="card-icon">🔗</div>
+          <h3 class="card-title">Quantum Link</h3>
+          <p class="card-desc">Hardware-accelerated interconnect protocols with deterministic latency.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Interactive Sci-Fi Access Terminal Modal -->
+  <div id="loginModal" class="modal access-terminal-modal" aria-hidden="true" role="dialog">
+    <div id="modalBackdrop" class="modal-backdrop"></div>
+    <div class="modal-container access-terminal-card">
+      <button id="modalCloseBtn" class="modal-close-btn" aria-label="Close terminal">✕</button>
+
+      <div id="loginFormContainer">
+        <div class="terminal-header-line">
+          <span class="modal-badge">// ACCESS CONTROL</span>
+          <span class="terminal-status-dot"></span>
+        </div>
+        <h2 class="modal-title">Access Terminal</h2>
+
+        <form id="cyberLoginForm" class="login-form">
+          <div id="loginErrorMsg" class="login-error-msg" style="display: none;"></div>
+
+          <div class="form-field">
+            <label for="loginUsername" class="form-label">EMAIL / ACCESS KEY (ชื่อผู้ใช้)</label>
+            <input type="text" id="loginUsername" class="form-input" placeholder="admin" autocomplete="username" required />
+          </div>
+
+          <div class="form-field">
+            <label for="loginPassword" class="form-label">PASSWORD (รหัสผ่าน)</label>
+            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" autocomplete="current-password" required />
+          </div>
+
+          <button type="submit" class="btn-initialize-session" style="width: 100%; margin-top: 0.9rem;">
+            INITIALIZE SESSION
+          </button>
+        </form>
+      </div>
+
+      <div id="authSuccessCard" class="auth-success-card">
+        <div class="auth-icon">✓</div>
+        <h3 style="color: #ffffff; font-size: 1.4rem;">ACCESS GRANTED</h3>
+        <p id="authWelcomeMsg" style="color: #4ade80; font-size: 0.95rem; margin-top: 0.4rem;">ยืนยันตัวตนสำเร็จ กำลังเปิดระบบ 3D Explorer...</p>
+        <button type="button" id="authSuccessCloseBtn" class="btn-initialize-session" style="margin-top: 1.2rem; width: 100%;">
+          🚀 เข้าสู่ระบบ 3D Explorer ทันที
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

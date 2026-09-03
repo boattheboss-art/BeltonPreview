@@ -1,0 +1,3189 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belton 3D Component Explorer PRO - Vision Edition</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== PURE LUXURY DARK SCI-FI / MONOCHROME ==================== */
+        :root {
+            --bg-dark: #000000;
+            --bg-radial: radial-gradient(circle at 50% 35%, #0b0d12 0%, #000000 85%);
+            --glass-bg: rgba(12, 15, 22, 0.78);
+            --glass-border: rgba(255, 255, 255, 0.14);
+            --glass-highlight: rgba(255, 255, 255, 0.28);
+            --glass-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75), 0 0 1px 1px rgba(255, 255, 255, 0.08);
+            
+            --text-main: #ffffff;
+            --text-sub: #a1a1aa;
+            --text-dim: #71717a;
+            
+            --accent-cyan: #00f0ff;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-rose: #f43f5e;
+            
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-pill: 9999px;
+            
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            background: #000000;
+            background-image: var(--bg-radial);
+            font-family: 'Plus Jakarta Sans', 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-main);
+            user-select: none;
+        }
+
+        /* Ambient background subtle grid */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        /* Ambient 4-Point Sparkle Stars */
+        .sparkle-star {
+            position: fixed;
+            color: #ffffff;
+            filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.95));
+            pointer-events: none;
+            z-index: 1;
+            animation: sparklePulse 3s ease-in-out infinite alternate;
+        }
+        .sparkle-star.top-left { top: 65px; left: 45px; width: 28px; height: 28px; }
+        .sparkle-star.bottom-left { bottom: 70px; left: 55px; width: 34px; height: 34px; animation-delay: 1.2s; }
+        .sparkle-star.bottom-right { bottom: 45px; right: 45px; width: 32px; height: 32px; animation-delay: 2.1s; }
+
+        @keyframes sparklePulse {
+            0% { opacity: 0.35; transform: scale(0.85); }
+            100% { opacity: 0.9; transform: scale(1.15); filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.9)); }
+        }
+
+        /* ==================== CANVAS LAYERS ==================== */
+        #click-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        #webcam {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            visibility: hidden;
+            z-index: -1;
+        }
+
+        #hand-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ==================== PAGE LOAD STAGGERED FADE-IN (BOX BY BOX) ==================== */
+        @keyframes topNavFadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-32px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+
+        @keyframes sidePanelFadeInRight {
+            0% {
+                opacity: 0;
+                transform: translateY(-50%) translateX(40px) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0) scale(1);
+            }
+        }
+
+        @keyframes bottomDockFadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(40px) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+
+        @keyframes sliderFadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(30px) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+
+        @keyframes canvasFadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.90);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #three-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 3;
+            cursor: grab;
+            animation: canvasFadeInScale 1.0s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+        }
+
+        #three-container:active {
+            cursor: grabbing;
+        }
+
+        /* ==================== TOP NAVIGATION BAR (CAPSULE PILL) ==================== */
+        .top-nav-wrap {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            width: calc(100% - 48px);
+            max-width: 1120px;
+            pointer-events: none;
+            animation: topNavFadeInDown 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+        }
+
+        .top-nav {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: rgba(10, 12, 16, 0.82);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-top: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: var(--radius-pill);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+            transition: all 0.4s var(--ease-smooth);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14.5px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: var(--text-main);
+            margin-right: 6px;
+        }
+
+        .nav-brand-logo {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            font-weight: 900;
+            color: #000000;
+        }
+
+        .nav-brand span {
+            color: #ffffff;
+            font-weight: 400;
+            opacity: 0.85;
+        }
+
+        /* Tool Buttons */
+        .tool-btn {
+            position: relative;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-sub);
+            padding: 8px 20px;
+            border-radius: var(--radius-pill);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-spring);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            outline: none;
+            overflow: hidden;
+        }
+
+        .tool-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .tool-btn.active {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+
+        .tool-btn.active-ar {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 700;
+            box-shadow: 0 0 16px rgba(255, 255, 255, 0.5);
+        }
+
+        /* High-Contrast White Capsule Logout Button */
+        .btn-logout-white {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: var(--radius-pill);
+            padding: 8px 24px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 16px rgba(255, 255, 255, 0.35);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .btn-logout-white:hover {
+            background: #e2e8f0;
+            transform: scale(1.04);
+            box-shadow: 0 0 24px rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-logout-white:active {
+            transform: scale(0.96);
+        }
+
+        /* ==================== TOP NAV ZOOM CONTROLS ==================== */
+        .zoom-controls-group {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-pill);
+            padding: 3px 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.2s var(--ease-spring);
+        }
+
+        .zoom-btn:hover {
+            background: #ffffff;
+            color: #000000;
+            transform: scale(1.12);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.92);
+        }
+
+        .zoom-badge {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #ffffff;
+            padding: 0 6px;
+            min-width: 44px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            user-select: none;
+        }
+
+        .zoom-btn.zoom-reset {
+            font-size: 13px;
+            color: #a1a1aa;
+        }
+        .zoom-btn.zoom-reset:hover {
+            color: #000000;
+        }
+
+        .tool-btn.lock-active {
+            background: rgba(255, 255, 255, 0.22) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.45) !important;
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.35) !important;
+        }
+
+        /* Status Pill */
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(10, 14, 23, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: var(--radius-pill);
+            padding: 6px 14px;
+            font-size: 11.5px;
+            font-weight: 500;
+            color: var(--text-sub);
+        }
+
+        .status-pill .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-rose);
+            box-shadow: 0 0 8px var(--accent-rose);
+            transition: all 0.4s var(--ease-smooth);
+        }
+
+        .status-pill .dot.on {
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        /* ==================== GESTURE BADGE ==================== */
+        .gesture-badge {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px) scale(0.92);
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-pill);
+            padding: 8px 24px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--accent-green);
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s var(--ease-spring);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .gesture-badge.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        .gesture-badge.explode {
+            background: rgba(244, 63, 94, 0.12);
+            border-color: rgba(244, 63, 94, 0.4);
+            color: var(--accent-rose);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(244, 63, 94, 0.2);
+        }
+
+        /* ==================== DIAGNOSTICS OVERLAY ==================== */
+        #diag-ui {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.92);
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid var(--accent-green);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(16, 185, 129, 0.2);
+            width: 260px;
+            z-index: 25;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.4s var(--ease-spring);
+            color: var(--text-main);
+        }
+
+        #diag-ui.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .diag-header {
+            font-size: 11px;
+            color: var(--accent-green);
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .diag-header::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .diag-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .diag-row:last-child {
+            border: none;
+        }
+
+        .diag-row .val {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .diag-row .pass {
+            color: var(--accent-green);
+            font-weight: 800;
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        /* ==================== SEAMLESS LEFT-ALIGNED SPLINE COMPANION ==================== */
+        #spline-companion-canvas {
+            position: fixed;
+            top: 50%;
+            left: -40px;
+            transform: translateY(-50%) scale(0.62);
+            transform-origin: center center;
+            width: 520px !important;
+            height: 520px !important;
+            z-index: 1;
+            pointer-events: none;
+            outline: none;
+            background: transparent !important;
+        }
+
+        /* ==================== SPECS INFO PANEL ==================== */
+        .info-panel {
+            position: absolute;
+            right: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 320px;
+            z-index: 10;
+            pointer-events: auto;
+            animation: sidePanelFadeInRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+        }
+
+        .info-card {
+            background: rgba(10, 14, 22, 0.78);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 26px 22px;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.8);
+            transition: all 0.4s var(--ease-spring);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .info-card .title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .info-card .subtitle {
+            font-size: 11px;
+            font-weight: 600;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 18px;
+            opacity: 0.85;
+        }
+
+        .spec-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+            margin: 0 -22px 14px;
+        }
+
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 12px;
+        }
+
+        .spec-row .lbl {
+            color: var(--text-sub);
+            font-weight: 400;
+        }
+
+        .spec-row .val {
+            font-weight: 600;
+            text-align: right;
+            color: var(--text-main);
+        }
+
+        .hint-box {
+            margin-top: 18px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 14px;
+            font-size: 11px;
+            line-height: 1.8;
+            color: #d1d5db;
+        }
+
+        .hint-title {
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+            font-size: 11.5px;
+        }
+
+        .hint-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .hint-item b {
+            color: #ffffff;
+        }
+
+        /* ==================== SLIDER UI (MOUSE MODE) ==================== */
+        #slider-ui {
+            position: absolute;
+            bottom: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 440px;
+            background: rgba(10, 14, 22, 0.85);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            padding: 14px 22px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
+            z-index: 25;
+            transition: all 0.4s var(--ease-spring);
+            animation: sliderFadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .slider-val-badge {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 2px 14px;
+            border-radius: var(--radius-pill);
+            font-weight: 700;
+            font-size: 11.5px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 0 16px #ffffff;
+            transition: transform 0.2s var(--ease-spring);
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* ==================== LEFT HAND SKELETON HUD ==================== */
+        .hand-hud-card {
+            position: absolute;
+            bottom: 30px;
+            left: 32px;
+            width: 220px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            z-index: 22;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.4s var(--ease-smooth);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hand-hud-card.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px) scale(0.92);
+        }
+
+        .hud-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .hud-title {
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-rose);
+            box-shadow: 0 0 8px var(--accent-rose);
+            transition: all 0.3s;
+        }
+
+        .hud-dot.active {
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .hud-gesture {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .hud-expand-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-sub);
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            line-height: 1;
+            transition: all 0.2s var(--ease-spring);
+        }
+
+        .hud-expand-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: #ffffff;
+            transform: scale(1.15);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+        }
+
+        .hand-hud-card.expanded {
+            width: 380px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 255, 255, 0.15);
+        }
+
+        .hand-hud-card.expanded .hud-canvas-wrap {
+            height: 320px;
+        }
+
+        .hud-canvas-wrap {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, rgba(7, 9, 14, 0.6) 100%);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: height 0.35s var(--ease-spring);
+        }
+
+        #skeleton-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .hud-standby {
+            position: absolute;
+            font-size: 11.5px;
+            color: var(--text-dim);
+            pointer-events: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* ==================== BOTTOM DOCK (VISION OS STYLE) ==================== */
+        .bottom-dock-wrap {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            pointer-events: auto;
+            animation: bottomDockFadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.70s both;
+        }
+
+        .bottom-dock {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(10, 12, 16, 0.85);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: var(--radius-pill);
+            padding: 6px 12px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
+            position: relative;
+        }
+
+        /* Sliding Active Pill Background */
+        .dock-active-pill {
+            position: absolute;
+            top: 6px;
+            bottom: 6px;
+            left: 12px;
+            width: 110px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: var(--radius-pill);
+            transition: all 0.4s var(--ease-spring);
+            z-index: 1;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 8px 20px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+        }
+
+        .dock-item {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            transition: all 0.3s var(--ease-spring);
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .dock-item:hover {
+            color: var(--text-main);
+            transform: translateY(-1px);
+        }
+
+        .dock-item:active {
+            transform: scale(0.92);
+        }
+
+        .dock-item.active {
+            color: var(--text-main);
+        }
+
+        .dock-item .dock-icon {
+            font-size: 18px;
+            transition: transform 0.35s var(--ease-spring);
+        }
+
+        .dock-item:hover .dock-icon {
+            transform: scale(1.15);
+        }
+
+        .dock-item.active .dock-icon {
+            transform: scale(1.12);
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+        }
+
+        .dock-item .dock-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        /* ==================== SHATTER GLASS TRANSITION ==================== */
+        #shatter-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 97;
+            pointer-events: none;
+        }
+
+        /* ==================== PART RADAR TOOLTIP ==================== */
+        #part-tooltip {
+            position: absolute;
+            z-index: 60;
+            pointer-events: none;
+            background: rgba(10, 15, 25, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            border-top: 1px solid rgba(0, 240, 255, 0.6);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 12px;
+            line-height: 1.7;
+            min-width: 170px;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+
+        #part-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #part-tooltip .pt-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--accent-cyan);
+            letter-spacing: 0.3px;
+        }
+
+        #part-tooltip .pt-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--text-sub);
+        }
+
+        #part-tooltip .pt-row b {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        #part-tooltip::before {
+            content: '◈ SCAN';
+            display: block;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--accent-cyan);
+            opacity: 0.7;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        /* ==================== HOLOGRAPHIC PART LABELS ==================== */
+        #label-lines-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 28;
+        }
+
+        #part-labels-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 29;
+        }
+
+        .holo-label {
+            position: absolute;
+            width: 175px;
+            background: linear-gradient(135deg, rgba(8, 24, 48, 0.92) 0%, rgba(5, 14, 28, 0.96) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-left: 3px solid #00f0ff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            pointer-events: none;
+            opacity: 0;
+            clip-path: inset(0 0 0 100%); /* Start hidden from right to left */
+            transform: translate3d(20px, 0, 0); /* GPU accelerated subtle slide */
+            will-change: clip-path, opacity, transform;
+            transition: 
+                clip-path 0.65s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.45s ease-out,
+                transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow:
+                0 0 16px rgba(0, 240, 255, 0.2),
+                inset 0 0 15px rgba(0, 240, 255, 0.05);
+            z-index: 30;
+            overflow: hidden;
+        }
+
+        /* Glowing Holographic Scanning Laser Leading Edge */
+        .holo-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, transparent 0%, #00f0ff 50%, transparent 100%);
+            box-shadow: 0 0 14px #00f0ff, 0 0 28px #00f0ff;
+            right: 0%;
+            opacity: 0.9;
+            pointer-events: none;
+            will-change: right, opacity;
+            transition: right 0.65s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+            z-index: 5;
+        }
+
+        .holo-label.visible {
+            opacity: 1 !important;
+            clip-path: inset(0 0 0 0%) !important; /* Fully revealed right-to-left */
+            transform: translate3d(0, 0, 0) !important;
+        }
+
+        .holo-label.visible::before {
+            right: 100%;
+            opacity: 0;
+        }
+
+        .holo-label.hiding {
+            opacity: 0 !important;
+            clip-path: inset(0 0 0 100%) !important;
+            transform: translate3d(14px, 0, 0) !important;
+            transition: clip-path 0.35s ease, opacity 0.3s ease, transform 0.35s ease;
+        }
+
+        .holo-label-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(0, 240, 255, 0.95);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+        }
+
+        .holo-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 3px;
+        }
+
+        .holo-label-row .hlbl {
+            color: rgba(0, 240, 255, 0.5);
+            font-weight: 600;
+            font-size: 9px;
+            letter-spacing: 0.5px;
+        }
+
+        .holo-label-row .hval {
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+        }
+
+        .holo-label-scanline {
+            height: 1px;
+            margin: 6px 0 4px;
+            background: linear-gradient(90deg, transparent 0%, rgba(0, 240, 255, 0.4) 50%, transparent 100%);
+            animation: holoScanPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes holoFlickerIn {
+            0%   { opacity: 0; transform: scale(0.6) translateY(12px); filter: brightness(2.5) hue-rotate(30deg); }
+            15%  { opacity: 0.7; transform: scale(1.05) translateY(-2px); filter: brightness(1.8) hue-rotate(15deg); }
+            30%  { opacity: 0.3; transform: scale(0.98) translateY(1px); filter: brightness(1.2) hue-rotate(0deg); }
+            50%  { opacity: 0.85; transform: scale(1.02) translateY(-1px); filter: brightness(1.5); }
+            70%  { opacity: 0.5; transform: scale(0.99) translateY(0); filter: brightness(1.1); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: brightness(1); }
+        }
+
+        @keyframes holoFadeOut {
+            0%   { opacity: 1; transform: scale(1) translateY(0); filter: brightness(1); }
+            30%  { opacity: 0.6; transform: scale(1.03) translateY(-3px); filter: brightness(1.8) hue-rotate(15deg); }
+            60%  { opacity: 0.3; transform: scale(0.95) translateY(4px); filter: brightness(2.2) hue-rotate(30deg); }
+            100% { opacity: 0; transform: scale(0.5) translateY(12px); filter: brightness(3) hue-rotate(60deg); }
+        }
+
+        @keyframes holoScanPulse {
+            0%, 100% { opacity: 0.3; }
+            50%      { opacity: 0.8; }
+        }
+
+        /* ==================== 3-SECOND HOLD COUNTDOWN OVERLAY ==================== */
+        .countdown-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            pointer-events: none;
+            z-index: 45;
+            opacity: 0;
+            transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .countdown-overlay.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .countdown-box {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(10, 25, 48, 0.92) 0%, rgba(5, 12, 24, 0.96) 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 35px rgba(0, 240, 255, 0.4),
+                inset 0 0 25px rgba(0, 240, 255, 0.2);
+            border: 1px solid rgba(0, 240, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .countdown-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .countdown-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.08);
+            stroke-width: 6;
+        }
+
+        .countdown-bar {
+            fill: none;
+            stroke: #00f0ff;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 326.7;
+            stroke-dashoffset: 326.7;
+            transition: stroke-dashoffset 0.08s linear, stroke 0.3s ease;
+            filter: drop-shadow(0 0 8px #00f0ff);
+        }
+
+        .countdown-number {
+            font-size: 50px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.9), 0 0 40px rgba(0, 240, 255, 0.6);
+            z-index: 2;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1;
+            margin-top: -8px;
+        }
+
+        @keyframes pulseNumber {
+            0% { transform: scale(1.4); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .countdown-icon {
+            position: absolute;
+            bottom: 15px;
+            font-size: 18px;
+            z-index: 2;
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.8));
+        }
+
+        .countdown-label {
+            background: rgba(8, 20, 40, 0.92);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: var(--radius-pill);
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #e2e8f0;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 240, 255, 0.2);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            backdrop-filter: blur(12px);
+        }
+
+    </style>
+
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <!-- Ambient 4-Point Sparkle Stars -->
+    <svg class="sparkle-star top-left" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+    </svg>
+    <svg class="sparkle-star bottom-left" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+    </svg>
+    <svg class="sparkle-star bottom-right" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+    </svg>
+
+    <!-- Interactive Click Ripple & Particle Canvas -->
+    <canvas id="click-canvas"></canvas>
+
+    <!-- Shattered Glass Transition Canvas -->
+    <canvas id="shatter-canvas"></canvas>
+
+    <!-- Part Radar Scanner Tooltip -->
+    <div id="part-tooltip"></div>
+
+    <!-- Media Layers -->
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="hand-canvas"></canvas>
+    <div id="three-container"></div>
+
+    <!-- Holographic Part Labels Layer -->
+    <canvas id="label-lines-canvas"></canvas>
+    <div id="part-labels-container"></div>
+
+    <!-- Gesture Status Badge -->
+    <div class="gesture-badge" id="gesture-badge">✦ X-RAY MODE</div>
+
+    <!-- 3-Second Hold Countdown Hologram Overlay -->
+    <div id="countdown-overlay" class="countdown-overlay">
+        <div class="countdown-box">
+            <svg class="countdown-svg" viewBox="0 0 120 120">
+                <circle class="countdown-track" cx="60" cy="60" r="52"></circle>
+                <circle class="countdown-bar" id="countdown-progress" cx="60" cy="60" r="52"></circle>
+            </svg>
+            <div class="countdown-number" id="countdown-num">3</div>
+            <div class="countdown-icon" id="countdown-icon">🤏</div>
+        </div>
+        <div class="countdown-label" id="countdown-label">แตะนิ้วค้างไว้ 3 วินาที เพื่อรวมร่าง</div>
+    </div>
+
+    <!-- Diagnostics Overlay -->
+    <div id="diag-ui">
+        <div class="diag-header">QC DIAGNOSTICS</div>
+        <div id="diag-content"></div>
+    </div>
+
+    <!-- Exploded View Slider UI (Directly Below 3D Model) -->
+    <div id="slider-ui">
+        <div class="slider-header">
+            <span>รวมร่าง</span>
+            <span class="slider-val-badge" id="slider-val">0%</span>
+            <span>แยกร่าง</span>
+        </div>
+        <input type="range" id="explode-slider" min="0" max="100" value="0" oninput="onSliderChange(this.value)">
+    </div>
+
+    <!-- Left Hand Skeleton HUD Widget -->
+    <div id="hand-hud" class="hand-hud-card hidden">
+        <div class="hud-header">
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span class="hud-dot" id="hud-dot"></span>
+                <span class="hud-title">HAND SKELETON</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span class="hud-gesture" id="hud-gesture-badge">STANDBY</span>
+                <button class="hud-expand-btn" id="btn-hud-expand" onclick="toggleHudExpand()" title="ขยาย / ย่อหน้าต่างโครงกระดูกมือ">⤢</button>
+            </div>
+        </div>
+        <div class="hud-canvas-wrap">
+            <canvas id="skeleton-canvas" width="190" height="180"></canvas>
+            <div id="hud-standby-msg" class="hud-standby">🖐️ นำมือเข้ากล้อง</div>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav-wrap">
+        <nav class="top-nav">
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <div class="nav-brand-logo">B</div>
+                    Belton <span>Explorer PRO</span>
+                </div>
+                <button class="tool-btn" id="btn-mode" onclick="toggleAppMode()">
+                    ✋ โหมดกล้อง AR
+                </button>
+                <button class="tool-btn" id="btn-ar-submode" onclick="toggleArSubMode()" title="สลับโหมด AR: 360° หมุนอิสระ / ล็อกมุมมองขยับตามมือ" style="display: none;">
+                    🔄 AR: 360°
+                </button>
+                <button class="tool-btn" id="btn-ruler" onclick="toggleRuler()">
+                    📐 ไม้บรรทัด AR
+                </button>
+                <div class="zoom-controls-group">
+                    <button class="zoom-btn" onclick="adjustZoom(-1.8)" title="ซูมเข้า (ดูระยะใกล้)">🔍+</button>
+                    <span class="zoom-badge" id="zoom-badge">100%</span>
+                    <button class="zoom-btn" onclick="adjustZoom(1.8)" title="ซูมออก (ดูระยะไกล)">🔍−</button>
+                    <button class="zoom-btn zoom-reset" onclick="resetZoom()" title="รีเซ็ตระยะ">↺</button>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="status-pill">
+                    <span class="dot on" id="dot"></span>
+                    <span id="status-text">โหมดเมาส์ 3D (พร้อมใช้งาน)</span>
+                </div>
+                <button class="btn-logout-white" onclick="sessionStorage.removeItem('belton_logged_in'); window.location.href='/'" title="ออกจากระบบ และกลับสู่หน้า Intro">
+                    ออกจากระบบ
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Full-Screen Interactive Spline Companion (Seamless Background) -->
+    <canvas id="spline-companion-canvas"></canvas>
+
+    <!-- Specs Info Panel -->
+    <div class="info-panel">
+        <div class="info-card" id="info-card">
+            <div class="title" id="comp-title">โมเดลคอยล์ & หัวอ่าน</div>
+            <div class="subtitle" id="comp-subtitle">COIL & ACTUATOR MODEL (GLB)</div>
+            <div class="spec-divider"></div>
+            <div id="comp-specs">
+                <div class="spec-row"><span class="lbl">ประเภท</span><span class="val">Coil & Actuator (GLB)</span></div>
+                <div class="spec-row"><span class="lbl">แหล่งไฟล์</span><span class="val">โมเดลคอย..glb</span></div>
+                <div class="spec-row"><span class="lbl">การแสดงผล</span><span class="val">แยกชิ้น Exploded View</span></div>
+            </div>
+            <div class="hint-box">
+                <div class="hint-title">โหมดกล้อง AR (ใช้มือเดี่ยว) :</div>
+                <div class="hint-item"><span>🤏</span> <span><b>จีบนิ้วชี้-โป้งค้าง 3 วิ :</b> รวมร่างโมเดล (ล็อกไว้)</span></div>
+                <div class="hint-item"><span>🖐️</span> <span><b>แบมือค้าง 3 วิ :</b> แยกร่างโมเดล (ล็อกไว้)</span></div>
+                <div class="hint-item"><span>👋</span> <span><b>ขยับมือ :</b> หมุน/เลื่อนโมเดลตามมือ</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Dock -->
+    <div class="bottom-dock-wrap">
+        <div class="bottom-dock">
+            <div class="dock-active-pill" id="dock-pill"></div>
+            <button class="dock-item active" onclick="selectComp(0, event)" id="dock-0">
+                <span class="dock-icon">💽</span><span class="dock-label">Hard Disk</span>
+            </button>
+            <button class="dock-item" onclick="selectComp(1, event)" id="dock-1">
+                <span class="dock-icon">🗄️</span><span class="dock-label">Capacity</span>
+            </button>
+            <button class="dock-item" onclick="selectComp(2, event)" id="dock-2">
+                <span class="dock-icon">⚡</span><span class="dock-label">Resistor</span>
+            </button>
+            <button class="dock-item" onclick="selectComp(3, event)" id="dock-3">
+                <span class="dock-icon">🔲</span><span class="dock-label">IC Chip</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ======================== MICRO-SOUND SYNTHESIZER ========================
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let actx = null;
+
+        function initAudio() {
+            if (!actx) actx = new AudioCtx();
+            if (actx.state === 'suspended') actx.resume();
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                const now = actx.currentTime;
+                const osc = actx.createOscillator();
+                const gain = actx.createGain();
+                osc.connect(gain);
+                gain.connect(actx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'hover') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(500, now);
+                    gain.gain.setValueAtTime(0.015, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+                    osc.start(now);
+                    osc.stop(now + 0.03);
+                } else if (type === 'switch') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.05); // E5
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } else if (type === 'on') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'off') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(440, now + 0.12);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'cute-tick') {
+                    // Cute high bubble pop / tick
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(950, now);
+                    osc.frequency.exponentialRampToValueAtTime(1400, now + 0.08);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'cute-assemble') {
+                    // Cute cheerful sparkle twinkle arpeggio (C6, E6, G6, C7)
+                    const notes = [1046.50, 1318.51, 1567.98, 2093.00];
+                    notes.forEach((freq, idx) => {
+                        const noteOsc = actx.createOscillator();
+                        const noteGain = actx.createGain();
+                        noteOsc.type = 'triangle';
+                        noteOsc.frequency.setValueAtTime(freq, now + idx * 0.07);
+                        noteGain.gain.setValueAtTime(0.09, now + idx * 0.07);
+                        noteGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.22);
+                        noteOsc.connect(noteGain);
+                        noteGain.connect(actx.destination);
+                        noteOsc.start(now + idx * 0.07);
+                        noteOsc.stop(now + idx * 0.07 + 0.22);
+                    });
+                } else if (type === 'cute-explode') {
+                    // Cute sci-fi power-up sparkle chord
+                    const notes = [659.25, 880.00, 1318.51, 1760.00];
+                    notes.forEach((freq, idx) => {
+                        const noteOsc = actx.createOscillator();
+                        const noteGain = actx.createGain();
+                        noteOsc.type = 'sine';
+                        noteOsc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                        noteGain.gain.setValueAtTime(0.09, now + idx * 0.06);
+                        noteGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.2);
+                        noteOsc.connect(noteGain);
+                        noteGain.connect(actx.destination);
+                        noteOsc.start(now + idx * 0.06);
+                        noteOsc.stop(now + idx * 0.06 + 0.2);
+                    });
+                }
+            } catch(e) {}
+        }
+
+        // Add hover sound listeners to all buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mouseenter', () => playSound('hover'));
+        });
+
+        // ======================== CLICK RIPPLE & PARTICLE ENGINE ========================
+        const cCanvas = document.getElementById('click-canvas');
+        const cCtx = cCanvas.getContext('2d');
+        let ripples = [];
+        let particles = [];
+
+        function resizeClickCanvas() {
+            cCanvas.width = window.innerWidth;
+            cCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeClickCanvas);
+        resizeClickCanvas();
+
+        function spawnClickEffect(x, y, color = '#00f0ff') {
+            // Ripple Ring
+            ripples.push({
+                x, y,
+                r: 5,
+                maxR: 45,
+                alpha: 0.8,
+                color
+            });
+
+            // Particles
+            const particleCount = 12;
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (Math.PI * 2 / particleCount) * i + (Math.random() * 0.5);
+                const speed = 2 + Math.random() * 4;
+                particles.push({
+                    x, y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 2 + Math.random() * 2.5,
+                    alpha: 1,
+                    color: Math.random() > 0.5 ? color : '#3b82f6',
+                    decay: 0.03 + Math.random() * 0.02
+                });
+            }
+        }
+
+        window.addEventListener('pointerdown', (e) => {
+            playSound('click');
+            spawnClickEffect(e.clientX, e.clientY);
+        });
+
+        function animateClickEffects() {
+            cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+
+            // Draw Ripples
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const rip = ripples[i];
+                rip.r += (rip.maxR - rip.r) * 0.15;
+                rip.alpha -= 0.03;
+
+                if (rip.alpha <= 0) {
+                    ripples.splice(i, 1);
+                    continue;
+                }
+
+                cCtx.beginPath();
+                cCtx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+                cCtx.strokeStyle = rip.color;
+                cCtx.globalAlpha = rip.alpha;
+                cCtx.lineWidth = 2;
+                cCtx.stroke();
+            }
+
+            // Draw Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.94;
+                p.vy *= 0.94;
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                cCtx.beginPath();
+                cCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                cCtx.fillStyle = p.color;
+                cCtx.globalAlpha = p.alpha;
+                cCtx.shadowColor = p.color;
+                cCtx.shadowBlur = 8;
+                cCtx.fill();
+                cCtx.shadowBlur = 0;
+            }
+
+            cCtx.globalAlpha = 1;
+            requestAnimationFrame(animateClickEffects);
+        }
+        animateClickEffects();
+
+        // ======================== SHATTERED GLASS TRANSITION ========================
+        const shCanvas = document.getElementById('shatter-canvas');
+        const shCtx = shCanvas.getContext('2d');
+
+        function resizeShatter() {
+            shCanvas.width = window.innerWidth;
+            shCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeShatter);
+        resizeShatter();
+
+        let shards = [];
+        let shatterActive = false;
+
+        function shatterBurst(color = '0, 240, 255') {
+            const cx = shCanvas.width / 2;
+            const cy = shCanvas.height / 2;
+            shards = [];
+            const count = 46;
+
+            for (let i = 0; i < count; i++) {
+                // Random triangle shard radiating from center
+                const baseAngle = (Math.PI * 2 / count) * i + Math.random() * 0.4;
+                const spread = 0.25 + Math.random() * 0.35;
+                const innerR = 40 + Math.random() * 80;
+                const outerR = shCanvas.width * 0.15 + Math.random() * shCanvas.width * 0.35;
+
+                const a1 = baseAngle - spread;
+                const a2 = baseAngle + spread;
+
+                shards.push({
+                    // Triangle points relative to centroid
+                    pts: [
+                        { x: cx + Math.cos(baseAngle) * innerR, y: cy + Math.sin(baseAngle) * innerR },
+                        { x: cx + Math.cos(a1) * outerR, y: cy + Math.sin(a1) * outerR },
+                        { x: cx + Math.cos(a2) * outerR, y: cy + Math.sin(a2) * outerR }
+                    ],
+                    // Velocity direction outward
+                    vx: Math.cos(baseAngle) * (3 + Math.random() * 7),
+                    vy: Math.sin(baseAngle) * (3 + Math.random() * 7),
+                    rot: 0,
+                    vr: (Math.random() - 0.5) * 0.05,
+                    alpha: 0.85 + Math.random() * 0.15,
+                    hue: Math.random() > 0.7 ? '255, 255, 255' : color
+                });
+            }
+
+            shatterActive = true;
+            animateShatter();
+        }
+
+        function animateShatter() {
+            if (!shatterActive) return;
+            shCtx.clearRect(0, 0, shCanvas.width, shCanvas.height);
+            let alive = false;
+
+            for (const s of shards) {
+                if (s.alpha <= 0) continue;
+                alive = true;
+
+                const cxs = s.pts.reduce((a, p) => a + p.x, 0) / 3;
+                const cys = s.pts.reduce((a, p) => a + p.y, 0) / 3;
+
+                s.pts.forEach(p => { p.x += s.vx; p.y += s.vy; });
+                s.vx *= 0.96; s.vy *= 0.96;
+                s.vy += 0.15; // gravity fall
+                s.rot += s.vr;
+                s.alpha -= 0.022;
+
+                shCtx.save();
+                shCtx.translate(cxs, cys);
+                shCtx.rotate(s.rot);
+                shCtx.translate(-cxs, -cys);
+
+                shCtx.beginPath();
+                shCtx.moveTo(s.pts[0].x, s.pts[0].y);
+                shCtx.lineTo(s.pts[1].x, s.pts[1].y);
+                shCtx.lineTo(s.pts[2].x, s.pts[2].y);
+                shCtx.closePath();
+
+                shCtx.fillStyle = `rgba(${s.hue}, ${Math.max(s.alpha * 0.18, 0)})`;
+                shCtx.fill();
+                shCtx.strokeStyle = `rgba(${s.hue}, ${Math.max(s.alpha, 0)})`;
+                shCtx.lineWidth = 1.2;
+                shCtx.shadowColor = `rgba(${s.hue}, 0.6)`;
+                shCtx.shadowBlur = 6;
+                shCtx.stroke();
+                shCtx.restore();
+            }
+
+            if (alive) {
+                requestAnimationFrame(animateShatter);
+            } else {
+                shatterActive = false;
+                shCtx.clearRect(0, 0, shCanvas.width, shCanvas.height);
+            }
+        }
+
+        // ======================== EXPLODE ON SCROLL (MOUSE MODE) ========================
+        window.addEventListener('wheel', (e) => {
+            if (appMode !== 'NORMAL') return;
+            const step = e.deltaY > 0 ? 0.07 : -0.07;
+            explodeLerpTarget = THREE.MathUtils.clamp(explodeLerpTarget + step, 0, 1);
+            const pct = Math.round(explodeLerpTarget * 100);
+            const slider = document.getElementById('explode-slider');
+            const sliderVal = document.getElementById('slider-val');
+            if (slider) slider.value = pct;
+            if (sliderVal) sliderVal.innerText = `${pct}%`;
+        }, { passive: true });
+
+        // ======================== THREE.JS SETUP ========================
+        const container = document.getElementById('three-container');
+        const scene = new THREE.Scene(); 
+        scene.background = null;
+
+        const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 11);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(innerWidth, innerHeight); 
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enabled = true;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+        const kL = new THREE.DirectionalLight(0xffffff, 2.0); 
+        kL.position.set(5, 10, 8); 
+        scene.add(kL);
+
+        const fL = new THREE.DirectionalLight(0x88ccff, 0.8); 
+        fL.position.set(-5, 3, -5); 
+        scene.add(fL);
+
+        const modelHolder = new THREE.Group();
+        scene.add(modelHolder);
+
+        // ======================== HOLOGRAM PROJECTOR BASE ========================
+        const holoGroup = new THREE.Group();
+        holoGroup.position.y = -1.7;
+        modelHolder.add(holoGroup);
+
+        const holoRingMat1 = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, side: THREE.DoubleSide });
+        const holoRingMat2 = new THREE.MeshBasicMaterial({ color: 0xe2e8f0, transparent: true, opacity: 0.28, side: THREE.DoubleSide });
+
+        const holoRing1 = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.014, 8, 120), holoRingMat1);
+        holoRing1.rotation.x = Math.PI / 2;
+        holoGroup.add(holoRing1);
+
+        const holoRing2 = new THREE.Mesh(new THREE.TorusGeometry(2.7, 0.007, 8, 120), holoRingMat2);
+        holoRing2.rotation.x = Math.PI / 2;
+        holoGroup.add(holoRing2);
+
+        // Scan line (thin glowing plane sweeping up & down)
+        const scanLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.45, side: THREE.DoubleSide });
+        const scanLine = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 0.02), scanLineMat);
+        scanLine.rotation.x = -Math.PI / 2;
+        holoGroup.add(scanLine);
+
+        // Faint projection cone
+        const coneMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.04, side: THREE.DoubleSide, depthWrite: false });
+        const cone = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 1.4, 1.2, 64, 1, true), coneMat);
+        cone.position.y = 0.6;
+        holoGroup.add(cone);
+
+        // ======================== PART RADAR SCANNER ========================
+        const raycaster = new THREE.Raycaster();
+        const mouseV = new THREE.Vector2(-10, -10);
+        const partTooltip = document.getElementById('part-tooltip');
+        let hoveredMesh = null;
+
+        function setHoverHighlight(mesh) {
+            if (hoveredMesh === mesh) return;
+            // Restore previous
+            if (hoveredMesh && hoveredMesh.material && hoveredMesh.material.emissive && hoveredMesh.userData._em !== undefined) {
+                hoveredMesh.material.emissive.setHex(hoveredMesh.userData._em);
+                hoveredMesh.userData._em = undefined;
+            }
+            hoveredMesh = mesh;
+            // Apply glow
+            if (mesh && mesh.material && mesh.material.emissive) {
+                mesh.userData._em = mesh.material.emissive.getHex();
+                mesh.material.emissive.setHex(0x0a4a5a);
+            }
+        }
+
+        function initRadarScanner() {
+            container.addEventListener('pointermove', (e) => {
+                if (appMode !== 'NORMAL' || !activeN) {
+                    partTooltip.classList.remove('show');
+                    setHoverHighlight(null);
+                    return;
+                }
+
+                mouseV.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+                raycaster.setFromCamera(mouseV, camera);
+                const hits = raycaster.intersectObjects(activeN.children, true);
+
+                if (hits.length > 0) {
+                    const hit = hits[0];
+                    setHoverHighlight(hit.object);
+
+                    // Gather part info
+                    let name = hit.object.name || hit.object.parent?.name || '';
+                    if (!name || name.length < 1) name = 'ชิ้นส่วน (Unnamed Part)';
+                    const geo = hit.object.geometry;
+                    let tris = 0;
+                    if (geo) {
+                        tris = geo.index ? geo.index.count / 3 : (geo.attributes.position ? geo.attributes.position.count / 3 : 0);
+                        tris = Math.round(tris);
+                    }
+
+                    partTooltip.innerHTML = `
+                        <div class="pt-name">${name}</div>
+                        <div class="pt-row"><span>Triangles</span><b>${tris.toLocaleString()}</b></div>
+                        <div class="pt-row"><span>Material</span><b>${hit.object.material?.type?.replace('Mesh', '').replace('Material', '') || 'N/A'}</b></div>
+                        <div class="pt-row"><span>Status</span><b style="color:#10b981;">SCANNED</b></div>
+                    `;
+                    partTooltip.style.left = Math.min(e.clientX + 18, innerWidth - 220) + 'px';
+                    partTooltip.style.top = Math.min(e.clientY + 18, innerHeight - 140) + 'px';
+                    partTooltip.classList.add('show');
+                } else {
+                    partTooltip.classList.remove('show');
+                    setHoverHighlight(null);
+                }
+            });
+
+            container.addEventListener('pointerleave', () => {
+                partTooltip.classList.remove('show');
+                setHoverHighlight(null);
+            });
+        }
+
+        // ======================== GLOBAL STATE & DATA ========================
+        const HAND_CONN = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [17, 18], [18, 19], [19, 20], [0, 17]];
+
+        const COMP_DATA = [
+            {
+                name: 'โมเดลคอยล์ & หัวอ่าน', sub: 'Coil & Actuator Model (GLB)',
+                specs: [{ l: 'ประเภท', v: 'Coil & Actuator (GLB)' }, { l: 'แหล่งไฟล์', v: 'โมเดลคอย.glb' }, { l: 'การแสดงผล', v: 'แยกชิ้น Exploded View' }],
+                diag: []
+            },
+            {
+                name: 'ตัวเก็บประจุ', sub: 'Electrolytic Capacitor',
+                specs: [{ l: 'ประเภท', v: 'อิเล็กโตรไลต์' }, { l: 'ค่าความจุ', v: '100µF / 25V' }, { l: 'ขั้ว', v: 'Polarized' }],
+                diag: [{ l: 'Capacitance', v: '98.5 µF', p: 'PASS' }, { l: 'ESR', v: '0.4 Ω', p: 'PASS' }, { l: 'Leakage', v: '0.01mA', p: 'OK' }]
+            },
+            {
+                name: 'ตัวต้านทาน', sub: 'Carbon Film Resistor',
+                specs: [{ l: 'ประเภท', v: 'แผ่นคาร์บอน' }, { l: 'ค่าต้านทาน', v: '10kΩ ±5%' }, { l: 'กำลังไฟ', v: '1/4 Watt' }],
+                diag: [{ l: 'Resistance', v: '9.98 kΩ', p: 'PASS' }, { l: 'Tolerance', v: '0.2%', p: 'EXCELLENT' }, { l: 'Continuity', v: 'Connected', p: 'OK' }]
+            },
+            {
+                name: 'ไอซี ชิป', sub: 'QFP IC Package',
+                specs: [{ l: 'ประเภท', v: 'Quad Flat Package' }, { l: 'จำนวนขา', v: '32 Pins' }, { l: 'ชิปภายใน', v: 'Silicon Die' }],
+                diag: [{ l: 'VCC Input', v: '3.3V', p: 'PASS' }, { l: 'Clock Sync', v: '16 MHz', p: 'PASS' }, { l: 'Bond Wires', v: '32/32', p: 'INTACT' }]
+            }
+        ];
+
+        let curComp = 0;
+        let gestureState = 'NORMAL';
+        let rulerEnabled = false;
+        let appMode = 'NORMAL';
+        let explodeLerpTarget = 0, currentExplodeLerp = 0;
+        let handDetected = false;
+
+        // UI Toggles & Mode Switch
+        function toggleRuler() {
+            rulerEnabled = !rulerEnabled;
+            document.getElementById('btn-ruler').classList.toggle('active', rulerEnabled);
+            playSound(rulerEnabled ? 'on' : 'off');
+        }
+
+        let hudExpanded = false;
+        function toggleHudExpand() {
+            hudExpanded = !hudExpanded;
+            const card = document.getElementById('hand-hud');
+            const btn = document.getElementById('btn-hud-expand');
+            const sCanvas = document.getElementById('skeleton-canvas');
+            if (card) card.classList.toggle('expanded', hudExpanded);
+            if (btn) btn.innerText = hudExpanded ? '⤡' : '⤢';
+            if (sCanvas) {
+                sCanvas.width = hudExpanded ? 350 : 190;
+                sCanvas.height = hudExpanded ? 320 : 180;
+            }
+            playSound('click');
+        }
+
+        // AR Sub-modes: '360' (Free rotation) vs 'LOCK' (Fixed isometric angle, follows hand left-right)
+        let arSubMode = '360';
+        const lockOrientationQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.35, 0, 0, 'XYZ'));
+
+        function setAppMode(mode) {
+            appMode = mode;
+            const btn = document.getElementById('btn-mode');
+            const arSubBtn = document.getElementById('btn-ar-submode');
+            const sliderUI = document.getElementById('slider-ui');
+            const handHud = document.getElementById('hand-hud');
+            
+            if (appMode === 'NORMAL') {
+                if (videoEl) videoEl.style.opacity = '0';
+                if (btn) { btn.innerHTML = "✋ โหมดกล้อง AR"; btn.className = "tool-btn"; }
+                if (arSubBtn) arSubBtn.style.display = "none";
+                if (sliderUI) sliderUI.style.display = "block";
+                if (handHud) handHud.classList.add('hidden');
+                
+                if (modelHolder) {
+                    modelHolder.position.set(0, 0, 0);
+                    modelHolder.rotation.set(0, 0, 0);
+                    modelHolder.visible = true;
+                    modelHolder.scale.setScalar(1.0);
+                }
+
+                camera.position.set(0, 0, 11);
+                camera.rotation.set(0, 0, 0);
+                camera.lookAt(0, 0, 0);
+                camera.updateProjectionMatrix();
+
+                if (controls) {
+                    controls.target.set(0, 0, 0);
+                    controls.reset();
+                    controls.enableZoom = false;
+                    controls.enabled = true;
+                    controls.update();
+                }
+                
+                const statusText = document.getElementById('status-text');
+                if (statusText) statusText.innerText = 'โหมดเมาส์ 3D (พร้อมใช้งาน)';
+                const dot = document.getElementById('dot');
+                if (dot) dot.className = 'dot on';
+                updateBadge('', '');
+            } else {
+                if (videoEl) videoEl.style.opacity = '0';
+                try { startCamera(); } catch(e) {}
+                if (btn) { btn.innerHTML = "🖥️ โหมดเมาส์"; btn.className = "tool-btn active-ar"; }
+                if (arSubBtn) { arSubBtn.innerHTML = (arSubMode === '360') ? "🔄 AR: 360°" : "🔒 AR: ล็อกมุมมอง"; arSubBtn.style.display = "inline-flex"; }
+                if (sliderUI) sliderUI.style.display = "none";
+                if (handHud) handHud.classList.remove('hidden');
+                
+                if (controls) {
+                    controls.reset();
+                    controls.target.set(0, 0, 0);
+                    controls.enabled = false;
+                }
+                
+                camera.position.set(0, 0, 11);
+                camera.rotation.set(0, 0, 0);
+                camera.lookAt(0, 0, 0);
+                camera.updateProjectionMatrix();
+
+                if (modelHolder) {
+                    modelHolder.position.set(0, 0, 0);
+                    modelHolder.visible = true;
+                }
+
+                const statusText = document.getElementById('status-text');
+                if (statusText) statusText.innerText = 'กำลังเชื่อมต่อกล้อง...';
+            }
+        }
+        
+        function toggleAppMode() {
+            setAppMode(appMode === 'CAMERA' ? 'NORMAL' : 'CAMERA');
+            playSound('on');
+        }
+
+        function toggleArSubMode() {
+            arSubMode = (arSubMode === '360') ? 'LOCK' : '360';
+            const btn = document.getElementById('btn-ar-submode');
+            if (btn) {
+                if (arSubMode === '360') {
+                    btn.innerHTML = '🔄 AR: 360°';
+                    btn.classList.remove('lock-active');
+                    updateBadge('🔄 โหมด AR: หมุน 360° อิสระ', '');
+                } else {
+                    btn.innerHTML = '🔒 AR: ล็อกมุมมอง';
+                    btn.classList.add('lock-active');
+                    updateBadge('🔒 โหมด AR: ล็อกมุมมอง (ขยับตามมือ)', '');
+                }
+            }
+            playSound('switch');
+        }
+
+        function onSliderChange(val) {
+            explodeLerpTarget = val / 100;
+            document.getElementById('slider-val').innerText = `${Math.round(val)}%`;
+        }
+
+        // ======================== MODEL BUILDERS ========================
+        let normalMeshes = [], xrayGroup = null, scaleLerp = 0;
+
+        function addM(group, mesh, expVec) {
+            mesh.userData.orig = mesh.position.clone();
+            mesh.userData.exp = expVec;
+            group.add(mesh);
+            normalMeshes.push(mesh);
+        }
+
+        const copperMat = new THREE.MeshStandardMaterial({ color: 0xb87333, metalness: 0.8, roughness: 0.3 });
+        const silverMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.1 });
+
+        const gltfLoader = new THREE.GLTFLoader();
+
+        function getExplodeVectorForNode(name, pos) {
+            const n = (name || '').toLowerCase();
+            if (n.includes('vert.001') || n.includes('vert.002') || n.includes('vert.003') || 
+                n.includes('vert.004') || n.includes('vert.005') || n.includes('vert.006') || 
+                n.includes('vert.007') || n.includes('arm') || n.includes('blade') || n.includes('suspension')) {
+                return new THREE.Vector3(-2.8, 0, 0.8);
+            }
+            if (n.includes('pivot') || n.includes('ทรงกระบอก')) {
+                return new THREE.Vector3(0, 2.5, 0);
+            }
+            if (n.includes('vert.008') || n.includes('vert.009') || n.includes('vcm') || n.includes('voice_coil')) {
+                return new THREE.Vector3(2.0, 0, 1.2);
+            }
+            if (n.includes('fpc') || n.includes('ribbon') || n.includes('clamp') || n.includes('strain') || n.includes('flex')) {
+                return new THREE.Vector3(1.2, 0.8, -1.0);
+            }
+            if (n.includes('ระนาบ') || n.includes('pcb') || n.includes('housing')) {
+                return new THREE.Vector3(2.8, 0, -1.8);
+            }
+            if (pos) {
+                const dir = new THREE.Vector3(pos.x, pos.y, pos.z);
+                if (dir.lengthSq() > 0.05) {
+                    return dir.clone().normalize().multiplyScalar(2.0);
+                }
+            }
+            return new THREE.Vector3(0, 1.5, 0);
+        }
+
+        function buildHDD(loadId) {
+            const n = new THREE.Group(), x = new THREE.Group();
+            gltfLoader.load(
+                'models/coil.glb?v=' + Date.now(),
+                (gltf) => {
+                    if (loadId !== undefined && loadId !== currentLoadId) return;
+
+                    const sceneModel = gltf.scene;
+                    const allChildren = [...sceneModel.children];
+                    
+                    const mainParts = allChildren.filter(child => {
+                        const p = child.position;
+                        const isOldOrFloating = (p.z < 5.0 || child.name.includes('ว่างเปล่า'));
+                        return !isOldOrFloating;
+                    });
+                    
+                    const bbox = new THREE.Box3();
+                    mainParts.forEach(part => bbox.expandByObject(part));
+                    const centerOffset = new THREE.Vector3();
+                    bbox.getCenter(centerOffset);
+                    
+                    mainParts.forEach((child) => {
+                        child.position.sub(centerOffset);
+                        const expVec = getExplodeVectorForNode(child.name, child.position);
+                        
+                        // Tag each child with its exact holographic label group
+                        const nameL = (child.name || '').toLowerCase().replace(/[^a-z0-9\u0E00-\u0E7F]/g, '');
+                        if (/vert00[1-7]|vert[1-7]|arm|blade|suspension/.test(nameL)) {
+                            child.userData.holoGroup = 'arm-blade';
+                        } else if (nameL.includes('pivot') || nameL.includes('outerring') || nameL.includes('ทรงกระบอก')) {
+                            child.userData.holoGroup = 'pivot';
+                        } else if (/vert00[89]|vert[89]|vcm|voicecoil/.test(nameL)) {
+                            child.userData.holoGroup = 'vcm';
+                        } else if (nameL.includes('fpc') || nameL.includes('ribbon') || nameL.includes('clamp') || nameL.includes('strain')) {
+                            child.userData.holoGroup = 'fpc';
+                        } else if (nameL.includes('ระนาบ') || nameL.includes('pcb')) {
+                            child.userData.holoGroup = 'pcb';
+                        }
+
+                        child.traverse((c) => {
+                            if (c.isMesh) {
+                                c.castShadow = true;
+                                c.receiveShadow = true;
+                                if (c.material) {
+                                    c.material.side = THREE.DoubleSide;
+                                    if (c.material.metalness !== undefined) {
+                                        c.material.metalness = Math.min(c.material.metalness, 0.9);
+                                    }
+                                }
+                            }
+                        });
+                        addM(n, child, expVec);
+                    });
+                    console.log('[HoloLabels] Loaded parts tagged:', normalMeshes.map(m => m.name + ' -> ' + (m.userData.holoGroup || 'none')));
+                    n.rotation.y = Math.PI * 0.15;
+                },
+                undefined,
+                (err) => console.error('Error loading models/coil.glb:', err)
+            );
+            return { n, x };
+        }
+
+        // ======================== HOLOGRAPHIC PART LABELS SYSTEM ========================
+        const PART_LABELS_DATA = [
+            {
+                id: 'arm-blade',
+                icon: '⚙️',
+                title: 'ใบมีดแขนอ่าน',
+                material: 'สแตนเลส',
+                func: 'อ่าน/เขียนข้อมูลบนจาน',
+                keywords: ['vert.001','vert.002','vert.003','vert.004','vert.005','vert.006','vert.007','arm','blade','suspension'],
+                side: 'left'
+            },
+            {
+                id: 'pivot',
+                icon: '🔩',
+                title: 'แกนหมุนลูกปืน',
+                material: 'เหล็กกล้า',
+                func: 'จุดหมุนศูนย์กลาง',
+                keywords: ['pivot','outer_ring','ทรงกระบอก'],
+                side: 'left'
+            },
+            {
+                id: 'vcm',
+                icon: '🧲',
+                title: 'แม่เหล็ก VCM',
+                material: 'นีโอไดเมียม',
+                func: 'ขับเคลื่อนแม่เหล็กไฟฟ้า',
+                keywords: ['vert.008','vert.009','vcm','voice_coil'],
+                side: 'right'
+            },
+            {
+                id: 'fpc',
+                icon: '🔌',
+                title: 'สายแพ FPC',
+                material: 'ทองแดง / PI',
+                func: 'ส่งสัญญาณไปบอร์ด',
+                keywords: ['fpc','ribbon','clamp','strain','flex'],
+                side: 'right'
+            },
+            {
+                id: 'pcb',
+                icon: '🟩',
+                title: 'แผ่นวงจร PCB',
+                material: 'FR-4',
+                func: 'ประมวลผลสัญญาณ',
+                keywords: ['ระนาบ','pcb','base'],
+                side: 'right'
+            }
+        ];
+
+        // Canvas for leader lines
+        const llCanvas = document.getElementById('label-lines-canvas');
+        const llCtx = llCanvas.getContext('2d');
+        const labelsContainer = document.getElementById('part-labels-container');
+
+        function resizeLabelCanvas() {
+            llCanvas.width = window.innerWidth;
+            llCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeLabelCanvas);
+        resizeLabelCanvas();
+
+        // Create label DOM elements
+        let holoLabelEls = [];
+        let holoLabelsVisible = false;
+        let holoLabelsCreated = false;
+
+        function createHoloLabels() {
+            labelsContainer.innerHTML = '';
+            holoLabelEls = [];
+            PART_LABELS_DATA.forEach((d) => {
+                const el = document.createElement('div');
+                el.className = 'holo-label';
+                el.id = 'holo-label-' + d.id;
+                el.innerHTML = `
+                    <div class="holo-label-title">${d.icon} ${d.title}</div>
+                    <div class="holo-label-scanline"></div>
+                    <div class="holo-label-row"><span class="hlbl">วัสดุ</span><span class="hval">${d.material}</span></div>
+                    <div class="holo-label-row"><span class="hlbl">หน้าที่</span><span class="hval">${d.func}</span></div>
+                `;
+                labelsContainer.appendChild(el);
+                holoLabelEls.push(el);
+            });
+            holoLabelsCreated = true;
+        }
+        createHoloLabels();
+
+        // Find the representative mesh for each label group
+        function findLabelAnchors() {
+            return PART_LABELS_DATA.map(d => {
+                let foundMeshes = normalMeshes.filter(m => m.userData && m.userData.holoGroup === d.id);
+                if (foundMeshes.length === 0) {
+                    foundMeshes = normalMeshes.filter(m => {
+                        const n = (m.name || '').toLowerCase().replace(/[^a-z0-9\u0E00-\u0E7F]/g, '');
+                        for (const kw of d.keywords) {
+                            const kwClean = kw.toLowerCase().replace(/[^a-z0-9\u0E00-\u0E7F]/g, '');
+                            if (n.includes(kwClean)) return true;
+                        }
+                        return false;
+                    });
+                }
+                return foundMeshes.length > 0 ? foundMeshes : null;
+            });
+        }
+
+        // Project a 3D world position to 2D screen coordinates
+        function projectToScreen(worldPos, cam, w, h) {
+            const v = worldPos.clone();
+            v.project(cam);
+            return {
+                x: (v.x * 0.5 + 0.5) * w,
+                y: (-v.y * 0.5 + 0.5) * h
+            };
+        }
+
+        // Get the world center of a group of meshes
+        function getMeshGroupWorldCenter(meshes) {
+            const center = new THREE.Vector3();
+            let count = 0;
+            meshes.forEach(m => {
+                const wp = new THREE.Vector3();
+                m.getWorldPosition(wp);
+                center.add(wp);
+                count++;
+            });
+            if (count > 0) center.divideScalar(count);
+            return center;
+        }
+
+        // Separate and distribute vertical positions without overlapping
+        function distributeVerticalPositions(items, minGap, topBound, bottomBound) {
+            if (items.length === 0) return;
+            items.sort((a, b) => a.targetY - b.targetY);
+
+            for (let i = 1; i < items.length; i++) {
+                if (items[i].targetY < items[i - 1].targetY + minGap) {
+                    items[i].targetY = items[i - 1].targetY + minGap;
+                }
+            }
+
+            const lastIdx = items.length - 1;
+            if (items[lastIdx].targetY > bottomBound) {
+                items[lastIdx].targetY = bottomBound;
+                for (let i = lastIdx - 1; i >= 0; i--) {
+                    if (items[i].targetY > items[i + 1].targetY - minGap) {
+                        items[i].targetY = items[i + 1].targetY - minGap;
+                    }
+                }
+            }
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].targetY < topBound) {
+                    items[i].targetY = topBound + i * minGap;
+                }
+            }
+        }
+
+        // ======================== ZOOM CONTROLS SYSTEM ========================
+        let zoomTargetDistance = 11.0;
+        let currentZoomDistance = 11.0;
+
+        function adjustZoom(delta) {
+            zoomTargetDistance = THREE.MathUtils.clamp(zoomTargetDistance + delta, 4.5, 24.0);
+            updateZoomBadge();
+            playSound('click');
+        }
+
+        function resetZoom() {
+            zoomTargetDistance = 11.0;
+            updateZoomBadge();
+            playSound('switch');
+        }
+
+        function updateZoomBadge() {
+            const badge = document.getElementById('zoom-badge');
+            if (badge) {
+                const pct = Math.round((11.0 / zoomTargetDistance) * 100);
+                badge.innerText = pct + '%';
+            }
+        }
+
+        // Update holographic labels each frame (Wide Spread Layout)
+        function updateHoloLabels() {
+            if (!holoLabelsCreated) return;
+            const shouldShow = (currentExplodeLerp > 0.15) && (curComp === 0);
+
+            if (shouldShow) {
+                if (!holoLabelsVisible) {
+                    holoLabelsVisible = true;
+                    // Sequentially reveal 1 by 1 smoothly (140ms between each box)
+                    holoLabelEls.forEach((el, idx) => {
+                        setTimeout(() => {
+                            if (holoLabelsVisible) {
+                                el.classList.remove('hiding');
+                                el.classList.add('visible');
+                            }
+                        }, idx * 140);
+                    });
+                }
+            } else {
+                if (holoLabelsVisible) {
+                    holoLabelsVisible = false;
+                    // Sequentially collapse back smoothly
+                    holoLabelEls.forEach((el, idx) => {
+                        setTimeout(() => {
+                            el.classList.remove('visible');
+                            el.classList.add('hiding');
+                        }, (holoLabelEls.length - 1 - idx) * 50);
+                    });
+                    setTimeout(() => {
+                        if (!holoLabelsVisible) {
+                            llCtx.clearRect(0, 0, llCanvas.width, llCanvas.height);
+                        }
+                    }, 350);
+                }
+                return;
+            }
+
+            const anchors = findLabelAnchors();
+            const W = window.innerWidth;
+            const H = window.innerHeight;
+            const cardW = 175;
+            const cardH = 72;
+            const minGapLeft = 120; // Wide vertical spacing on left
+            const minGapRight = 105; // Wide vertical spacing on right
+            const topBound = 90;
+            const bottomBound = H - 145;
+            const infoCardLeft = W - 330; // Info panel guard boundary
+
+            // Clear leader lines canvas
+            llCtx.clearRect(0, 0, W, H);
+
+            // Separate left and right items for layout
+            const leftGroup = [];
+            const rightGroup = [];
+
+            anchors.forEach((meshGroup, i) => {
+                const el = holoLabelEls[i];
+                const d = PART_LABELS_DATA[i];
+
+                if (!meshGroup || meshGroup.length === 0) {
+                    el.style.display = 'none';
+                    return;
+                }
+                el.style.display = '';
+
+                const worldCenter = getMeshGroupWorldCenter(meshGroup);
+                const anchor2D = projectToScreen(worldCenter, camera, W, H);
+
+                const item = {
+                    index: i,
+                    el: el,
+                    data: d,
+                    anchor: anchor2D,
+                    targetX: 0,
+                    targetY: anchor2D.y - (cardH / 2)
+                };
+
+                if (d.side === 'left') {
+                    // Position further left away from model
+                    item.targetX = Math.max(25, Math.min(anchor2D.x - cardW - 70, W * 0.22));
+                    leftGroup.push(item);
+                } else {
+                    // Position further right away from model without touching info panel
+                    const rawX = anchor2D.x + 80;
+                    const maxX = infoCardLeft - cardW - 20;
+                    item.targetX = Math.min(maxX, Math.max(rawX, W * 0.50));
+                    rightGroup.push(item);
+                }
+            });
+
+            // Prevent vertical overlap on each side with wide gap
+            distributeVerticalPositions(leftGroup, minGapLeft, topBound, bottomBound);
+            distributeVerticalPositions(rightGroup, minGapRight, topBound, bottomBound);
+
+            const allActiveItems = [...leftGroup, ...rightGroup];
+
+            allActiveItems.forEach((item) => {
+                const el = item.el;
+                const labelX = item.targetX;
+                const labelY = item.targetY;
+
+                el.style.left = labelX + 'px';
+                el.style.top = labelY + 'px';
+
+                // Determine line connection points
+                const anchorPt = item.anchor;
+                const isLeft = item.data.side === 'left';
+                const lineStartX = isLeft ? (labelX + cardW + 4) : (labelX - 4);
+                const lineStartY = labelY + (cardH / 2);
+
+                const lineEndX = anchorPt.x;
+                const lineEndY = anchorPt.y;
+
+                // Draw glowing dashed leader line
+                llCtx.save();
+                llCtx.strokeStyle = 'rgba(0, 240, 255, 0.75)';
+                llCtx.lineWidth = 1.4;
+                llCtx.setLineDash([5, 4]);
+                llCtx.shadowColor = 'rgba(0, 240, 255, 0.5)';
+                llCtx.shadowBlur = 6;
+
+                // Dogleg elbow joint
+                const elbowX = isLeft ? (lineStartX + 22) : (lineStartX - 22);
+
+                llCtx.beginPath();
+                llCtx.moveTo(lineStartX, lineStartY);
+                llCtx.lineTo(elbowX, lineStartY);
+                llCtx.lineTo(lineEndX, lineEndY);
+                llCtx.stroke();
+
+                // Anchor endpoint dot on the 3D part
+                llCtx.setLineDash([]);
+                llCtx.beginPath();
+                llCtx.arc(lineEndX, lineEndY, 3.5, 0, Math.PI * 2);
+                llCtx.fillStyle = '#00f0ff';
+                llCtx.fill();
+
+                // Hologram radar ring pulse
+                const pulseR = 6 + Math.sin(Date.now() * 0.005 + item.index) * 2;
+                llCtx.beginPath();
+                llCtx.arc(lineEndX, lineEndY, pulseR, 0, Math.PI * 2);
+                llCtx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+                llCtx.lineWidth = 1;
+                llCtx.stroke();
+
+                llCtx.restore();
+            });
+        }
+
+        // Clear labels when switching models
+        function clearHoloLabels() {
+            holoLabelsVisible = false;
+            holoLabelEls.forEach(el => {
+                el.classList.remove('visible', 'hiding');
+                el.style.opacity = '0';
+            });
+            llCtx.clearRect(0, 0, llCanvas.width, llCanvas.height);
+        }
+
+        function buildCapacitor() {
+            const n = new THREE.Group(), x = new THREE.Group();
+            
+            // 1. Outer Aluminum Can & Insulating Sleeve (Body)
+            const shellGroup = new THREE.Group();
+            const sleeveMat = new THREE.MeshStandardMaterial({ color: 0x1b365d, metalness: 0.4, roughness: 0.5 }); // Royal Blue Electrolytic Capacitor
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.3, 64, 32), sleeveMat);
+            shellGroup.add(body);
+            
+            // Negative stripe band (- - -)
+            const stripeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const stripeGeo = new THREE.BoxGeometry(0.12, 1.25, 0.52);
+            const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+            stripe.position.set(0.44, 0, 0);
+            shellGroup.add(stripe);
+
+            // Printed text simulation ring (silver label band)
+            const labelMat = new THREE.MeshStandardMaterial({ color: 0xc5d0e0, metalness: 0.8, roughness: 0.3 });
+            const labelRing = new THREE.Mesh(new THREE.CylinderGeometry(0.505, 0.505, 0.4, 64), labelMat);
+            labelRing.position.y = 0.2;
+            shellGroup.add(labelRing);
+
+            addM(n, shellGroup, new THREE.Vector3(0, 1.4, 0));
+
+            // 2. Top Lid & Precision K-Vent / Star Safety Vents
+            const topGroup = new THREE.Group();
+            const topCap = new THREE.Mesh(new THREE.CylinderGeometry(0.49, 0.5, 0.06, 64), silverMat);
+            topCap.position.y = 0.68;
+            topGroup.add(topCap);
+
+            // Stamped K-Vent grooves (Cross / Star indentations)
+            const ventMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9 });
+            const v1 = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.03, 0.06), ventMat); v1.position.set(0, 0.71, 0);
+            const v2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.03, 0.65), ventMat); v2.position.set(0, 0.71, 0);
+            const v3 = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.03, 0.06), ventMat); v3.position.set(0, 0.71, 0); v3.rotation.y = Math.PI / 4;
+            const v4 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.03, 0.46), ventMat); v4.position.set(0, 0.71, 0); v4.rotation.y = Math.PI / 4;
+            topGroup.add(v1); topGroup.add(v2); topGroup.add(v3); topGroup.add(v4);
+
+            addM(n, topGroup, new THREE.Vector3(0, 2.2, 0));
+
+            // 3. Internal Rolled Foil Core (Electrolytic Element)
+            const coreGroup = new THREE.Group();
+            const foilMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+            const core = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.43, 1.1, 48, 16), foilMat);
+            coreGroup.add(core);
+
+            const sepMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.8 });
+            const sepPin = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.15, 32), sepMat);
+            coreGroup.add(sepPin);
+
+            addM(n, coreGroup, new THREE.Vector3(0, 0, 0));
+
+            // 4. Rubber End Seal Bung (Phenolic Bottom Seal)
+            const baseGroup = new THREE.Group();
+            const rubberMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+            const rubber = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.18, 64), rubberMat);
+            rubber.position.y = -0.65;
+            baseGroup.add(rubber);
+
+            const ribMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.9 });
+            const rib1 = new THREE.Mesh(new THREE.CylinderGeometry(0.485, 0.485, 0.04, 64), ribMat); rib1.position.y = -0.62;
+            const rib2 = new THREE.Mesh(new THREE.CylinderGeometry(0.485, 0.485, 0.04, 64), ribMat); rib2.position.y = -0.68;
+            baseGroup.add(rib1); baseGroup.add(rib2);
+
+            addM(n, baseGroup, new THREE.Vector3(0, -1.2, 0));
+
+            // 5. Terminals / Leads (Anode + & Cathode -)
+            const leadGroup = new THREE.Group();
+            const leadMat = silverMat;
+            
+            const leadPos = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 1.0, 32), leadMat);
+            leadPos.position.set(0.18, -1.25, 0);
+            const shoulderPos = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.08, 32), leadMat);
+            shoulderPos.position.set(0.18, -0.76, 0);
+            
+            const leadNeg = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.75, 32), leadMat);
+            leadNeg.position.set(-0.18, -1.12, 0);
+            const shoulderNeg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.08, 32), leadMat);
+            shoulderNeg.position.set(-0.18, -0.76, 0);
+
+            leadGroup.add(leadPos); leadGroup.add(shoulderPos);
+            leadGroup.add(leadNeg); leadGroup.add(shoulderNeg);
+
+            addM(n, leadGroup, new THREE.Vector3(0, -2.0, 0.8));
+
+            return { n, x };
+        }
+
+        function buildResistor() {
+            const n = new THREE.Group(), x = new THREE.Group();
+            const bM = new THREE.MeshStandardMaterial({ color: 0xd4c5a0, roughness: 0.9 });
+            
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.8, 64, 32), bM); 
+            body.rotation.z = Math.PI / 2;
+            
+            const bandGeo = new THREE.CylinderGeometry(0.225, 0.225, 0.08, 64);
+            const c1 = new THREE.Mesh(bandGeo, new THREE.MeshStandardMaterial({color: 0x8b4513})); c1.position.y = 0.25; body.add(c1);
+            const c2 = new THREE.Mesh(bandGeo, new THREE.MeshStandardMaterial({color: 0x111111})); c2.position.y = 0.1; body.add(c2);
+            const c3 = new THREE.Mesh(bandGeo, new THREE.MeshStandardMaterial({color: 0xff8c00})); c3.position.y = -0.05; body.add(c3);
+            const c4 = new THREE.Mesh(bandGeo, new THREE.MeshStandardMaterial({color: 0xffd700, metalness: 0.5})); c4.position.y = -0.3; body.add(c4);
+            
+            addM(n, body, new THREE.Vector3(0, 0, 0));
+
+            const capG = new THREE.CylinderGeometry(0.26, 0.26, 0.25, 64, 16);
+            const leadG = new THREE.CylinderGeometry(0.03, 0.03, 0.8, 32);
+            
+            const leftGroup = new THREE.Group();
+            const cL = new THREE.Mesh(capG, bM); cL.rotation.z = Math.PI / 2; cL.position.x = -0.45;
+            const leadL = new THREE.Mesh(leadG, silverMat); leadL.rotation.z = Math.PI / 2; leadL.position.x = -0.9;
+            leftGroup.add(cL); leftGroup.add(leadL);
+            addM(n, leftGroup, new THREE.Vector3(-0.6, 0, 0)); 
+
+            const rightGroup = new THREE.Group();
+            const cR = new THREE.Mesh(capG, bM); cR.rotation.z = Math.PI / 2; cR.position.x = 0.45;
+            const leadR = new THREE.Mesh(leadG, silverMat); leadR.rotation.z = Math.PI / 2; leadR.position.x = 0.9;
+            rightGroup.add(cR); rightGroup.add(leadR);
+            addM(n, rightGroup, new THREE.Vector3(0.6, 0, 0)); 
+            return { n, x };
+        }
+
+        function buildIC() {
+            const n = new THREE.Group(), x = new THREE.Group();
+            const pG = new THREE.BoxGeometry(1.2, 0.12, 1.2, 32, 4, 32);
+            const pM = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
+
+            const topGroup = new THREE.Group();
+            const top = new THREE.Mesh(pG, pM); 
+            const mark = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.05, 32), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+            mark.position.set(-0.4, 0.06, -0.4);
+            topGroup.add(top); topGroup.add(mark);
+            topGroup.position.y = 0.06;
+            addM(n, topGroup, new THREE.Vector3(0, 0.8, 0));
+
+            const bot = new THREE.Mesh(pG, pM); bot.position.y = -0.06;
+            addM(n, bot, new THREE.Vector3(0, -0.6, 0));
+
+            const dieGroup = new THREE.Group();
+            const die = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.05, 0.4, 16, 1, 16), new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.1 }));
+            const dieCore = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.06, 0.2), new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 1.0, emissive: 0x1d4ed8 }));
+            dieGroup.add(die); dieGroup.add(dieCore);
+            addM(n, dieGroup, new THREE.Vector3(0, 0, 0));
+
+            const pinsGroup = new THREE.Group();
+            const pinMat = silverMat;
+            for(let side = 0; side < 4; side++) {
+                for(let i = 0; i < 8; i++) {
+                    const pin = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.02, 0.06, 4, 1, 4), pinMat);
+                    const offset = (i - 3.5) * 0.12;
+                    if(side === 0) { pin.position.set(0.65, 0, offset); }
+                    else if(side === 1) { pin.position.set(-0.65, 0, offset); }
+                    else if(side === 2) { pin.position.set(offset, 0, 0.65); pin.rotation.y = Math.PI/2; }
+                    else if(side === 3) { pin.position.set(offset, 0, -0.65); pin.rotation.y = Math.PI/2; }
+                    pinsGroup.add(pin);
+                }
+            }
+            addM(n, pinsGroup, new THREE.Vector3(0, 0, 0));
+            return { n, x };
+        }
+
+        const builders = [buildHDD, buildCapacitor, buildResistor, buildIC];
+        let activeN = null;
+        let currentLoadId = 0;
+
+        function updateDockPillPosition(index) {
+            const pill = document.getElementById('dock-pill');
+            const targetBtn = document.getElementById(`dock-${index}`);
+            if (pill && targetBtn) {
+                pill.style.left = `${targetBtn.offsetLeft}px`;
+                pill.style.width = `${targetBtn.offsetWidth}px`;
+            }
+        }
+
+        function loadComp(i) {
+            currentLoadId++;
+            const thisLoadId = currentLoadId;
+
+            while (modelHolder.children.length > 0) {
+                modelHolder.remove(modelHolder.children[0]);
+            }
+            modelHolder.add(holoGroup); // Keep hologram base attached
+            
+            normalMeshes = []; 
+            xrayGroup = null; 
+            gestureState = 'NORMAL';
+            explodeLerpTarget = 0;
+            currentExplodeLerp = 0;
+            scaleLerp = 1.0;
+            clearHoloLabels();
+
+            const slider = document.getElementById('explode-slider');
+            if (slider) slider.value = 0;
+            const sliderVal = document.getElementById('slider-val');
+            if (sliderVal) sliderVal.innerText = '0%';
+
+            const r = builders[i](thisLoadId);
+            activeN = r.n; 
+            xrayGroup = r.x;
+
+            const scale = (i === 0) ? 0.7 : 1.6;
+            activeN.scale.setScalar(scale); 
+            xrayGroup.scale.setScalar(scale);
+            xrayGroup.visible = false;
+            modelHolder.add(activeN); 
+            modelHolder.add(xrayGroup);
+
+            // Update UI & Specs
+            const card = document.getElementById('info-card');
+            card.style.opacity = '0'; 
+            card.style.transform = 'translateY(12px)';
+            
+            setTimeout(() => {
+                const d = COMP_DATA[i];
+                document.getElementById('comp-title').innerText = d.name;
+                document.getElementById('comp-subtitle').innerText = d.sub;
+                const sp = document.getElementById('comp-specs'); sp.innerHTML = '';
+                d.specs.forEach(s => sp.innerHTML += `<div class="spec-row"><span class="lbl">${s.l}</span><span class="val">${s.v}</span></div>`);
+
+                const diag = document.getElementById('diag-content'); diag.innerHTML = '';
+                d.diag.forEach(s => diag.innerHTML += `<div class="diag-row"><span>${s.l}</span><span><span class="val">${s.v}</span> &nbsp;<span class="pass">${s.p}</span></span></div>`);
+
+                card.style.opacity = '1'; 
+                card.style.transform = 'translateY(0)';
+            }, 180);
+        }
+
+        function updateDockPillPosition(i) {
+            const pill = document.getElementById('dock-pill');
+            const item = document.getElementById(`dock-${i}`);
+            if (pill && item) {
+                pill.style.left = `${item.offsetLeft}px`;
+                pill.style.width = `${item.offsetWidth}px`;
+            }
+        }
+
+        function selectComp(i, e) {
+            if (i === curComp) return;
+            curComp = i;
+            document.querySelectorAll('.dock-item').forEach((d, j) => d.classList.toggle('active', j === i));
+            updateDockPillPosition(i);
+            loadComp(i);
+            playSound('switch');
+        }
+
+
+
+        // ======================== GESTURE & TRACKING ========================
+        const videoEl = document.getElementById('webcam'), handCanvas = document.getElementById('hand-canvas'), hCtx = handCanvas.getContext('2d');
+        function resizeHC() { handCanvas.width = innerWidth; handCanvas.height = innerHeight; } addEventListener('resize', resizeHC); resizeHC();
+
+        function updateBadge(txt, type) {
+            const b = document.getElementById('gesture-badge');
+            if (!txt) { b.classList.remove('show'); return; }
+            b.innerText = txt;
+            b.className = `gesture-badge show ${type}`;
+        }
+
+
+
+        // 3-Second Hold Countdown Manager for State Locking
+        let holdCountdownMode = null; // 'ASSEMBLE' or 'EXPLODE'
+        let holdCountdownStart = 0;
+        let lastPlayedCountdownSec = 0;
+        let lockedState = null; // 'NORMAL' or 'EXPLODED'
+
+        function updateHoldCountdown(mode, progress, currentSec) {
+            const overlay = document.getElementById('countdown-overlay');
+            const numEl = document.getElementById('countdown-num');
+            const iconEl = document.getElementById('countdown-icon');
+            const labelEl = document.getElementById('countdown-label');
+            const bar = document.getElementById('countdown-progress');
+            if (!overlay) return;
+
+            if (!mode) {
+                overlay.classList.remove('show');
+                return;
+            }
+
+            overlay.classList.add('show');
+            if (numEl.innerText !== String(currentSec)) {
+                numEl.innerText = currentSec;
+                numEl.style.animation = 'none';
+                numEl.offsetHeight; // trigger reflow
+                numEl.style.animation = 'pulseNumber 0.35s ease-out';
+            }
+
+            if (mode === 'ASSEMBLE') {
+                iconEl.innerText = '🔒';
+                labelEl.innerText = `จีบค้างไว้ ${currentSec} วินาที เพื่อล็อกสถานะรวมร่าง...`;
+                if (bar) {
+                    bar.style.stroke = '#10b981';
+                    bar.style.filter = 'drop-shadow(0 0 10px #10b981)';
+                }
+            } else {
+                iconEl.innerText = '🔒';
+                labelEl.innerText = `แบมือค้างไว้ ${currentSec} วินาที เพื่อล็อกสถานะแยกร่าง...`;
+                if (bar) {
+                    bar.style.stroke = '#00f0ff';
+                    bar.style.filter = 'drop-shadow(0 0 10px #00f0ff)';
+                }
+            }
+
+            if (bar) {
+                const totalLength = 326.7;
+                const offset = totalLength * (1 - Math.min(progress, 1));
+                bar.style.strokeDashoffset = offset;
+            }
+        }
+
+        function onHR(results) {
+            hCtx.save(); hCtx.clearRect(0, 0, handCanvas.width, handCanvas.height);
+            if (appMode !== 'CAMERA') { 
+                hCtx.restore(); 
+                if (holdCountdownMode) {
+                    holdCountdownMode = null;
+                    updateHoldCountdown(null);
+                }
+                return; 
+            }
+            
+            const hands = results.multiHandLandmarks || [];
+            handDetected = (hands.length > 0);
+
+            if (handDetected) {
+                document.getElementById('status-text').innerText = 'ตรวจจับมือแล้ว (พร้อมควบคุม)'; 
+                document.getElementById('dot').classList.add('on');
+
+                const hand0 = hands[0];
+                const px0 = hand0.map(l => ({ x: (1 - l.x) * handCanvas.width, y: l.y * handCanvas.height }));
+
+                if (arSubMode === '360') {
+                    // ================= AR 360° MODE: Free 3D Tilt Tracking (No 3s Countdown) =================
+                    if (holdCountdownMode) {
+                        holdCountdownMode = null;
+                        updateHoldCountdown(null);
+                    }
+
+                    // 3D Model orientation follows user's hand freely in real-time
+                    const w = hand0[0], m = hand0[9], idx = hand0[5], pk = hand0[17];
+                    modelHolder.position.lerp(new THREE.Vector3(0, 0, 0), 0.2);
+
+                    const vU = new THREE.Vector3(1 - m.x, 1 - m.y, -m.z * 1.5).sub(new THREE.Vector3(1 - w.x, 1 - w.y, -w.z * 1.5)).normalize();
+                    const vR = new THREE.Vector3(1 - pk.x, 1 - pk.y, -pk.z * 1.5).sub(new THREE.Vector3(1 - idx.x, 1 - idx.y, -idx.z * 1.5)).normalize();
+                    const vN = new THREE.Vector3().crossVectors(vR, vU).normalize(); vR.crossVectors(vU, vN).normalize();
+                    modelHolder.quaternion.slerp(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(vR, vU, vN)), 0.2);
+
+                    // Fist = Assemble, Open Hand = Explode (Real-time)
+                    const fI = hand0[8].y > hand0[6].y, fM = hand0[12].y > hand0[10].y, fR = hand0[16].y > hand0[14].y, fP = hand0[20].y > hand0[18].y;
+                    let newState = gestureState;
+                    if (fI && fM && fR && fP) newState = 'NORMAL';
+                    else if (!fI && !fM && !fR && !fP) newState = 'EXPLODED';
+
+                    if (newState !== gestureState) {
+                        gestureState = newState;
+                        if (gestureState === 'EXPLODED') { updateBadge('💥 แยกร่าง (EXPLODED)', 'explode'); playSound('on'); }
+                        else { updateBadge('✊ รวมร่าง (ASSEMBLED)', ''); playSound('off'); }
+                    }
+                    explodeLerpTarget = (gestureState === 'EXPLODED') ? 1 : 0;
+                } else {
+                    // ================= AR LOCK MODE: Fixed Angle + 3-Second Hold Lock Countdown =================
+                    modelHolder.position.lerp(new THREE.Vector3(0, 0, 0), 0.15);
+
+                    // Single-Hand Pinch Gesture (Index #8 <-> Thumb #4)
+                    const pinchDist = Math.hypot(hand0[8].x - hand0[4].x, hand0[8].y - hand0[4].y);
+                    const isTouching = (pinchDist < 0.08); // Pinch (จีบนิ้ว)
+                    const isSeparated = (pinchDist > 0.15); // Open Hand (แบมือ)
+
+                    if (isTouching) {
+                        // Immediate Real-Time Response: Assemble!
+                        explodeLerpTarget = 0;
+                        gestureState = 'NORMAL';
+
+                        // 3-Second Hold Countdown to LOCK assembled state
+                        if (lockedState !== 'NORMAL') {
+                            if (holdCountdownMode !== 'ASSEMBLE') {
+                                holdCountdownMode = 'ASSEMBLE';
+                                holdCountdownStart = Date.now();
+                                lastPlayedCountdownSec = 0;
+                            }
+
+                            const elapsed = Date.now() - holdCountdownStart;
+                            const currentSec = Math.max(1, Math.ceil((3000 - elapsed) / 1000));
+                            const progress = elapsed / 3000;
+
+                            if (currentSec !== lastPlayedCountdownSec) {
+                                lastPlayedCountdownSec = currentSec;
+                                playSound('cute-tick');
+                            }
+
+                            updateHoldCountdown('ASSEMBLE', progress, currentSec);
+
+                            if (elapsed >= 3000) {
+                                // 3 Seconds completed! Lock assembled state
+                                lockedState = 'NORMAL';
+                                holdCountdownMode = null;
+                                updateHoldCountdown(null);
+                                updateBadge('🔒 ล็อกสถานะรวมร่างแล้ว', 'assembled');
+                                playSound('cute-assemble');
+                            }
+                        } else {
+                            if (holdCountdownMode) {
+                                holdCountdownMode = null;
+                                updateHoldCountdown(null);
+                            }
+                        }
+                    } else if (isSeparated) {
+                        // Immediate Real-Time Response: Explode!
+                        explodeLerpTarget = 1;
+                        gestureState = 'EXPLODED';
+
+                        // 3-Second Hold Countdown to LOCK exploded state
+                        if (lockedState !== 'EXPLODED') {
+                            if (holdCountdownMode !== 'EXPLODE') {
+                                holdCountdownMode = 'EXPLODE';
+                                holdCountdownStart = Date.now();
+                                lastPlayedCountdownSec = 0;
+                            }
+
+                            const elapsed = Date.now() - holdCountdownStart;
+                            const currentSec = Math.max(1, Math.ceil((3000 - elapsed) / 1000));
+                            const progress = elapsed / 3000;
+
+                            if (currentSec !== lastPlayedCountdownSec) {
+                                lastPlayedCountdownSec = currentSec;
+                                playSound('cute-tick');
+                            }
+
+                            updateHoldCountdown('EXPLODE', progress, currentSec);
+
+                            if (elapsed >= 3000) {
+                                // 3 Seconds completed! Lock exploded state
+                                lockedState = 'EXPLODED';
+                                holdCountdownMode = null;
+                                updateHoldCountdown(null);
+                                updateBadge('🔒 ล็อกสถานะแยกร่างค้างไว้แล้ว', 'explode');
+                                playSound('cute-explode');
+                            }
+                        } else {
+                            if (holdCountdownMode) {
+                                holdCountdownMode = null;
+                                updateHoldCountdown(null);
+                            }
+                        }
+                    } else {
+                        // Between pinch and open: cancel countdown if not locked yet
+                        if (holdCountdownMode) {
+                            holdCountdownMode = null;
+                            updateHoldCountdown(null);
+                        }
+                    }
+                }
+
+                activeN.visible = true;
+                xrayGroup.visible = false;
+                scaleLerp = THREE.MathUtils.lerp(scaleLerp, 1.0, 0.12);
+            } else {
+                if (holdCountdownMode) {
+                    holdCountdownMode = null;
+                    updateHoldCountdown(null);
+                }
+                document.getElementById('status-text').innerText = 'STANDBY (รอตรวจจับมือ)'; 
+                document.getElementById('dot').classList.remove('on');
+                scaleLerp = THREE.MathUtils.lerp(scaleLerp, 1.0, 0.05);
+                modelHolder.position.lerp(new THREE.Vector3(0, 0, 0), 0.05);
+                document.getElementById('diag-ui').classList.remove('show');
+                
+                // Maintain locked state even when hand leaves camera view
+                if (lockedState === 'EXPLODED') {
+                    explodeLerpTarget = 1;
+                } else if (lockedState === 'NORMAL') {
+                    explodeLerpTarget = 0;
+                }
+            }
+
+            // Draw Hand Skeleton & Pinch Visual Feedback in Left HUD Canvas Only
+            const sCanvas = document.getElementById('skeleton-canvas');
+            if (sCanvas) {
+                const sCtx = sCanvas.getContext('2d');
+                sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+
+                if (handDetected) {
+                    const hudDot = document.getElementById('hud-dot');
+                    if (hudDot) hudDot.classList.add('active');
+                    const hudMsg = document.getElementById('hud-standby-msg');
+                    if (hudMsg) hudMsg.style.display = 'none';
+                    const hudBadge = document.getElementById('hud-gesture-badge');
+                    if (hudBadge) {
+                        const pinchDist = hands[0] ? Math.hypot(hands[0][8].x - hands[0][4].x, hands[0][8].y - hands[0][4].y) : 1;
+                        const isPinching = pinchDist < 0.08;
+                        hudBadge.innerText = isPinching ? '🤏 จีบนิ้ว (PINCH)' : '🖐️ แบมือ (OPEN)';
+                        hudBadge.style.color = isPinching ? '#10b981' : '#00f0ff';
+                    }
+
+                    const pad = 12;
+                    const sw = sCanvas.width - pad * 2;
+                    const sh = sCanvas.height - pad * 2;
+                    const hand = hands[0];
+
+                    if (hand) {
+                        const sPts = hand.map(l => ({
+                            x: pad + (1 - l.x) * sw,
+                            y: pad + l.y * sh
+                        }));
+
+                        // Draw Pinch Connection Laser Line inside Left HUD Canvas
+                        const pinchDist = Math.hypot(hand[8].x - hand[4].x, hand[8].y - hand[4].y);
+                        const isPinching = pinchDist < 0.08;
+                        const ptThumb = sPts[4], ptIndex = sPts[8];
+
+                        sCtx.beginPath();
+                        sCtx.moveTo(ptThumb.x, ptThumb.y);
+                        sCtx.lineTo(ptIndex.x, ptIndex.y);
+                        sCtx.strokeStyle = isPinching ? 'rgba(16, 185, 129, 0.95)' : 'rgba(0, 240, 255, 0.8)';
+                        sCtx.lineWidth = isPinching ? 3.5 : 2;
+                        sCtx.setLineDash(isPinching ? [] : [4, 4]);
+                        sCtx.shadowColor = isPinching ? '#10b981' : '#00f0ff';
+                        sCtx.shadowBlur = 8;
+                        sCtx.stroke();
+                        sCtx.setLineDash([]);
+                        sCtx.shadowBlur = 0;
+
+                        // Draw bones
+                        HAND_CONN.forEach(([i, j]) => {
+                            const p1 = sPts[i], p2 = sPts[j];
+                            sCtx.beginPath();
+                            sCtx.moveTo(p1.x, p1.y);
+                            sCtx.lineTo(p2.x, p2.y);
+                            sCtx.strokeStyle = 'rgba(0, 240, 255, 0.85)';
+                            sCtx.lineWidth = 2.5;
+                            sCtx.lineCap = 'round';
+                            sCtx.stroke();
+                        });
+
+                        // Draw joints
+                        sPts.forEach((pt, idx) => {
+                            sCtx.beginPath();
+                            const isIndexOrThumb = (idx === 4 || idx === 8);
+                            const isTip = [12, 16, 20].includes(idx);
+                            const radius = isIndexOrThumb ? 5 : (isTip ? 3.5 : 2.5);
+                            sCtx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
+                            sCtx.fillStyle = isIndexOrThumb ? (isPinching ? '#10b981' : '#f59e0b') : '#00f0ff';
+                            sCtx.shadowColor = isIndexOrThumb ? (isPinching ? '#10b981' : '#f59e0b') : '#00f0ff';
+                            sCtx.shadowBlur = 6;
+                            sCtx.fill();
+                            sCtx.shadowBlur = 0;
+                        });
+                    }
+                } else {
+                    const hudDot = document.getElementById('hud-dot');
+                    if (hudDot) hudDot.classList.remove('active');
+                    const hudMsg = document.getElementById('hud-standby-msg');
+                    if (hudMsg) hudMsg.style.display = 'block';
+                    const hudBadge = document.getElementById('hud-gesture-badge');
+                    if (hudBadge) {
+                        hudBadge.innerText = 'STANDBY';
+                        hudBadge.style.color = '#94a3b8';
+                    }
+                }
+            }
+
+            modelHolder.scale.setScalar(scaleLerp);
+            hCtx.restore();
+        }
+
+        const mpH = new Hands({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
+        mpH.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.60, minTrackingConfidence: 0.60 });
+        mpH.onResults(onHR);
+
+        let mpCamera = null;
+        function startCamera() {
+            if (!mpCamera) {
+                mpCamera = new Camera(videoEl, { onFrame: async () => { await mpH.send({ image: videoEl }); }, width: 640, height: 480 });
+                mpCamera.start();
+            }
+        }
+
+        // ======================== RENDER LOOP ========================
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (controls.enabled) controls.update();
+
+            currentExplodeLerp = THREE.MathUtils.lerp(currentExplodeLerp, explodeLerpTarget, 0.1);
+            normalMeshes.forEach(m => {
+                if (m.userData && m.userData.orig) {
+                    const target = m.userData.orig.clone().add(m.userData.exp.clone().multiplyScalar(currentExplodeLerp));
+                    m.position.copy(target);
+                }
+            });
+
+            // Hologram projector animation
+            holoRing1.rotation.z += 0.004;
+            holoRing2.rotation.z -= 0.002;
+            scanLine.position.y = Math.sin(Date.now() * 0.0012) * 0.55;
+            scanLineMat.opacity = 0.3 + Math.abs(Math.sin(Date.now() * 0.002)) * 0.35;
+
+            // Ensure model scales in properly in all modes
+            if (appMode === 'NORMAL' || !handDetected) {
+                scaleLerp = THREE.MathUtils.lerp(scaleLerp, 1.0, 0.08);
+                modelHolder.scale.setScalar(scaleLerp);
+            }
+
+            // AR Mode Rotation & Position Management
+            if (appMode === 'CAMERA') {
+                if (arSubMode === '360') {
+                    // In 360 mode: gently auto-rotate only when no hand is detected
+                    if (!handDetected) {
+                        modelHolder.rotation.y += 0.004;
+                        modelHolder.rotation.x = Math.sin(Date.now() * 0.001) * 0.08;
+                        modelHolder.position.lerp(new THREE.Vector3(0, 0, 0), 0.05);
+                    }
+                } else {
+                    // In Lock Mode:
+                    const isExploded = (currentExplodeLerp > 0.05) || (explodeLerpTarget > 0);
+
+                    if (isExploded) {
+                        // Stop rotation completely when exploded and hold fixed isometric angle
+                        modelHolder.rotation.y = THREE.MathUtils.lerp(modelHolder.rotation.y, 0, 0.08);
+                        modelHolder.rotation.x = THREE.MathUtils.lerp(modelHolder.rotation.x, 0.35, 0.08);
+                        modelHolder.rotation.z = THREE.MathUtils.lerp(modelHolder.rotation.z, 0, 0.08);
+                    } else {
+                        // Smooth continuous 360 rotation when assembled
+                        modelHolder.rotation.y += 0.005;
+                        modelHolder.rotation.x = THREE.MathUtils.lerp(modelHolder.rotation.x, 0.35, 0.05);
+                        modelHolder.rotation.z = THREE.MathUtils.lerp(modelHolder.rotation.z, 0, 0.05);
+                    }
+                    modelHolder.position.lerp(new THREE.Vector3(0, 0, 0), 0.08);
+                }
+            }
+
+            // Smooth Camera Zoom Distance
+            currentZoomDistance = THREE.MathUtils.lerp(currentZoomDistance, zoomTargetDistance, 0.1);
+            if (!controls.enabled) {
+                camera.position.z = currentZoomDistance;
+            } else {
+                const dir = camera.position.clone().sub(controls.target);
+                if (dir.lengthSq() > 0.001) {
+                    dir.normalize().multiplyScalar(currentZoomDistance);
+                    camera.position.copy(controls.target).add(dir);
+                }
+            }
+
+            // Update holographic part labels
+            updateHoloLabels();
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        addEventListener('resize', () => { 
+            camera.aspect = innerWidth / innerHeight; 
+            camera.updateProjectionMatrix(); 
+            renderer.setSize(innerWidth, innerHeight);
+            updateDockPillPosition(curComp);
+        });
+
+        // Initialize 3D Component Explorer immediately on page load
+        function initAppExperience() {
+            if (window._hasInitApp) return;
+            window._hasInitApp = true;
+            updateDockPillPosition(0);
+            modelHolder.visible = true;
+            loadComp(0);
+            initRadarScanner();
+            setAppMode('NORMAL');
+        }
+
+        initAppExperience();
+        window.addEventListener('DOMContentLoaded', initAppExperience);
+        window.addEventListener('load', initAppExperience);
+    </script>
+
+    <!-- Spline 3D Companion Loader (Full-Screen Live Mouse Tracking) -->
+    <script type="module">
+        import { Application } from 'https://unpkg.com/@splinetool/runtime@1.9.59/build/runtime.js';
+        const companionCanvas = document.getElementById('spline-companion-canvas');
+        if (companionCanvas) {
+            companionCanvas.width = 520;
+            companionCanvas.height = 520;
+
+            const splineApp = new Application(companionCanvas);
+            splineApp.load('https://prod.spline.design/ASw3qe3kLH4Rlopa/scene.splinecode?v=' + Date.now()).then(() => {
+                // Turn off any purple ground glow, floor light, or shadow plane under the circular model
+                try {
+                    const splineScene = splineApp._scene;
+                    if (splineScene && splineScene.traverse) {
+                        splineScene.traverse((obj) => {
+                            const name = (obj.name || '').toLowerCase();
+                            // Hide floor, ground, shadow planes, or secondary bottom lights
+                            if (
+                                name.includes('floor') ||
+                                name.includes('ground') ||
+                                name.includes('shadow') ||
+                                name.includes('plane') ||
+                                name.includes('glow') ||
+                                name.includes('backdrop') ||
+                                name.includes('bg') ||
+                                name.includes('ellipse') ||
+                                (name.includes('circle') && obj !== splineScene) ||
+                                (obj.isLight && (name.includes('point') || name.includes('bottom') || name.includes('purple') || name.includes('floor') || name.includes('ambient')))
+                            ) {
+                                obj.visible = false;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Spline object cleanup error:', e);
+                }
+            }).catch(err => {
+                console.warn('Spline companion load error, trying direct link:', err);
+                splineApp.load('https://prod.spline.design/ASw3qe3kLH4Rlopa/scene.splinecode').catch(e => console.error(e));
+            });
+
+            // Global mousemove forwarding from window to companion canvas
+            window.addEventListener('mousemove', (e) => {
+                const rect = companionCanvas.getBoundingClientRect();
+                companionCanvas.dispatchEvent(new MouseEvent('mousemove', {
+                    clientX: e.clientX - rect.left,
+                    clientY: e.clientY - rect.top,
+                    screenX: e.screenX,
+                    screenY: e.screenY,
+                    bubbles: true,
+                    cancelable: true
+                }));
+            }, { passive: true });
+
+            window.addEventListener('pointermove', (e) => {
+                const rect = companionCanvas.getBoundingClientRect();
+                companionCanvas.dispatchEvent(new PointerEvent('pointermove', {
+                    clientX: e.clientX - rect.left,
+                    clientY: e.clientY - rect.top,
+                    screenX: e.screenX,
+                    screenY: e.screenY,
+                    bubbles: true,
+                    cancelable: true
+                }));
+            }, { passive: true });
+        }
+    </script>
+</body>
+
+</html>

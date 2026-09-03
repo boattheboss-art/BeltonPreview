@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BELTON — Precision Kinetic Core & Product Showcase</title>
+  <meta name="description" content="Luxury minimalist 2K Scrollytelling experience with SAO holographic product selector." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>" />
+  
+  <!-- Luxury High-End Typography: Cormorant Garamond, Inter, & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="product.css" />
+  
+  <!-- Authentication Guard -->
+  <script>
+    if (sessionStorage.getItem('belton_logged_in') !== 'true') {
+      window.location.href = '/';
+    }
+  </script>
+  
+  <script src="js/product.js" defer></script>
+</head>
+<body class="intro-active">
+
+  <!-- Minimalist Preloader (Direct Auto Fade-out) -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-inner">
+      <div class="minimal-spinner" id="preloaderSpinner"></div>
+      <span class="preloader-text">BELTON — PRODUCT</span>
+      <span class="preloader-sub" id="loadStatus">LOADING 2K MASTER ASSETS...</span>
+    </div>
+  </div>
+
+  <!-- FIXED 3D VIEWPORT (LOCKED IN DEAD CENTER) -->
+  <div class="fixed-viewport-stage" id="viewportStage">
+    <div class="stage-ambient-glow" id="ambientGlow"></div>
+    <canvas id="scrubCanvas" class="scrub-canvas"></canvas>
+    <div class="stage-gradient-overlay"></div>
+  </div>
+
+  <!-- SAO HOLOGRAPHIC PRODUCT SELECTOR (TOP-LEFT CLICK-TRIGGER) -->
+  <div class="sao-menu-wrapper" id="saoMenuWrapper">
+    <!-- SAO 3-Bar Trigger Button (Click to Open/Close) -->
+    <button class="sao-trigger-btn" id="saoTriggerBtn" aria-label="Toggle Product Menu">
+      <div class="sao-bars">
+        <span class="sao-bar bar-1"></span>
+        <span class="sao-bar bar-2"></span>
+        <span class="sao-bar bar-3"></span>
+      </div>
+      <span class="sao-trigger-label" id="saoTriggerLabel">MENU // PRODUCT A</span>
+    </button>
+
+    <!-- SAO Cascading Hologram Menu Dropdown -->
+    <div class="sao-dropdown-panel" id="saoDropdownPanel">
+      <div class="sao-dropdown-header">
+        <span class="sao-system-status">LINK START // INVENTORY</span>
+        <span class="sao-item-count">SELECT PRODUCT</span>
+      </div>
+
+      <div class="sao-items-list">
+        <!-- ITEM A (Active) -->
+        <button class="sao-item-card active" data-product="A" style="--box-index: 1;">
+          <div class="sao-item-icon">
+            <span class="sao-icon-glow"></span>
+            <span class="sao-letter">A</span>
+          </div>
+          <div class="sao-item-meta">
+            <span class="sao-code">ITEM 01 // APFA</span>
+            <span class="sao-name">PRODUCT A</span>
+            <span class="sao-sub">Actuator Pivot Flex Assembly</span>
+          </div>
+          <div class="sao-active-indicator"></div>
+        </button>
+
+        <!-- ITEM B -->
+        <button class="sao-item-card" data-product="B" style="--box-index: 2;">
+          <div class="sao-item-icon">
+            <span class="sao-icon-glow"></span>
+            <span class="sao-letter">B</span>
+          </div>
+          <div class="sao-item-meta">
+            <span class="sao-code">ITEM 02 // ACA</span>
+            <span class="sao-name">PRODUCT B</span>
+            <span class="sao-sub">Actuator Coil Assembly</span>
+          </div>
+          <div class="sao-active-indicator"></div>
+        </button>
+
+        <!-- ITEM C -->
+        <button class="sao-item-card" data-product="C" style="--box-index: 3;">
+          <div class="sao-item-icon">
+            <span class="sao-icon-glow"></span>
+            <span class="sao-letter">C</span>
+          </div>
+          <div class="sao-item-meta">
+            <span class="sao-code">ITEM 03 // FCOF</span>
+            <span class="sao-name">PRODUCT C</span>
+            <span class="sao-sub">Flip Chip on Flex Circuit</span>
+          </div>
+          <div class="sao-active-indicator"></div>
+        </button>
+
+        <!-- ITEM D -->
+        <button class="sao-item-card" data-product="D" style="--box-index: 4;">
+          <div class="sao-item-icon">
+            <span class="sao-icon-glow"></span>
+            <span class="sao-letter">D</span>
+          </div>
+          <div class="sao-item-meta">
+            <span class="sao-code">ITEM 04 // COIL</span>
+            <span class="sao-name">PRODUCT D</span>
+            <span class="sao-sub">Precision Voice Coil Core</span>
+          </div>
+          <div class="sao-active-indicator"></div>
+        </button>
+      </div>
+
+      <div class="sao-dropdown-footer">
+        <span class="sao-node-ip">SYSTEM ACTIVE // 2K QHD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CINEMATIC INTRO OVERLAY (Unified Action Group in Top Right) -->
+  <div class="cinematic-intro-hud" id="introHud">
+    <div class="intro-brand-tag">
+      <span class="pulse-dot"></span>
+      <span id="introTagText">BELTON // 360° CINEMATIC PREVIEW</span>
+    </div>
+    
+    <!-- Top-Right Action Controls (Clean Side-by-Side) -->
+    <div class="intro-actions-group">
+      <button class="intro-audio-btn" id="audioToggleBtn" title="Toggle Sound">
+        <span class="audio-icon-wave">🔊</span>
+        <span class="audio-status-label" id="audioStatusLabel">AUDIO ON</span>
+      </button>
+
+      <button class="skip-intro-btn" id="skipIntroBtn">
+        <span>Skip Intro</span>
+        <span class="skip-arrow">↗</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- FLOATING LUXURY PILL NAVBAR (Reveals after Intro) - ONLY HOME & LOGOUT -->
+  <header class="navbar-wrapper reveal-ui" id="mainNavbar">
+    <nav class="minimal-nav-pill">
+      <a href="/" class="nav-brand" id="navBrandText">✦ BELTON <span style="font-size:0.75rem; color:#64748b; font-weight:500; margin-left:6px; letter-spacing:1.5px;">PRODUCT</span></a>
+      <div class="nav-links-group">
+        <a href="/" class="nav-item" style="font-weight: 600; font-size: 0.85rem;">Home</a>
+      </div>
+      <button class="nav-action-pill" onclick="sessionStorage.removeItem('belton_logged_in'); window.location.href='/'" title="ออกจากระบบ และกลับสู่หน้าแรก" style="cursor: pointer; border: none;">
+        ออกจากระบบ
+      </button>
+    </nav>
+  </header>
+
+  <!-- =========================================================================
+       LUXURY SIDE-BY-SIDE SCROLLYTELLING RUNWAY (Reveals after Intro)
+       ========================================================================= -->
+  <main class="minimal-scrolly-container reveal-ui" id="mainScrolly">
+
+    <!-- SCENE 1: HERO (Card on LEFT - Center 100% Unobstructed) -->
+    <section class="story-scene split-left-scene hero-split-scene" id="overview">
+      <div class="side-card left-card hero-intro-card">
+        <span class="scene-kicker" id="heroKicker">AUTONOMOUS KINETIC ARCHITECTURE</span>
+        <h1 class="hero-heading" id="heroTitle">BELTON<span class="brand-dash"> — </span>APFA</h1>
+        <p class="hero-subtext" id="heroDesc">
+          Precision micro-actuator assembly engineered for sub-micron orbital stabilization and zero-friction kinetics.
+        </p>
+        <div class="hero-scroll-badge">
+          <span class="pulse-beacon"></span>
+          <span>Scroll to explore 360°</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 2: MATERIALS (Card on RIGHT, Center 100% Open) -->
+    <section class="story-scene split-right-scene" id="materials">
+      <div class="side-card right-card">
+        <span class="scene-kicker" id="sec1Kicker">01 // MONOCOQUE METALLURGY</span>
+        <h2 class="scene-heading" id="sec1Title">Aerospace-grade suspension.</h2>
+        <p class="scene-description" id="sec1Desc">
+          8-blade CNC-milled duralumin comb with recessed stiffener cavities, dual laser rivet ports, and side multi-channel trace flex pads.
+        </p>
+        <div class="specs-grid-mini">
+          <div class="spec-cell">
+            <span class="val" id="spec1Val">±0.001 mm</span>
+            <span class="lbl" id="spec1Lbl">Milling Tolerance</span>
+          </div>
+          <div class="spec-cell">
+            <span class="val" id="spec2Val">8-Tier</span>
+            <span class="lbl" id="spec2Lbl">Stacked Arms</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 3: MAGLEV (Card on LEFT, Center 100% Open) -->
+    <section class="story-scene split-left-scene" id="maglev">
+      <div class="side-card left-card">
+        <span class="scene-kicker" id="sec2Kicker">02 // CONTACTLESS ROTATION</span>
+        <h2 class="scene-heading" id="sec2Title">Concentric precision raceway.</h2>
+        <p class="scene-description" id="sec2Desc">
+          Chamfered stainless steel hub with concentric bearing well and a triad of laser-drilled balancing ports eliminating angular runout.
+        </p>
+        <div class="specs-grid-mini">
+          <div class="spec-cell">
+            <span class="val" id="spec3Val">148,000</span>
+            <span class="lbl" id="spec3Lbl">Peak RPM</span>
+          </div>
+          <div class="spec-cell">
+            <span class="val" id="spec4Val">99.94%</span>
+            <span class="lbl" id="spec4Lbl">Efficiency</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 4: FLUX CORE (Card on RIGHT, Center 100% Open) -->
+    <section class="story-scene split-right-scene" id="flux">
+      <div class="side-card right-card">
+        <span class="scene-kicker" id="sec3Kicker">03 // VOICE COIL MOTOR</span>
+        <h2 class="scene-heading" id="sec3Title">Gold-anodized yoke frame.</h2>
+        <p class="scene-description" id="sec3Desc">
+          High-luster gold-brass alloy yoke frame directing high-density magnetic flux directly through the dark sintered magnetic core.
+        </p>
+        <div class="specs-grid-mini">
+          <div class="spec-cell">
+            <span class="val" id="spec5Val">14.8 T</span>
+            <span class="lbl" id="spec5Lbl">Flux Density</span>
+          </div>
+          <div class="spec-cell">
+            <span class="val" id="spec6Val">4.8 GW/kg</span>
+            <span class="lbl" id="spec6Lbl">Power Density</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 5: TELEMETRY (Card on LEFT, Center 100% Open) -->
+    <section class="story-scene split-left-scene" id="telemetry">
+      <div class="side-card left-card">
+        <span class="scene-kicker" id="sec4Kicker">04 // SIGNAL ARCHITECTURE</span>
+        <h2 class="scene-heading" id="sec4Title">Flex-rigid pre-amp circuit.</h2>
+        <p class="scene-description" id="sec4Desc">
+          Translucent amber Kapton polyimide ribbon carrying high-speed differential signals into a dedicated Pre-Amp IC and 28-pin gold SMD header.
+        </p>
+        <div class="specs-grid-mini">
+          <div class="spec-cell">
+            <span class="val" id="spec7Val">50 kHz</span>
+            <span class="lbl" id="spec7Lbl">Laser Sampling</span>
+          </div>
+          <div class="spec-cell">
+            <span class="val" id="spec8Val">0.12 µs</span>
+            <span class="lbl" id="spec8Lbl">Response Latency</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 6: CLEAN FINALE (Pure Unobstructed View - Subtle Bottom Bar) -->
+    <section class="story-scene finale-pure-scene" id="contact">
+      <div class="pure-finale-bar">
+        <div class="pure-meta-left">
+          <span class="kicker-sub" id="finaleKicker">BESPOKE ALLOCATION</span>
+          <span class="title-sub" id="finaleTitle">The benchmark in mechanical artistry.</span>
+        </div>
+        <a href="/" class="pure-action-pill">
+          <span>Back to Home</span>
+          <span>→</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM MINIMAL TIMELINE PILL (Reveals after Intro) -->
+  <footer class="bottom-timeline-pill reveal-ui" id="mainTimeline">
+    <div class="timeline-bar-track">
+      <div class="timeline-bar-fill" id="timelineFill"></div>
+    </div>
+    <span class="timeline-orbit-text" id="orbitAngleDisplay">0.0s / 000°</span>
+  </footer>
+
+</body>
+</html>
+

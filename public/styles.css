@@ -1,0 +1,948 @@
+/**
+ * BELTON — Intelligent Automation for the Next Generation
+ * Hardware Accelerated Stylesheet (Camera Glitch-Free Architecture)
+ * 1. Maintain Spline Mounted in Background (opacity-0 pointer-events-none)
+ * 2. Smooth 700ms ease-out Fade-in on is-visible (No scale / y-transform to prevent camera snapping)
+ */
+
+:root {
+  --bg-deep: #000000;
+  --bg-card: rgba(14, 16, 22, 0.88);
+  --bg-card-hover: rgba(22, 26, 36, 0.95);
+
+  --white-pure: #ffffff;
+  --white-bright: #f8fafc;
+  --white-silver: #e2e8f0;
+  --white-glow: rgba(255, 255, 255, 0.65);
+  --white-dim: rgba(255, 255, 255, 0.14);
+
+  --text-main: #ffffff;
+  --text-dim: #94a3b8;
+  --text-dark: #475569;
+
+  --line: rgba(255, 255, 255, 0.18);
+  --line-strong: rgba(255, 255, 255, 0.45);
+
+  --font-sans: "Space Grotesk", -apple-system, sans-serif;
+  --font-mono: "Space Mono", monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--white-pure) var(--bg-deep);
+}
+
+body.is-locked {
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   STEP 1: SPINNING STAR LOADING SCREEN (z-9999)
+   ========================================================================== */
+.site-preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  pointer-events: auto;
+}
+
+.site-preloader.flash-out {
+  opacity: 0;
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+.preloader-star-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preloader-star {
+  width: 72px;
+  height: 72px;
+  color: #ffffff;
+  filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.8));
+  animation: preloader-star-spin 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform, opacity;
+}
+
+.site-preloader.flash-out .preloader-star {
+  animation: preloader-star-flash 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.preloader-glow-ring {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
+  animation: ring-pulse 1.8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes preloader-star-spin {
+  0% { transform: rotate(0deg) scale(0.85); opacity: 0.7; }
+  50% { transform: rotate(180deg) scale(1.18); opacity: 1; }
+  100% { transform: rotate(360deg) scale(0.85); opacity: 0.7; }
+}
+
+@keyframes ring-pulse {
+  0% { transform: scale(0.8); opacity: 0.4; }
+  100% { transform: scale(1.35); opacity: 0.85; }
+}
+
+@keyframes preloader-star-flash {
+  0% { transform: scale(1.18) rotate(0deg); opacity: 1; }
+  40% { transform: scale(2.2) rotate(90deg); opacity: 1; }
+  100% { transform: scale(0) rotate(180deg); opacity: 0; }
+}
+
+/* ==========================================================================
+   STEP 2: BACKGROUND "BELTON" TYPOGRAPHY (z-0, GPU COMPOSITED)
+   ========================================================================== */
+.bg-belton-container {
+  position: fixed;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(0);
+  width: 100%;
+  max-width: 1500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.4rem, 2.5vw, 2.2rem);
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  contain: layout paint;
+  backface-visibility: hidden;
+}
+
+.belton-letter {
+  font-family: var(--font-sans);
+  font-size: clamp(5rem, 17vw, 15.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  text-transform: uppercase;
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 35px, 0);
+  will-change: opacity, transform;
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
+}
+
+.bg-belton-container.play-intro .belton-letter {
+  animation: letter-hardware-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Stagger Delays for initial reveal */
+.bg-belton-container.play-intro .belton-letter:nth-child(1) { animation-delay: 0.06s; }
+.bg-belton-container.play-intro .belton-letter:nth-child(2) { animation-delay: 0.18s; }
+.bg-belton-container.play-intro .belton-letter:nth-child(3) { animation-delay: 0.30s; }
+.bg-belton-container.play-intro .belton-letter:nth-child(4) { animation-delay: 0.42s; }
+.bg-belton-container.play-intro .belton-letter:nth-child(5) { animation-delay: 0.54s; }
+.bg-belton-container.play-intro .belton-letter:nth-child(6) { animation-delay: 0.66s; }
+
+@keyframes letter-hardware-reveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 35px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0px, 0);
+  }
+}
+
+/* ==========================================================================
+   STEP 3: SPLINE 3D ROBOT COMPONENT (z-10, SMOOTH 0.85s FADE-IN & SPLIT-SCREEN)
+   ========================================================================== */
+.hero-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  contain: strict;
+  isolation: isolate;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.hero-canvas.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* When isLoginOpen = true: Shift 3D Robot to the left, fade background typography */
+body.is-login-open .hero-canvas {
+  transform: translate3d(-24%, 0, 0);
+}
+
+body.is-login-open .bg-belton-container {
+  opacity: 0.20 !important;
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.is-login-open .hero-overlay-content {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(20px) !important;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* ==========================================================================
+   POST-LOGIN 2-SECOND STAGGERED FADE-OUT SEQUENCE (BOX BY BOX)
+   ========================================================================== */
+body.is-post-login .hero-canvas {
+  transform: translate3d(0, 0, 0) scale(1) !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease !important;
+}
+
+body.is-post-login .modal {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease !important;
+}
+
+/* Box 1 (0.4s): Top Nav Bar fades out */
+body.fade-step-nav .site-header {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(-50%) translateY(-30px) !important;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Box 2 (0.8s): Hero Overlay Content & Buttons fade out */
+body.fade-step-hero #heroOverlayContent,
+body.fade-step-hero .sparkle-star {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(20px) !important;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Box 3 (1.2s): Background "BELTON" typography fades out -> Only solo robot remains */
+body.fade-step-bg #bgBeltonText {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ==========================================================================
+   CONTENT WRAPPER (z-20)
+   ========================================================================== */
+.content-wrapper {
+  position: relative;
+  z-index: 20;
+  pointer-events: none;
+  contain: layout;
+}
+
+/* ==========================================================================
+/* ==========================================================================
+   TOP FLOATING PILL NAVIGATION (z-50)
+   ========================================================================== */
+@keyframes navSlideDownEntrance {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-35px) scale(0.94);
+  }
+  60% {
+    transform: translateX(-50%) translateY(4px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.site-header {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateZ(0);
+  width: 92%;
+  max-width: 1280px;
+  z-index: 50;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.4s var(--ease-spring);
+  will-change: opacity, transform;
+}
+
+.site-header.intro-visible {
+  opacity: 1;
+}
+
+.site-header.just-authenticated {
+  animation: navSlideDownEntrance 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(14, 17, 24, 0.90);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.05);
+  transition: all 0.4s var(--ease-spring);
+}
+
+body.is-logged-in .nav-container {
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9), 0 0 24px rgba(255, 255, 255, 0.15);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  font-size: 1.05rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  text-shadow: 0 0 16px var(--white-glow);
+}
+
+.nav-logo-icon {
+  color: var(--white-pure);
+  font-size: 1.15rem;
+}
+
+.nav-links {
+  display: none;
+  align-items: center;
+  gap: 1.8rem;
+  list-style: none;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.is-logged-in .nav-links {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.nav-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseDotGreen 1.8s infinite;
+}
+
+@keyframes pulseDotGreen {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.7); opacity: 0.5; }
+}
+
+.nav-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: all 0.25s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--white-pure);
+  text-shadow: 0 0 12px var(--white-glow);
+}
+
+.nav-link-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #000000 !important;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  transition: all 0.25s var(--ease-spring);
+}
+
+.nav-link-highlight:hover {
+  background: #e2e8f0;
+  transform: scale(1.08);
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.8);
+}
+
+
+
+.btn-logout-state {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.btn-logout-state:hover {
+  background: rgba(244, 63, 94, 0.25) !important;
+  border-color: rgba(244, 63, 94, 0.5) !important;
+  color: #f43f5e !important;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.btn-get-started {
+  background: var(--white-pure);
+  color: #000000;
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 1.4rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 20px var(--white-glow);
+}
+
+.btn-get-started:hover {
+  background: var(--white-silver);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.audio-toggle-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.5rem 0.8rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.audio-toggle-pill.is-active {
+  border-color: var(--white-pure);
+  color: var(--white-bright);
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 3.5rem;
+  text-align: center;
+}
+
+.hero-overlay-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+  max-width: 900px;
+  padding: 0 1.5rem;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(18px) translateZ(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  will-change: opacity, transform;
+}
+
+.hero-overlay-content.intro-visible {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
+}
+
+.hero-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--text-main);
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+}
+
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.btn-pill-cyan {
+  background: var(--white-pure);
+  color: #000000;
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 2.2rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 25px var(--white-glow);
+}
+
+.btn-pill-cyan:hover {
+  background: var(--white-silver);
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
+}
+
+.btn-pill-outline {
+  background: rgba(14, 16, 22, 0.6);
+  color: #ffffff;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 0.75rem 2.2rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-pill-outline:hover {
+  border-color: var(--white-pure);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px var(--white-dim);
+}
+
+.hero-scroll-indicator {
+  margin-top: 1.2rem;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+  animation: bounce-down 2s infinite ease-in-out;
+  cursor: pointer;
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(8px); opacity: 1; color: var(--white-pure); }
+}
+
+/* 4-Point Sparkle Stars */
+.sparkle-star {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  animation: sparkle-pulse 3s infinite ease-in-out alternate;
+}
+
+.sparkle-star.bottom-right {
+  bottom: 5.5rem;
+  right: 6.5rem;
+}
+
+.sparkle-star.top-left {
+  top: 12rem;
+  left: 6.5rem;
+  opacity: 0.5;
+}
+
+@keyframes sparkle-pulse {
+  0% { transform: scale(0.8) rotate(0deg); opacity: 0.5; }
+  100% { transform: scale(1.2) rotate(45deg); opacity: 1.0; color: #ffffff; filter: drop-shadow(0 0 10px #ffffff); }
+}
+
+/* ==========================================================================
+   FEATURES BENTO GRID SECTION
+   ========================================================================== */
+.section-features {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 6rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+  pointer-events: auto;
+}
+
+.section-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  color: var(--white-bright);
+}
+
+.section-heading {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.bento-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.bento-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--white-pure);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--white-dim);
+  transform: translateY(-4px);
+}
+
+.bento-card.span-2 {
+  grid-column: span 2;
+}
+
+.card-icon {
+  font-size: 2rem;
+  color: var(--white-pure);
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.card-desc {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   FUTURISTIC GLASSMORPHISM ACCESS TERMINAL MODAL
+   ========================================================================== */
+.modal.access-terminal-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Shifted to right side */
+  padding-right: 8vw;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal.access-terminal-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1;
+}
+
+.modal.is-open .modal-backdrop {
+  opacity: 1;
+}
+
+/* Glassmorphism Access Terminal Card with Luxury Crimson / Ruby Red Theme */
+.access-terminal-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
+  background: rgba(14, 16, 22, 0.90);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid var(--line-strong);
+  border-top: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 24px;
+  padding: 2.4rem;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.9),
+    0 0 25px rgba(255, 255, 255, 0.15),
+    inset 0 0 15px rgba(255, 255, 255, 0.05);
+  transform: translateX(50px) scale(0.96);
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.modal.is-open .access-terminal-card {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+.terminal-header-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+
+.terminal-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff;
+  animation: terminalDotPulse 1.8s infinite alternate;
+}
+@keyframes terminalDotPulse {
+  0% { opacity: 0.4; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+.modal-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--white-silver);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.modal-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  margin: 0.3rem 0 1.5rem 0;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1.3rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+}
+
+.form-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.form-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.25);
+}
+
+/* INITIALIZE SESSION Action Button */
+.btn-initialize-session {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white-pure);
+  color: #000000;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 1rem 1.6rem;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.btn-initialize-session:hover {
+  transform: translateY(-2px);
+  background: var(--white-silver);
+  box-shadow: 0 12px 32px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.btn-initialize-session:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive adjustment for Mobile screens */
+@media (max-width: 900px) {
+  body.is-login-open .hero-canvas {
+    transform: translateY(-18%) scale(0.85);
+  }
+  .modal.access-terminal-modal {
+    justify-content: center;
+    padding-right: 0;
+  }
+}
+
+.login-error-msg {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-radius: 10px;
+  color: #fca5a5;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.6rem 0.9rem;
+  text-align: center;
+  margin-bottom: 0.4rem;
+  animation: shake-error 0.35s ease;
+}
+
+@keyframes shake-error {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* Success Card */
+.auth-success-card {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.auth-success-card.active {
+  display: flex;
+}
+
+.auth-icon {
+  font-size: 3rem;
+  color: var(--white-pure);
+  text-shadow: 0 0 20px var(--white-glow);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-card.span-2 { grid-column: span 1; }
+  .sparkle-star.bottom-right { right: 2rem; }
+  .sparkle-star.top-left { left: 2rem; }
+  .belton-letter { font-size: clamp(3.2rem, 15vw, 6.5rem); }
+}
