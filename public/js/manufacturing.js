@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-GRADE INTERACTION ENGINE
  * - Left-Aligned HUD with Unobstructed 3D Kinetic Physics Viewport
  * - Spline Object Cleaner (hides template placeholder text in 3D scene)
@@ -35,17 +35,30 @@ function initSplineSceneCleaner() {
   const viewer = document.getElementById('nanaSplineViewer');
   if (!viewer) return;
 
-  // Once Spline finishes loading, hide embedded template text/buttons inside 3D
-  viewer.addEventListener('load', (e) => {
+  function cleanObjects() {
     try {
-      const app = viewer._app || (e && e.detail && e.detail.app);
+      const app = viewer._app;
+      if (app && app.scene) {
+        app.scene.traverse((obj) => {
+          if (!obj) return;
+          // Hide any TextGeometry
+          if (obj.geometry && (obj.geometry.type === 'TextGeometry' || obj.geometry.type === 'ShapeGeometry')) {
+            obj.visible = false;
+          }
+          if (obj.name) {
+            const n = obj.name.toLowerCase();
+            if (n.includes('text') || n.includes('button') || n.includes('title') || n.includes('subtitle') || n.includes('cta') || n.includes('heading') || n.includes('discover') || n.includes('future')) {
+              obj.visible = false;
+            }
+          }
+        });
+      }
       if (app && app.getAllObjects) {
         const objs = app.getAllObjects();
         objs.forEach(obj => {
           if (!obj || !obj.name) return;
           const n = obj.name.toLowerCase();
-          // Target template texts, buttons, and placeholder subtitles
-          if (n.includes('text') || n.includes('button') || n.includes('title') || n.includes('subtitle') || n.includes('heading') || n.includes('cta') || n.includes('label')) {
+          if (n.includes('text') || n.includes('button') || n.includes('title') || n.includes('subtitle') || n.includes('heading') || n.includes('cta') || n.includes('discover') || n.includes('future')) {
             obj.visible = false;
           }
         });
@@ -53,7 +66,12 @@ function initSplineSceneCleaner() {
     } catch (err) {
       console.warn('Spline cleaner notice:', err);
     }
-  });
+  }
+
+  viewer.addEventListener('load', cleanObjects);
+  // Interval checks during initial 2.5s in case objects are loaded asynchronously
+  const interval = setInterval(cleanObjects, 300);
+  setTimeout(() => clearInterval(interval), 2800);
 }
 
 // ==========================================================================

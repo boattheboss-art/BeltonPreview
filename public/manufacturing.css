@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-INSPIRED LUXURY CSS
    Typography: Apple SF Pro / Inter System Font
    Left-Aligned HUD with 100% Unobstructed 3D Physics Viewport
@@ -208,17 +208,21 @@ html, body {
   pointer-events: none; /* Let all mouse movement pass straight to 3D canvas! */
 }
 
-/* Left HUD Column: Frosted Glass Shield */
+/* Left HUD Column: Pure Open Typography (Zero White Background Box) */
 .hero-left-col {
   text-align: left;
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.95);
-  border-radius: 36px;
-  padding: 44px 40px;
-  box-shadow: 0 28px 60px -15px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
-  pointer-events: auto; /* Clickable buttons inside */
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  pointer-events: none; /* All text lets mouse pass straight through to 3D cubes! */
+}
+
+.hero-left-col .btn-hero-primary {
+  pointer-events: auto; /* Only button is clickable */
 }
 
 .hero-right-spacer {
