@@ -210,10 +210,42 @@ function init() {
     });
   }
 
+  const logoutConfirmModal = document.getElementById('logoutConfirmModal');
+  const logoutModalBackdrop = document.getElementById('logoutModalBackdrop');
+  const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+  const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+
+  function openLogoutConfirmModal() {
+    if (!logoutConfirmModal) {
+      applyLoggedOutState();
+      return;
+    }
+    logoutConfirmModal.classList.add('is-open');
+    logoutConfirmModal.setAttribute('aria-hidden', 'false');
+    soundEngine.playUiClick();
+  }
+
+  function closeLogoutConfirmModal() {
+    if (!logoutConfirmModal) return;
+    logoutConfirmModal.classList.remove('is-open');
+    logoutConfirmModal.setAttribute('aria-hidden', 'true');
+    soundEngine.playUiClick();
+  }
+
+  if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', closeLogoutConfirmModal);
+  if (logoutModalBackdrop) logoutModalBackdrop.addEventListener('click', closeLogoutConfirmModal);
+
+  if (confirmLogoutBtn) {
+    confirmLogoutBtn.addEventListener('click', () => {
+      closeLogoutConfirmModal();
+      applyLoggedOutState();
+    });
+  }
+
   if (navGetStartedBtn) {
     navGetStartedBtn.addEventListener('click', () => {
       if (sessionStorage.getItem('belton_logged_in') === 'true') {
-        applyLoggedOutState();
+        openLogoutConfirmModal();
       } else {
         openLoginModal();
       }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-GRADE INTERACTION ENGINE
  * - Natural Mouse Wheel Page Scrolling (Fixes Spline scroll hijacking)
  * - Deep 3D Template Artifact Cleaner (Eliminates blue buttons, shapes, and texts)
@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollTriggeredBoxes();
   initBeforeAfterSlider();
   initLaserToleranceScanner();
+  initLogoutConfirmModal();
 });
 
 // Sound fx helpers
@@ -363,4 +364,39 @@ function initLaserToleranceScanner() {
       isScanning = false;
     }, 2800);
   });
+}
+
+// ==========================================================================
+// 8. LUXURY CONFIRM LOGOUT MODAL
+// ==========================================================================
+function initLogoutConfirmModal() {
+  const mfgLogoutBtn = document.getElementById('mfgLogoutBtn');
+  const logoutConfirmModal = document.getElementById('logoutConfirmModal');
+  const logoutModalBackdrop = document.getElementById('logoutModalBackdrop');
+  const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+  const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+
+  if (!mfgLogoutBtn || !logoutConfirmModal) return;
+
+  mfgLogoutBtn.addEventListener('click', () => {
+    logoutConfirmModal.classList.add('is-open');
+    logoutConfirmModal.setAttribute('aria-hidden', 'false');
+    playSfx(sfxClick);
+  });
+
+  const closeModal = () => {
+    logoutConfirmModal.classList.remove('is-open');
+    logoutConfirmModal.setAttribute('aria-hidden', 'true');
+    playSfx(sfxClick);
+  };
+
+  if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', closeModal);
+  if (logoutModalBackdrop) logoutModalBackdrop.addEventListener('click', closeModal);
+
+  if (confirmLogoutBtn) {
+    confirmLogoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('belton_logged_in');
+      window.location.href = '/';
+    });
+  }
 }

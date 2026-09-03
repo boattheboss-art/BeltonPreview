@@ -770,6 +770,35 @@
     });
   });
 
+  // Confirm Logout Modal Logic
+  const productLogoutBtn = document.getElementById('productLogoutBtn');
+  const logoutConfirmModal = document.getElementById('logoutConfirmModal');
+  const logoutModalBackdrop = document.getElementById('logoutModalBackdrop');
+  const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+  const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+
+  if (productLogoutBtn && logoutConfirmModal) {
+    productLogoutBtn.addEventListener('click', () => {
+      logoutConfirmModal.classList.add('is-open');
+      logoutConfirmModal.setAttribute('aria-hidden', 'false');
+    });
+
+    const closeLogoutModal = () => {
+      logoutConfirmModal.classList.remove('is-open');
+      logoutConfirmModal.setAttribute('aria-hidden', 'true');
+    };
+
+    if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', closeLogoutModal);
+    if (logoutModalBackdrop) logoutModalBackdrop.addEventListener('click', closeLogoutModal);
+
+    if (confirmLogoutBtn) {
+      confirmLogoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('belton_logged_in');
+        window.location.href = '/';
+      });
+    }
+  }
+
   // Init
   resizeCanvas();
   initApp();
