@@ -99,7 +99,7 @@ function init() {
       e.stopPropagation();
       const isMuted = soundEngine.toggleMute();
       audioToggleBtn.classList.toggle('is-active', !isMuted);
-      audioToggleBtn.querySelector('span').textContent = isMuted ? '🔇' : '🔊';
+      audioToggleBtn.querySelector('span').textContent = isMuted ? 'MUTED' : 'AUDIO';
     });
   }
 
