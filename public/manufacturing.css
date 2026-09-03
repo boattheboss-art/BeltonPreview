@@ -136,15 +136,27 @@ html, body {
 }
 
 .nav-item {
-  font-size: 0.84rem;
-  font-weight: 500;
+  font-family: var(--apple-font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--text-secondary);
   text-decoration: none;
-  transition: color 0.2s ease;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-item:hover {
   color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.08);
+  transform: scale(1.06);
 }
 
 .nav-action-pill {

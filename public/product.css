@@ -668,17 +668,27 @@ body.intro-active {
 }
 
 .nav-item {
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 400;
-  letter-spacing: 0.5px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--text-secondary);
   text-decoration: none;
-  transition: color 0.25s ease;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-item:hover {
   color: #0a0e17;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.08);
+  transform: scale(1.06);
 }
 
 .nav-action-pill {
