@@ -1,13 +1,16 @@
 ﻿/**
- * BELTON MANUFACTURING & PRECISION LAB — INTERACTIVE ENGINE
+ * BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-GRADE INTERACTION ENGINE
+ * - Scroll-Triggered Motion Graphics via IntersectionObserver
  * - Stage 03 Before / After Draggable Slider
- * - Stage 02 Live CNC Coordinate Telemetry Stream
- * - Metrology Bay Laser Tolerance Verification Scanner
+ * - Live CNC Coordinate Telemetry Stream (Activated on Scroll)
+ * - Cleanroom Particle Counter Countdown (Activated on Scroll)
+ * - Laser Metrology Verification Scanner
+ * Zero Emojis. Pure Precision.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initScrollTriggeredBoxes();
   initBeforeAfterSlider();
-  initCncCoordinateStream();
   initLaserToleranceScanner();
 });
 
@@ -23,7 +26,45 @@ function playSfx(audio) {
 }
 
 // ==========================================================================
-// 1. BEFORE / AFTER INTERACTIVE SLIDER (STAGE 03)
+// 1. APPLE-STYLE SCROLL-TRIGGERED MOTION OBSERVER
+// ==========================================================================
+function initScrollTriggeredBoxes() {
+  const triggerBoxes = document.querySelectorAll('.scroll-trigger-box');
+  if (!triggerBoxes.length) return;
+
+  let cncStarted = false;
+  let cleanroomStarted = false;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-in-view');
+
+        const chapter = entry.target.getAttribute('data-chapter');
+
+        // Chapter 2: Wake up CNC coordinate stream
+        if (chapter === '2' && !cncStarted) {
+          cncStarted = true;
+          startCncCoordinateStream();
+        }
+
+        // Chapter 4: Wake up Cleanroom Particle Countdown
+        if (chapter === '4' && !cleanroomStarted) {
+          cleanroomStarted = true;
+          startCleanroomParticleCountdown();
+        }
+      }
+    });
+  }, {
+    threshold: 0.18,
+    rootMargin: '0px 0px -50px 0px'
+  });
+
+  triggerBoxes.forEach((box) => observer.observe(box));
+}
+
+// ==========================================================================
+// 2. BEFORE / AFTER INTERACTIVE SLIDER (CHAPTER 03)
 // ==========================================================================
 function initBeforeAfterSlider() {
   const container = document.getElementById('beforeAfterSlider');
@@ -56,12 +97,10 @@ function initBeforeAfterSlider() {
   });
 
   window.addEventListener('mouseup', () => {
-    if (isDragging) {
-      isDragging = false;
-    }
+    if (isDragging) isDragging = false;
   });
 
-  // Touch Support (Mobile / iPad)
+  // Touch Support
   container.addEventListener('touchstart', (e) => {
     isDragging = true;
     updateSlider(e.touches[0].clientX);
@@ -78,9 +117,9 @@ function initBeforeAfterSlider() {
 }
 
 // ==========================================================================
-// 2. LIVE CNC G-CODE COORDINATE TELEMETRY STREAM (STAGE 02)
+// 3. CNC G-CODE COORDINATE TELEMETRY STREAM (CHAPTER 02)
 // ==========================================================================
-function initCncCoordinateStream() {
+function startCncCoordinateStream() {
   const elX = document.getElementById('cncX');
   const elY = document.getElementById('cncY');
   const elZ = document.getElementById('cncZ');
@@ -93,9 +132,9 @@ function initCncCoordinateStream() {
   let baseZ = 1.100;
 
   setInterval(() => {
-    const jitterX = (Math.sin(Date.now() * 0.003) * 0.045).toFixed(3);
-    const jitterY = (Math.cos(Date.now() * 0.004) * 0.038).toFixed(3);
-    const jitterZ = (Math.sin(Date.now() * 0.002) * 0.012).toFixed(3);
+    const jitterX = (Math.sin(Date.now() * 0.003) * 0.042).toFixed(3);
+    const jitterY = (Math.cos(Date.now() * 0.004) * 0.036).toFixed(3);
+    const jitterZ = (Math.sin(Date.now() * 0.002) * 0.011).toFixed(3);
 
     const curX = (baseX + parseFloat(jitterX)).toFixed(3);
     const curY = (baseY + parseFloat(jitterY)).toFixed(3);
@@ -106,14 +145,44 @@ function initCncCoordinateStream() {
     elZ.textContent = `${curZ >= 0 ? '+' : ''}${curZ} mm`;
 
     if (elFeed) {
-      const feed = Math.floor(12000 + Math.random() * 800);
+      const feed = Math.floor(12200 + Math.random() * 600);
       elFeed.textContent = `${feed.toLocaleString()} mm/min`;
     }
-  }, 140);
+  }, 130);
 }
 
 // ==========================================================================
-// 3. INTERACTIVE LASER TOLERANCE SCANNER
+// 4. CLEANROOM PARTICLE COUNTDOWN ANIMATION (CHAPTER 04)
+// ==========================================================================
+function startCleanroomParticleCountdown() {
+  const counterEl = document.getElementById('cleanCounter');
+  if (!counterEl) return;
+
+  let startVal = 46.5;
+  const duration = 2400; // 2.4s
+  const startTime = performance.now();
+
+  function updateCount(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Exponential deceleration curve
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    const current = Math.max(0, startVal * (1 - easeOut));
+
+    counterEl.textContent = current.toFixed(1);
+
+    if (progress < 1) {
+      requestAnimationFrame(updateCount);
+    } else {
+      counterEl.textContent = '00.0';
+    }
+  }
+
+  requestAnimationFrame(updateCount);
+}
+
+// ==========================================================================
+// 5. INTERACTIVE LASER METROLOGY SCANNER
 // ==========================================================================
 function initLaserToleranceScanner() {
   const startBtn = document.getElementById('startScanBtn');
@@ -133,7 +202,7 @@ function initLaserToleranceScanner() {
 
     playSfx(sfxClick);
     startBtn.disabled = true;
-    startBtn.style.opacity = '0.6';
+    startBtn.style.opacity = '0.5';
     startBtn.style.cursor = 'not-allowed';
 
     laserBeam.classList.add('is-scanning');
@@ -143,26 +212,24 @@ function initLaserToleranceScanner() {
       resStatus.style.color = '#38bdf8';
     }
 
-    // Fluctuate numbers while scanning
     const sweepInterval = setInterval(() => {
       if (resPitch) resPitch.textContent = `0.${Math.floor(2480 + Math.random() * 40)} mm`;
       if (resRunout) resRunout.textContent = `0.000${Math.floor(2 + Math.random() * 5)} mm`;
       if (resGap) resGap.textContent = `0.${Math.floor(1180 + Math.random() * 40)} mm`;
     }, 100);
 
-    // Conclude verification after 2.8s
     setTimeout(() => {
       clearInterval(sweepInterval);
       laserBeam.classList.remove('is-scanning');
       playSfx(sfxOpen);
 
-      if (resPitch) resPitch.textContent = '0.2500 mm (±0.0002)';
+      if (resPitch) resPitch.textContent = '0.2500 mm (+/- 0.0002)';
       if (resRunout) resRunout.textContent = '0.0003 mm (EXCELLENT)';
       if (resGap) resGap.textContent = '0.1200 mm (OPTIMAL)';
 
       if (resStatus) {
-        resStatus.textContent = 'VERIFIED // PASSED QC COMPLIANCE ✓';
-        resStatus.style.color = '#10b981';
+        resStatus.textContent = 'VERIFIED / PASSED QC COMPLIANCE';
+        resStatus.style.color = '#00c853';
       }
 
       startBtn.disabled = false;
