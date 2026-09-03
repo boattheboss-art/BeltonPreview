@@ -54,23 +54,23 @@
   <!-- MAIN SCROLLABLE CONTENT -->
   <main class="lab-container">
 
-    <!-- HERO SECTION: THE BENTON GENESIS -->
-    <section class="lab-hero-section scroll-reveal">
-      <div class="hero-badge">
+    <!-- HERO SECTION: IMMEDIATE ON-LOAD ANIMATION -->
+    <section class="lab-hero-section initial-load-animate" id="heroSection">
+      <div class="hero-badge hero-anim-item">
         <span class="beacon-pulse"></span>
         <span>ESTABLISHED 1988 / GLOBAL PRECISION LEADER</span>
       </div>
 
-      <h1 class="lab-hero-title">
+      <h1 class="lab-hero-title hero-anim-item">
         <span class="highlight-brand">BENTON</span><br/>
         THE ARCHITECTS OF SUB-MICRON MOTION
       </h1>
-      <p class="lab-hero-subtitle">
+      <p class="lab-hero-subtitle hero-anim-item">
         From precision micro-coil winding pioneers in 1988 to the tier-one global manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA), powering enterprise cloud data infrastructure and aerospace kinetic systems.
       </p>
 
       <!-- STATS STRIP -->
-      <div class="hero-stats-strip">
+      <div class="hero-stats-strip hero-anim-item">
         <div class="stat-card">
           <span class="stat-num">1988</span>
           <span class="stat-label">Year Founded (35+ Years of Mastery)</span>
@@ -92,7 +92,7 @@
 
     <!-- THE 4 CHAPTERS OF BENTON FOUNDING & INNOVATION -->
     <section class="stages-section">
-      <div class="section-tag-row scroll-reveal">
+      <div class="section-tag-row scroll-trigger-box">
         <span class="tag-line"></span>
         <span class="tag-text">CORPORATE FOUNDING & TECHNOLOGICAL EVOLUTION</span>
         <span class="tag-line"></span>
@@ -114,21 +114,21 @@
         </div>
 
         <div class="stage-interactive-col">
-          <div class="interactive-panel coil-motion-panel">
+          <div class="interactive-panel photo-card-panel">
             <div class="panel-header">
               <span class="panel-status-dot"></span>
-              <span>MAGNETIC COIL INDUCTION SIMULATOR / 1988</span>
+              <span>BENTON FACILITY ARCHIVE / COIL WINDING PRODUCTION</span>
             </div>
-            <div class="coil-stage-visual">
-              <div class="coil-magnetic-core"></div>
-              <div class="coil-winding-ring ring-a"></div>
-              <div class="coil-winding-ring ring-b"></div>
-              <div class="coil-winding-ring ring-c"></div>
-              <div class="flux-scan-crosshair"></div>
+            <div class="photo-visual-frame">
+              <img src="assets/images/coil_winding.jpg" alt="Benton Precision Coil Winding" class="stage-actual-photo" />
+              <div class="photo-telemetry-hud">
+                <div class="hud-reticle"></div>
+                <div class="hud-data-badge">VCM COIL / 14.8T FLUX</div>
+              </div>
             </div>
             <div class="panel-footer-readout">
-              <span>INDUCTION STATUS: ACTIVE</span>
-              <span>FLUX DENSITY: 14.8 TESLA</span>
+              <span>WINDING LINE: AUTOMATED</span>
+              <span>INDUCTION PURITY: 99.98%</span>
             </div>
           </div>
         </div>
@@ -150,31 +150,37 @@
         </div>
 
         <div class="stage-interactive-col">
-          <div class="interactive-panel cnc-stream-panel">
+          <div class="interactive-panel photo-card-panel">
             <div class="panel-header">
               <span class="panel-status-dot live"></span>
-              <span>LIVE CNC G-CODE COORDINATE TELEMETRY</span>
+              <span>LIVE CNC SPINDLE TELEMETRY / NAVANAKORN</span>
             </div>
-            <div class="cnc-feed-content">
-              <div class="cnc-axis-row">
-                <span class="axis-lbl">X-AXIS</span>
-                <span class="axis-val" id="cncX">+14.821 mm</span>
-              </div>
-              <div class="cnc-axis-row">
-                <span class="axis-lbl">Y-AXIS</span>
-                <span class="axis-val" id="cncY">-04.092 mm</span>
-              </div>
-              <div class="cnc-axis-row">
-                <span class="axis-lbl">Z-AXIS</span>
-                <span class="axis-val" id="cncZ">+01.104 mm</span>
-              </div>
-              <div class="cnc-axis-row">
-                <span class="axis-lbl">FEEDRATE</span>
-                <span class="axis-val" id="cncFeed">12,400 mm/min</span>
+            <div class="photo-visual-frame">
+              <img src="assets/images/cnc_sparks.webp" alt="Benton 5-Axis CNC Precision Milling" class="stage-actual-photo" />
+              <div class="cnc-data-hud-overlay">
+                <div class="cnc-stream-mini">
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">X</span>
+                    <span class="c-val" id="cncX">+14.821</span>
+                  </div>
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">Y</span>
+                    <span class="c-val" id="cncY">-04.092</span>
+                  </div>
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">Z</span>
+                    <span class="c-val" id="cncZ">+01.104</span>
+                  </div>
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">FEED</span>
+                    <span class="c-val" id="cncFeed">12,400</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="toolpath-mini-canvas">
-              <div class="laser-cutting-line"></div>
+            <div class="panel-footer-readout">
+              <span>SPINDLE: 60,000 RPM</span>
+              <span>CUTTER: SINGLE-CRYSTAL DIAMOND</span>
             </div>
           </div>
         </div>
@@ -196,14 +202,14 @@
         <div class="stage-interactive-col">
           <div class="before-after-wrapper" id="beforeAfterSlider">
             <div class="ba-layer ba-before">
-              <div class="ba-art raw-metal-art">
-                <div class="art-chassis silver"></div>
+              <div class="ba-photo-container">
+                <img src="assets/images/hdd_apfa_assembly.jpg" alt="Benton HDD APFA Raw Carriage" class="ba-real-img grayscale-mode" />
                 <span class="ba-badge before-badge">STAGE A / RAW DURALUMIN</span>
               </div>
             </div>
             <div class="ba-layer ba-after" id="baAfterLayer">
-              <div class="ba-art gold-metal-art">
-                <div class="art-chassis gold"></div>
+              <div class="ba-photo-container">
+                <img src="assets/images/hdd_apfa_assembly.jpg" alt="Benton HDD APFA Gold Anodized" class="ba-real-img gold-mode" />
                 <span class="ba-badge after-badge">STAGE B / GOLD ANODIZED</span>
               </div>
             </div>
@@ -231,18 +237,23 @@
         </div>
 
         <div class="stage-interactive-col">
-          <div class="interactive-panel cleanroom-panel">
+          <div class="interactive-panel photo-card-panel">
             <div class="panel-header">
               <span class="panel-status-dot clean"></span>
-              <span>ENVIRONMENT: ISO 5 / CLASS 100 AIR</span>
+              <span>ROJANA R3 CLEANROOM SUITE / ISO CLASS 100</span>
             </div>
-            <div class="particle-counter-display">
-              <span class="counter-num" id="cleanCounter">00.0</span>
-              <span class="counter-unit">PARTICLES / FT³ (&gt;0.5 µm)</span>
+            <div class="photo-visual-frame">
+              <img src="assets/images/cleanroom_inspection.webp" alt="Benton Cleanroom Inspection" class="stage-actual-photo" />
+              <div class="cleanroom-data-hud-overlay">
+                <div class="particle-counter-display">
+                  <span class="counter-num" id="cleanCounter">00.0</span>
+                  <span class="counter-unit">PARTICLES / FT³ (&gt;0.5 µm)</span>
+                </div>
+              </div>
             </div>
-            <div class="laser-status-row">
-              <span class="laser-pulse-dot"></span>
-              <span class="laser-status-txt">DUAL 1064nm LASER RIVET: ACTIVE</span>
+            <div class="panel-footer-readout">
+              <span>AIR PURITY: ISO 5 VERIFIED</span>
+              <span>LASER RIVET: DUAL 1064nm ACTIVE</span>
             </div>
           </div>
         </div>
@@ -305,7 +316,7 @@
     </section>
 
     <!-- SECTION: THE iPERFECT PHILOSOPHY & MANIFESTO -->
-    <section class="manifesto-section scroll-reveal">
+    <section class="manifesto-section scroll-trigger-box">
       <span class="hero-badge" style="margin-bottom: 20px;">
         <span>BENTON "iPERFECT" CORE VALUES</span>
       </span>
