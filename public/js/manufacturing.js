@@ -373,18 +373,42 @@ function initLogoutConfirmModal() {
   const mfgLogoutBtn = document.getElementById('mfgLogoutBtn');
   const logoutConfirmModal = document.getElementById('logoutConfirmModal');
   const logoutModalBackdrop = document.getElementById('logoutModalBackdrop');
+  const logoutModalDesc = document.getElementById('logoutModalDesc');
   const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
   const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+
+  let logoutTypewriterTimer = null;
+  const logoutPromptText = 'Are you sure you want to end your authenticated session and return to guest mode?';
+
+  function playLogoutTypewriter() {
+    if (!logoutModalDesc) return;
+    clearInterval(logoutTypewriterTimer);
+    logoutModalDesc.innerHTML = '<span class="logout-typewriter-cursor"></span>';
+    let charIdx = 0;
+    logoutTypewriterTimer = setInterval(() => {
+      if (charIdx < logoutPromptText.length) {
+        charIdx++;
+        logoutModalDesc.innerHTML = logoutPromptText.slice(0, charIdx) + '<span class="logout-typewriter-cursor"></span>';
+      } else {
+        clearInterval(logoutTypewriterTimer);
+        setTimeout(() => {
+          if (logoutModalDesc) logoutModalDesc.textContent = logoutPromptText;
+        }, 1200);
+      }
+    }, 20);
+  }
 
   if (!mfgLogoutBtn || !logoutConfirmModal) return;
 
   mfgLogoutBtn.addEventListener('click', () => {
     logoutConfirmModal.classList.add('is-open');
     logoutConfirmModal.setAttribute('aria-hidden', 'false');
+    playLogoutTypewriter();
     playSfx(sfxClick);
   });
 
   const closeModal = () => {
+    clearInterval(logoutTypewriterTimer);
     logoutConfirmModal.classList.remove('is-open');
     logoutConfirmModal.setAttribute('aria-hidden', 'true');
     playSfx(sfxClick);

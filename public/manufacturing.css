@@ -1170,7 +1170,7 @@ html, body {
 }
 
 /* ==========================================================================
-   LUXURY CONFIRM LOGOUT MODAL & MOTION (MANUFACTURING PAGE)
+   LUXURY CONFIRM LOGOUT MODAL — PURE FROSTED WHITE GLASS & TYPEWRITER STREAM (MANUFACTURING)
    ========================================================================== */
 .logout-modal {
   position: fixed;
@@ -1182,7 +1182,7 @@ html, body {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.32s ease;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
 }
 
 .logout-modal.is-open {
@@ -1194,26 +1194,31 @@ html, body {
 .logout-modal .modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  transition: opacity 0.32s ease;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  transition: opacity 0.35s ease;
 }
 
+/* Frosted Pure Transparent White Glass Card */
 .logout-modal-card {
   position: relative;
   z-index: 10;
   width: 100%;
   max-width: 440px;
   margin: 20px;
-  background: rgba(14, 16, 22, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 24px;
-  padding: 34px 30px 28px;
-  box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.05);
-  transform: scale(0.9) translateY(20px);
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(36px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  border-radius: 26px !important;
+  padding: 34px 30px 28px !important;
+  box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.6), 
+              0 0 35px rgba(255, 255, 255, 0.14),
+              inset 0 0 20px rgba(255, 255, 255, 0.1) !important;
+  transform: scale(0.92) translateY(20px);
   filter: blur(8px);
-  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), filter 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .logout-modal.is-open .logout-modal-card {
@@ -1221,82 +1226,113 @@ html, body {
   filter: blur(0px);
 }
 
-.terminal-header-line {
+.logout-modal .terminal-header-line {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
 }
 
-.modal-badge {
-  font-family: monospace;
-  font-size: 0.72rem;
+.logout-modal .modal-badge {
+  font-family: -apple-system, BlinkMacSystemFont, "Space Mono", monospace;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 1.5px;
-  padding: 4px 10px;
-  border-radius: 99px;
-  border: 1px solid;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  padding: 4px 12px;
+  border-radius: 980px;
 }
 
-.terminal-status-dot {
-  width: 8px;
-  height: 8px;
+.logout-modal .terminal-status-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff, 0 0 20px rgba(255, 255, 255, 0.8);
+  animation: beaconPulseWhite 1.6s infinite ease-in-out;
 }
 
-.modal-title {
+.logout-modal-card .modal-title {
   color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  font-size: 1.35rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* Typewriter Letter-by-Letter Text Stream */
+.logout-modal-desc {
+  color: rgba(255, 255, 255, 0.88);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  min-height: 48px;
+  margin-bottom: 24px;
+  letter-spacing: 0.01em;
+}
+
+.logout-typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  background: #ffffff;
+  vertical-align: text-bottom;
+  margin-left: 3px;
+  animation: cursorBlink 0.75s infinite ease-in-out;
 }
 
 .logout-modal-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   margin-top: 10px;
 }
 
 .btn-modal-secondary {
   flex: 1;
   padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
   border-radius: 12px;
-  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px);
 }
 
 .btn-modal-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: scale(1.03);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.2);
 }
 
-.btn-modal-danger {
-  flex: 1.2;
+.btn-modal-white {
+  flex: 1.25;
   padding: 12px 20px;
-  background: #f43f5e;
-  border: 1px solid #fb7185;
-  color: #ffffff;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  color: #000000;
   border-radius: 12px;
-  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 1px;
   cursor: pointer;
-  box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
-  transition: all 0.2s ease;
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.45);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.btn-modal-danger:hover {
-  background: #e11d48;
-  box-shadow: 0 0 24px rgba(244, 63, 94, 0.6);
-  transform: translateY(-1px);
+.btn-modal-white:hover {
+  background: #f1f5f9;
+  transform: scale(1.03);
+  box-shadow: 0 0 36px rgba(255, 255, 255, 0.75);
 }
