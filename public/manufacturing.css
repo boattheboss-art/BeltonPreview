@@ -1,7 +1,7 @@
 ﻿/* ==========================================================================
    BENTON CORPORATE LEGACY & PRECISION LAB — APPLE-INSPIRED LUXURY CSS
    Typography: Apple SF Pro / Inter System Font
-   Authentic Belton Photography & Scroll-Triggered Motion Graphics
+   Authentic 3D Spline Centerpiece & Scroll-Triggered Motion Graphics
    ========================================================================== */
 
 :root {
@@ -167,20 +167,46 @@ html, body {
 }
 
 /* ==========================================================================
-   CONTAINER & HERO SECTION (IMMEDIATE ON-LOAD ANIMATION)
+   HERO: 3D SPLINE SHOWCASE STAGE (100VH IMMERSIVE)
    ========================================================================== */
-.lab-container {
+.spline-hero-showcase {
   position: relative;
-  z-index: 10;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 130px 28px 100px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 120px 24px 60px;
 }
 
-.lab-hero-section {
+/* Viewport for Spline Canvas */
+.spline-viewport-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.spline-viewport-frame spline-viewer {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Glass HUD Overlay positioned in front of 3D Canvas */
+.spline-hero-hud {
+  position: relative;
+  z-index: 10;
+  max-width: 1140px;
+  margin: 0 auto;
   text-align: center;
-  margin-bottom: 100px;
+  pointer-events: none; /* Let 3D mouse rotation pass through */
+}
+
+.spline-hero-hud .hero-anim-item {
+  pointer-events: auto; /* Buttons & cards clickable */
 }
 
 /* Apple Immediate Load Animation */
@@ -194,6 +220,7 @@ html, body {
 .initial-load-animate .lab-hero-title { animation-delay: 0.25s; }
 .initial-load-animate .lab-hero-subtitle { animation-delay: 0.4s; }
 .initial-load-animate .hero-stats-strip { animation-delay: 0.55s; }
+.initial-load-animate .scroll-down-prompt { animation-delay: 0.7s; }
 
 @keyframes heroCascadeUp {
   from {
@@ -212,7 +239,8 @@ html, body {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 980px;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(0, 0, 0, 0.06);
   font-family: var(--mono-font);
   font-size: 0.68rem;
@@ -252,7 +280,7 @@ html, body {
   font-weight: 400;
   color: var(--text-secondary);
   max-width: 760px;
-  margin: 0 auto 54px;
+  margin: 0 auto 50px;
   line-height: 1.65;
   letter-spacing: -0.01em;
 }
@@ -262,6 +290,7 @@ html, body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
+  margin-bottom: 40px;
 }
 
 .stat-card {
@@ -297,9 +326,46 @@ html, body {
   letter-spacing: -0.01em;
 }
 
+/* Scroll Down Prompt */
+.scroll-down-prompt {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.prompt-text {
+  font-family: var(--mono-font);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+.scroll-line-indicator {
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(180deg, var(--accent-cyan), transparent);
+  animation: scrollPulse 1.8s infinite;
+}
+
+@keyframes scrollPulse {
+  0% { transform: scaleY(0.4); opacity: 0.3; }
+  50% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0.4); opacity: 0.3; }
+}
+
 /* ==========================================================================
-   SCROLL-TRIGGERED BOXES (BELOW THE FOLD - STRICT STANDBY UNTIL SCROLL)
+   CONTAINER & SCROLL-TRIGGERED BOXES (BELOW THE FOLD STANDBY)
    ========================================================================== */
+.lab-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 28px 100px;
+}
+
 .stages-section {
   margin-bottom: 120px;
 }
@@ -1027,6 +1093,10 @@ html, body {
 
 /* Responsive */
 @media (max-width: 900px) {
+  .spline-hero-showcase {
+    padding: 100px 16px 40px;
+  }
+
   .stage-row, .stage-row.reverse {
     grid-template-columns: 1fr;
     gap: 36px;

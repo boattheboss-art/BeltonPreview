@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+  <!-- Spline Official Web Component Runtime -->
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.72/build/spline-viewer.js"></script>
+
   <!-- CSS -->
   <link rel="stylesheet" href="manufacturing.css" />
 
@@ -40,7 +43,7 @@
   <!-- FLOATING LUXURY PILL NAVBAR -->
   <header class="navbar-wrapper" id="mainNavbar">
     <nav class="minimal-nav-pill">
-      <a href="/" class="nav-brand">BENTON <span class="nav-brand-sub">LEGACY</span></a>
+      <a href="/" class="nav-brand">BENTON <span class="nav-brand-sub">LEGACY & 3D</span></a>
       <div class="nav-links-group">
         <a href="/" class="nav-item">Home</a>
         <a href="/product" class="nav-item">Product</a>
@@ -51,14 +54,25 @@
     </nav>
   </header>
 
-  <!-- MAIN SCROLLABLE CONTENT -->
-  <main class="lab-container">
+  <!-- =========================================================================
+       HERO: 3D SPLINE CENTERPIECE SHOWCASE (IMMEDIATE ON-LOAD ANIMATION)
+       ========================================================================= -->
+  <section class="spline-hero-showcase initial-load-animate" id="hero3DStage">
+    
+    <!-- Real 3D Spline Canvas Container -->
+    <div class="spline-viewport-frame">
+      <spline-viewer 
+        id="nanaSplineViewer" 
+        url="https://prod.spline.design/nanaSpudPyK-3gNf/scene.splinecode" 
+        loading-anim-type="none">
+      </spline-viewer>
+    </div>
 
-    <!-- HERO SECTION: IMMEDIATE ON-LOAD ANIMATION -->
-    <section class="lab-hero-section initial-load-animate" id="heroSection">
+    <!-- Apple-Style Floating Glass HUD Overlay -->
+    <div class="spline-hero-hud">
       <div class="hero-badge hero-anim-item">
         <span class="beacon-pulse"></span>
-        <span>ESTABLISHED 1988 / GLOBAL PRECISION LEADER</span>
+        <span>ESTABLISHED 1988 / 3D KINETIC ARCHITECTURE</span>
       </div>
 
       <h1 class="lab-hero-title hero-anim-item">
@@ -66,7 +80,7 @@
         THE ARCHITECTS OF SUB-MICRON MOTION
       </h1>
       <p class="lab-hero-subtitle hero-anim-item">
-        From precision micro-coil winding pioneers in 1988 to the tier-one global manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA), powering enterprise cloud data infrastructure and aerospace kinetic systems.
+        From precision micro-coil winding pioneers in 1988 to the tier-one global manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA). Drag or move cursor to interact with the 3D model.
       </p>
 
       <!-- STATS STRIP -->
@@ -88,7 +102,17 @@
           <span class="stat-label">Zero-Defect Quality Standard</span>
         </div>
       </div>
-    </section>
+
+      <!-- Scroll Hint -->
+      <div class="scroll-down-prompt hero-anim-item">
+        <span class="prompt-text">SCROLL TO EXPLORE HERITAGE</span>
+        <div class="scroll-line-indicator"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN SCROLLABLE CONTENT -->
+  <main class="lab-container">
 
     <!-- THE 4 CHAPTERS OF BENTON FOUNDING & INNOVATION -->
     <section class="stages-section">
@@ -122,7 +146,6 @@
             <div class="photo-visual-frame">
               <img src="assets/images/coil_winding.jpg" alt="Benton Precision Coil Winding" class="stage-actual-photo" />
               <div class="photo-telemetry-hud">
-                <div class="hud-reticle"></div>
                 <div class="hud-data-badge">VCM COIL / 14.8T FLUX</div>
               </div>
             </div>
