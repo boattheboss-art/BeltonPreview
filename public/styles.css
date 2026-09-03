@@ -422,18 +422,25 @@ body.is-logged-in .nav-links {
   box-shadow: none;
 }
 
-.nav-link:hover, 
-.nav-link.active,
-.nav-link-highlight:hover,
-.nav-link-highlight.active {
+.nav-link.active {
   color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  font-weight: 700;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.nav-link:hover, 
+.nav-link-highlight:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.38) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.16), inset 0 0 8px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.16), inset 0 0 8px rgba(255, 255, 255, 0.06) !important;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
-  transform: scale(1.06);
+  transform: scale(1.06) !important;
 }
 
 .nav-link-highlight {
@@ -441,6 +448,12 @@ body.is-logged-in .nav-links {
   background: transparent;
   color: rgba(255, 255, 255, 0.72) !important;
   box-shadow: none;
+}
+
+/* Hide the redundant center button when logged in so 3D robot is 100% visible */
+body.is-logged-in #heroLoginBtn,
+body.is-logged-in .hero-cta-group {
+  display: none !important;
 }
 
 

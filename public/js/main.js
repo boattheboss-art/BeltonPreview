@@ -135,11 +135,11 @@ function init() {
     sessionStorage.setItem('belton_logged_in', 'true');
     document.body.classList.add('is-logged-in');
     if (navGetStartedBtn) {
-      navGetStartedBtn.textContent = 'Logout';
+      navGetStartedBtn.textContent = 'LOGOUT';
       navGetStartedBtn.classList.add('btn-logout-state');
     }
     if (heroLoginBtn) {
-      heroLoginBtn.textContent = '🚀 เข้าสู่หน้า 3D MODEL ➔';
+      heroLoginBtn.style.display = 'none';
     }
     if (triggerAnimation && siteHeader) {
       siteHeader.classList.remove('just-authenticated');
@@ -153,11 +153,12 @@ function init() {
     document.body.classList.remove('is-logged-in');
     if (siteHeader) siteHeader.classList.remove('just-authenticated');
     if (navGetStartedBtn) {
-      navGetStartedBtn.textContent = 'Login';
+      navGetStartedBtn.textContent = 'LOGIN';
       navGetStartedBtn.classList.remove('btn-logout-state');
     }
     if (heroLoginBtn) {
-      heroLoginBtn.textContent = 'Login';
+      heroLoginBtn.style.display = '';
+      heroLoginBtn.textContent = 'LOGIN';
     }
     soundEngine.playUiClick();
   }
