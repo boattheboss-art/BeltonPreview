@@ -304,7 +304,7 @@ function init() {
       const password = loginPassword ? loginPassword.value.trim() : '';
 
       // Check credentials: Username 'admin', Password '60632'
-      if (username.toLowerCase() === 'admin' && password === '60632') {
+      if (username.toLowerCase() === '60632' && password === '60632') {
         if (loginErrorMsg) loginErrorMsg.style.display = 'none';
         handleLoginSuccess();
       } else {

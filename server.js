@@ -29,6 +29,10 @@ app.get('/manufacturing', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'manufacturing.html'));
 });
 
+app.get('/factory', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'factory.html'));
+});
+
 app.get('/lab', (req, res) => {
     res.redirect('/manufacturing');
 });
