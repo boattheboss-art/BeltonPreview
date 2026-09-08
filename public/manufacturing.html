@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BENTON — Corporate Legacy & Precision Engineering</title>
+  <meta name="description" content="The story of BENTON: From 1988 coil winding pioneers to the world's leading manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies." />
+
+  <!-- Apple SF Pro & Inter Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Spline Official Web Component Runtime -->
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.72/build/spline-viewer.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="manufacturing.css" />
+
+  <!-- Audio Sfx -->
+  <audio id="sfxClick" src="sao_click.wav" preload="auto"></audio>
+  <audio id="sfxOpen" src="sao_open.wav" preload="auto"></audio>
+
+  <!-- Auth Guard -->
+  <script>
+    if (sessionStorage.getItem('belton_logged_in') !== 'true') {
+      sessionStorage.setItem('belton_return_to', '/manufacturing');
+      window.location.href = '/';
+    }
+  </script>
+
+  <script src="js/manufacturing.js" defer></script>
+</head>
+<body class="lab-body">
+
+  <!-- Ambient Background Mesh & Lighting -->
+  <div class="lab-ambient-bg">
+    <div class="ambient-glow top-glow"></div>
+    <div class="ambient-glow bottom-glow"></div>
+    <div class="grid-subtle-overlay"></div>
+  </div>
+
+  <!-- FLOATING LUXURY PILL NAVBAR -->
+  <header class="navbar-wrapper" id="mainNavbar">
+    <nav class="minimal-nav-pill">
+      <a href="/" class="nav-brand">BENTON <span class="nav-brand-sub">LEGACY & 3D</span></a>
+      <div class="nav-links-group">
+        <a href="/" class="nav-item">HOME</a>
+        <a href="/product" class="nav-item">PRODUCT</a>
+        <a href="/factory" class="nav-item">DIGITAL TWIN</a>
+      </div>
+      <button class="nav-action-pill" id="mfgLogoutBtn" title="Sign out and return to Home">
+        LOGOUT
+      </button>
+    </nav>
+  </header>
+
+  <!-- =========================================================================
+       HERO: 3D SPLINE SHOWCASE (SPLIT LAYOUT: LEFT TEXT, RIGHT 3D MODEL)
+       ========================================================================= -->
+  <section class="spline-hero-showcase initial-load-animate" id="hero3DStage">
+    
+    <!-- Fullscreen 3D Spline Canvas (Latest Updated User Scene) -->
+    <div class="spline-viewport-frame">
+      <spline-viewer 
+        id="nanaSplineViewer" 
+        url="https://prod.spline.design/nanaSpudPyK-3gNf/scene.splinecode?v=1788428050" 
+        loading-anim-type="none">
+      </spline-viewer>
+    </div>
+
+    <!-- Apple-Style Left HUD Column (Text positioned strictly on the left) -->
+    <div class="hero-split-container">
+      <div class="hero-left-col">
+        <div class="hero-badge hero-anim-item">
+          <span class="beacon-pulse"></span>
+          <span>ESTABLISHED 1988 / 3D KINETIC ARCHITECTURE</span>
+        </div>
+
+        <h1 class="lab-hero-title hero-anim-item">
+          <span class="highlight-brand">BENTON</span><br/>
+          THE ARCHITECTS OF SUB-MICRON MOTION
+        </h1>
+
+        <p class="lab-hero-subtitle hero-anim-item">
+          From precision micro-coil winding pioneers in 1988 to the tier-one global manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA). Click, grab, and interact directly with the 3D kinetic cubes on the right.
+      </div>
+
+      <!-- Right Column is empty to let 3D model be 100% visible and interactive -->
+      <div class="hero-right-spacer"></div>
+    </div>
+
+    <!-- Floating Scroll Indicator -->
+    <div class="hero-bottom-scroll-hint hero-anim-item">
+      <span>SCROLL TO EXPLORE HERITAGE</span>
+      <div class="scroll-line-indicator"></div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP SECTION (TRANSITION INTO CHAPTERS) -->
+  <section class="stats-transition-section">
+    <div class="stats-container">
+      <div class="hero-stats-strip scroll-trigger-box">
+        <div class="stat-card">
+          <span class="stat-num">1988</span>
+          <span class="stat-label">Year Founded (35+ Years of Mastery)</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">NO. 1 GLOBAL</span>
+          <span class="stat-label">Tier-1 Supplier of HDD APFA</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">NAVANAKORN</span>
+          <span class="stat-label">Flagship High-Tech Campus</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">iPERFECT</span>
+          <span class="stat-label">Zero-Defect Quality Standard</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN SCROLLABLE CONTENT -->
+  <main class="lab-container">
+
+    <!-- THE 4 CHAPTERS OF BENTON FOUNDING & INNOVATION -->
+    <section class="stages-section">
+      <div class="section-tag-row scroll-trigger-box">
+        <span class="tag-line"></span>
+        <span class="tag-text">CORPORATE FOUNDING & TECHNOLOGICAL EVOLUTION</span>
+        <span class="tag-line"></span>
+      </div>
+
+      <!-- CHAPTER 01: 1988 -->
+      <div class="stage-row scroll-trigger-box" id="chapter1" data-chapter="1">
+        <div class="stage-info-col">
+          <span class="stage-step-num">CHAPTER 01 / 1988</span>
+          <h2 class="stage-heading">The Genesis & The Precision Coil</h2>
+          <p class="stage-desc">
+            BENTON was established with a singular focus on ultra-precision magnetic coil winding. This core mastery laid the foundation for the company's trademark coil emblem and paved the way for high-efficiency Voice Coil Motor (VCM) actuators that define modern high-density data storage.
+          </p>
+          <div class="metric-tags">
+            <div class="metric-pill"><span>Origin Year</span><strong>1988</strong></div>
+            <div class="metric-pill"><span>Core Invention</span><strong>VCM Coil Architecture</strong></div>
+            <div class="metric-pill"><span>Winding Accuracy</span><strong>Sub-Micron Wire Gauge</strong></div>
+          </div>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="interactive-panel photo-card-panel">
+            <div class="panel-header">
+              <span class="panel-status-dot"></span>
+              <span>BENTON FACILITY ARCHIVE / COIL WINDING PRODUCTION</span>
+            </div>
+            <div class="photo-visual-frame">
+              <img src="assets/images/coil_winding.jpg" alt="Benton Precision Coil Winding" class="stage-actual-photo" />
+              <div class="photo-telemetry-hud">
+                <div class="hud-data-badge">VCM COIL / 14.8T FLUX</div>
+              </div>
+            </div>
+            <div class="panel-footer-readout">
+              <span>WINDING LINE: AUTOMATED</span>
+              <span>INDUCTION PURITY: 99.98%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAPTER 02: 2000 -->
+      <div class="stage-row reverse scroll-trigger-box" id="chapter2" data-chapter="2">
+        <div class="stage-info-col">
+          <span class="stage-step-num">CHAPTER 02 / 2000</span>
+          <h2 class="stage-heading">The Navanakorn Industrial Hub & 5-Axis CNC</h2>
+          <p class="stage-desc">
+            In 2000, BENTON established its strategic Southeast Asian manufacturing headquarters in Navanakorn, Thailand. The facility introduced seismic-isolated granite machine beds and 5-axis CNC diamond tooling running at 60,000 RPM to craft zero-tolerance 8-blade actuator combs.
+          </p>
+          <div class="metric-tags">
+            <div class="metric-pill"><span>Expansion</span><strong>Navanakorn, Thailand</strong></div>
+            <div class="metric-pill"><span>Tooling Tech</span><strong>5-Axis Diamond Cutters</strong></div>
+            <div class="metric-pill"><span>Tolerance Limit</span><strong>+/- 0.001 mm</strong></div>
+          </div>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="interactive-panel photo-card-panel">
+            <div class="panel-header">
+              <span class="panel-status-dot live"></span>
+              <span>LIVE CNC SPINDLE TELEMETRY / NAVANAKORN</span>
+            </div>
+            <div class="photo-visual-frame">
+              <img src="assets/images/cnc_sparks.webp" alt="Benton 5-Axis CNC Precision Milling" class="stage-actual-photo" />
+              <div class="cnc-data-hud-overlay">
+                <div class="cnc-stream-mini">
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">X</span>
+                    <span class="c-val" id="cncX">+14.821</span>
+                  </div>
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">Y</span>
+                    <span class="c-val" id="cncY">-04.092</span>
+                  </div>
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">Z</span>
+                    <span class="c-val" id="cncZ">+01.104</span>
+                  </div>
+                  <div class="cnc-coord-item">
+                    <span class="c-lbl">FEED</span>
+                    <span class="c-val" id="cncFeed">12,400</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="panel-footer-readout">
+              <span>SPINDLE: 60,000 RPM</span>
+              <span>CUTTER: SINGLE-CRYSTAL DIAMOND</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAPTER 03: 2008 -->
+      <div class="stage-row scroll-trigger-box" id="chapter3" data-chapter="3">
+        <div class="stage-info-col">
+          <span class="stage-step-num">CHAPTER 03 / 2008</span>
+          <h2 class="stage-heading">World No. 1 Supplier & iPERFECT Standard</h2>
+          <p class="stage-desc">
+            Surpassing international benchmarks, BENTON became the world's largest supplier of Actuator Pivot Flex Assemblies (APFA). This era solidified the "iPERFECT" engineering philosophy and introduced proprietary plasma vacuum gold anodization for complete surface immunity.
+          </p>
+          <div class="slider-drag-hint">
+            Drag the divider to compare raw milled duralumin with the vacuum gold-anodized protective finish.
+          </div>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="before-after-wrapper" id="beforeAfterSlider">
+            <div class="ba-layer ba-before">
+              <div class="ba-photo-container">
+                <img src="assets/images/hdd_apfa_assembly.jpg" alt="Benton HDD APFA Raw Carriage" class="ba-real-img grayscale-mode" />
+                <span class="ba-badge before-badge">STAGE A / RAW DURALUMIN</span>
+              </div>
+            </div>
+            <div class="ba-layer ba-after" id="baAfterLayer">
+              <div class="ba-photo-container">
+                <img src="assets/images/hdd_apfa_assembly.jpg" alt="Benton HDD APFA Gold Anodized" class="ba-real-img gold-mode" />
+                <span class="ba-badge after-badge">STAGE B / GOLD ANODIZED</span>
+              </div>
+            </div>
+            <div class="ba-handle" id="baHandle">
+              <div class="handle-line"></div>
+              <div class="handle-thumb"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAPTER 04: 2021 TO PRESENT -->
+      <div class="stage-row reverse scroll-trigger-box" id="chapter4" data-chapter="4">
+        <div class="stage-info-col">
+          <span class="stage-step-num">CHAPTER 04 / 2021 — PRESENT</span>
+          <h2 class="stage-heading">Rojana R3 Campus & Nanometer Cleanrooms</h2>
+          <p class="stage-desc">
+            Marking a new era of advanced manufacturing, the Rojana R3 campus integrates ISO Class 100 cleanroom environments and dual-beam 1064nm laser riveting. Here, flexible Kapton polyimide circuits are bonded with nanometer accuracy to support global AI cloud infrastructure.
+          </p>
+          <div class="metric-tags">
+            <div class="metric-pill"><span>New Campus</span><strong>Rojana R3 High-Tech</strong></div>
+            <div class="metric-pill"><span>Cleanroom Class</span><strong>ISO 5 / Class 100</strong></div>
+            <div class="metric-pill"><span>Laser Alignment</span><strong>+/- 0.0002 mm</strong></div>
+          </div>
+        </div>
+
+        <div class="stage-interactive-col">
+          <div class="interactive-panel photo-card-panel">
+            <div class="panel-header">
+              <span class="panel-status-dot clean"></span>
+              <span>ROJANA R3 CLEANROOM SUITE / ISO CLASS 100</span>
+            </div>
+            <div class="photo-visual-frame">
+              <img src="assets/images/cleanroom_inspection.webp" alt="Benton Cleanroom Inspection" class="stage-actual-photo" />
+              <div class="cleanroom-data-hud-overlay">
+                <div class="particle-counter-display">
+                  <span class="counter-num" id="cleanCounter">00.0</span>
+                  <span class="counter-unit">PARTICLES / FT³ (&gt;0.5 µm)</span>
+                </div>
+              </div>
+            </div>
+            <div class="panel-footer-readout">
+              <span>AIR PURITY: ISO 5 VERIFIED</span>
+              <span>LASER RIVET: DUAL 1064nm ACTIVE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE METROLOGY BAY -->
+    <section class="tolerance-lab-section scroll-trigger-box">
+      <div class="section-tag-row">
+        <span class="tag-line"></span>
+        <span class="tag-text">QUALITY ASSURANCE / LASER METROLOGY BAY</span>
+        <span class="tag-line"></span>
+      </div>
+
+      <div class="tolerance-lab-card">
+        <div class="scanner-header">
+          <div class="scanner-title-group">
+            <span class="scanner-badge">LASER INTERFEROMETER VERIFICATION</span>
+            <h3 class="scanner-heading">Sub-Micron Tolerance Inspection</h3>
+            <p class="scanner-desc">
+              Execute laser metrology to verify APFA component tolerances against BENTON aerospace-grade standards.
+            </p>
+          </div>
+          <button id="startScanBtn" class="btn-scan-action">
+            START LASER SCAN
+          </button>
+        </div>
+
+        <div class="inspection-bay-visual" id="inspectionBay">
+          <div class="scanning-laser-beam" id="scannerLaserBeam"></div>
+          <div class="schematic-target-visual">
+            <div class="schematic-crosshair ch-1"></div>
+            <div class="schematic-crosshair ch-2"></div>
+            <div class="schematic-crosshair ch-3"></div>
+            <div class="schematic-target-core">
+              <div class="core-apfa-shape"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspection-results-grid">
+          <div class="result-cell">
+            <span class="res-lbl">POINT A / BLADE PITCH</span>
+            <span class="res-val" id="resPitch">--.---- mm</span>
+          </div>
+          <div class="result-cell">
+            <span class="res-lbl">POINT B / RUNOUT DEVIATION</span>
+            <span class="res-val" id="resRunout">--.---- mm</span>
+          </div>
+          <div class="result-cell">
+            <span class="res-lbl">POINT C / FLUX GAP</span>
+            <span class="res-val" id="resGap">--.---- mm</span>
+          </div>
+          <div class="result-cell status-cell">
+            <span class="res-lbl">VERIFICATION STATUS</span>
+            <span class="res-status" id="resStatus">STANDBY (AWAITING SCAN)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: THE iPERFECT PHILOSOPHY & MANIFESTO -->
+    <section class="manifesto-section scroll-trigger-box">
+      <span class="hero-badge" style="margin-bottom: 20px;">
+        <span>BENTON "iPERFECT" CORE VALUES</span>
+      </span>
+      <blockquote class="manifesto-quote">
+        "Integrity / People / Excellence / Respect / Flexibility / Execution / Customer Focus / Teamwork"
+      </blockquote>
+      <span class="manifesto-author">BENTON TECHNOLOGY GROUP (SINCE 1988)</span>
+
+      <div class="manifesto-actions">
+        <a href="/product" class="btn-pill-action primary">
+          <span>Explore Finished Products</span>
+          <span class="arrow-sym">-&gt;</span>
+        </a>
+        <a href="/" class="btn-pill-action secondary">
+          <span>Return to Home</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Luxury Confirm Logout Modal (Pure Frosted White Glass) -->
+  <div id="logoutConfirmModal" class="modal logout-modal" aria-hidden="true" role="dialog">
+    <div id="logoutModalBackdrop" class="modal-backdrop"></div>
+    <div class="modal-container logout-modal-card">
+      <div class="terminal-header-line">
+        <span class="modal-badge">// SECURITY PROTOCOL</span>
+        <span class="terminal-status-dot"></span>
+      </div>
+      <h2 class="modal-title" id="logoutModalTitle">TERMINATE SESSION?</h2>
+      <p class="logout-modal-desc" id="logoutModalDesc">
+        <!-- Letter-by-letter stream will populate here -->
+      </p>
+      <div class="logout-modal-actions">
+        <button type="button" id="cancelLogoutBtn" class="btn-modal-secondary">CANCEL</button>
+        <button type="button" id="confirmLogoutBtn" class="btn-modal-white">CONFIRM LOGOUT</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
