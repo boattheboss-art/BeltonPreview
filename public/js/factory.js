@@ -16,37 +16,8 @@
   let isReloadingModel = false;
   let lastModelMtime = null;
 
-  // Collision bounding boxes for physical boundaries
-  const wallColliders = [
-    // Outer perimeter walls
-    { minX: -98.0, maxX: -95.0, minZ: -30.0, maxZ: 57.0 },
-    { minX: 93.0, maxX: 96.0, minZ: -58.0, maxZ: 57.0 },
-    { minX: -98.0, maxX: 95.0, minZ: -31.0, maxZ: -28.0 },
-    { minX: -98.0, maxX: 95.0, minZ: 55.0, maxZ: 58.0 },
-
-    // West Window Wall (between East Highway and APFA Hall at X = 43.6, door at Z = 5.0 to 8.5)
-    { minX: 43.1, maxX: 44.1, minZ: -28.0, maxZ: 5.0 },
-    { minX: 43.1, maxX: 44.1, minZ: 8.5, maxZ: 24.0 },
-
-    // East Window Wall (between East Highway and East QA at X = 48.4, door at Z = 0.5 to 4.5)
-    { minX: 47.9, maxX: 48.9, minZ: -28.0, maxZ: 0.5 },
-    { minX: 47.9, maxX: 48.9, minZ: 4.5, maxZ: 24.0 },
-
-    // 8 Parallel QA Inspection Tables (X: 51.5 to 84.5)
-    { minX: 51.5, maxX: 84.5, minZ: -22.85, maxZ: -21.15 },
-    { minX: 51.5, maxX: 84.5, minZ: -15.85, maxZ: -14.15 },
-    { minX: 51.5, maxX: 84.5, minZ: -8.85, maxZ: -7.15 },
-    { minX: 51.5, maxX: 84.5, minZ: -1.85, maxZ: -0.15 },
-    { minX: 51.5, maxX: 84.5, minZ: 5.15, maxZ: 6.85 },
-    { minX: 51.5, maxX: 84.5, minZ: 12.15, maxZ: 13.85 },
-    { minX: 51.5, maxX: 84.5, minZ: 19.15, maxZ: 20.85 },
-    { minX: 51.5, maxX: 84.5, minZ: 26.15, maxZ: 27.85 },
-
-    // Heavy-duty Warehouse Storage Racks & Pallet Area
-    { minX: 88.5, maxX: 92.5, minZ: -19.0, maxZ: -13.0 },
-    { minX: 88.5, maxX: 92.5, minZ: 21.0, maxZ: 27.0 },
-    { minX: 74.0, maxX: 82.0, minZ: 31.5, maxZ: 35.5 }
-  ];
+  // Collision bounding boxes for physical boundaries (Cleared for free exploration in new Blender GLB model)
+  const wallColliders = [];
 
   // Player state
   const EYE_HEIGHT = 1.7;
