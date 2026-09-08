@@ -527,19 +527,61 @@
     const overlay = document.getElementById('fpsStartOverlay');
     const startBtn = document.getElementById('btnStartWalk');
 
+    function enterWalkthrough() {
+      if (!isModelLoaded) return;
+      if (overlay) overlay.classList.add('is-hidden');
+      initAudio();
+      canvas.requestPointerLock();
+    }
+
     if (startBtn) {
-      startBtn.addEventListener('click', () => {
-        if (!isModelLoaded) return;
-        if (overlay) overlay.classList.add('is-hidden');
-        initAudio();
-        canvas.requestPointerLock();
+      startBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        enterWalkthrough();
       });
     }
+
+    // Allow clicking the overlay backdrop to resume
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          enterWalkthrough();
+        }
+      });
+    }
+
+    // Re-lock mouse when clicking canvas if unlocked
+    canvas.addEventListener('click', () => {
+      if (!isPointerLocked && isModelLoaded) {
+        const logoutModal = document.getElementById('logoutConfirmModal');
+        const isLoggingOut = logoutModal && (logoutModal.classList.contains('is-active') || logoutModal.classList.contains('is-open'));
+        if (!isLoggingOut) {
+          enterWalkthrough();
+        }
+      }
+    });
 
     document.addEventListener('pointerlockchange', () => {
       isPointerLocked = document.pointerLockElement === canvas;
       const reticle = document.getElementById('fpsReticle');
       if (reticle) reticle.style.opacity = isPointerLocked ? '1' : '0';
+
+      // When user presses ESC (or mouse lock is released), show pause menu to resume
+      if (!isPointerLocked) {
+        // Clear all movement keys so player doesn't slide when paused
+        Object.keys(keys).forEach(k => keys[k] = false);
+
+        const logoutModal = document.getElementById('logoutConfirmModal');
+        const isLoggingOut = logoutModal && (logoutModal.classList.contains('is-active') || logoutModal.classList.contains('is-open'));
+        if (!isLoggingOut && overlay && isModelLoaded) {
+          overlay.classList.remove('is-hidden');
+          if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.textContent = 'RESUME TOUR / เล่นต่อ (CLICK)';
+            startBtn.classList.add('ready');
+          }
+        }
+      }
     });
 
     document.addEventListener('mousemove', (e) => {
