@@ -40,6 +40,14 @@ app.get('/factory', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'factory.html'));
 });
 
+app.get('/ai-preview', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'ai_tool_wear_preview.html'));
+});
+
+app.get('/ai-dispensing', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'ai_dispensing_preview.html'));
+});
+
 app.get('/api/model-status', (req, res) => {
     const glbPath = path.join(__dirname, 'public', 'models', 'belton_factory_cleanroom_full.glb');
     try {

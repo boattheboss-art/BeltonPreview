@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belton Digital Twin — Apple Industrial Design Edition</title>
+  
+  <!-- Apple System Typography fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=SF+Pro+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Three.js Libraries -->
+  <script src="/js/libs/three.min.js"></script>
+  <script src="/js/libs/OrbitControls.js"></script>
+  <script src="/js/libs/GLTFLoader.js"></script>
+
+  <style>
+    /* -------------------------------------------------------------
+       APPLE HUMAN INTERFACE GUIDELINES (HIG) & VISIONOS DESIGN SYSTEM
+       - Squircles, continuous curvature (corner-smoothing)
+       - Layered liquid frosted glass (thick material backdrop)
+       - Iconic Apple System Colors (Green 34C759, Blue 007AFF, Amber FF9500, Red FF3B30)
+       - Apple Watch Activity Rings
+       - Dynamic Island interactive status capsule
+       ------------------------------------------------------------- */
+    :root {
+      /* Apple Dark VisionOS Mode (Default) */
+      --app-bg: #000000;
+      --canvas-bg: radial-gradient(circle at 50% 30%, #151821 0%, #08090d 65%, #000000 100%);
+      
+      /* Apple Liquid Glass Tokens */
+      --glass-base: rgba(255, 255, 255, 0.06);
+      --glass-base-card: rgba(255, 255, 255, 0.08);
+      --glass-hover: rgba(255, 255, 255, 0.12);
+      --glass-blur: 50px;
+      
+      /* Apple Specular Edge & Shadows */
+      --glass-rim: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 12px 24px -8px rgba(0, 0, 0, 0.4);
+      --glass-shadow-sm: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+
+      /* Typography */
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(235, 235, 245, 0.65);
+      --text-tertiary: rgba(235, 235, 245, 0.38);
+
+      /* Apple System Accents */
+      --apple-green: #34C759;
+      --apple-blue: #007AFF;
+      --apple-orange: #FF9500;
+      --apple-red: #FF3B30;
+      --apple-purple: #AF52DE;
+      --apple-cyan: #32ADE6;
+
+      /* Dynamic Island / Status Active Accent */
+      --current-status-color: var(--apple-green);
+      --current-status-bg: rgba(52, 199, 89, 0.16);
+
+      /* Smooth Apple Spring Transition */
+      --apple-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --apple-ease: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Apple Light Glass Mode (Studio Silver) */
+    body.apple-light {
+      --app-bg: #F5F5F7;
+      --canvas-bg: radial-gradient(circle at 50% 30%, #FFFFFF 0%, #E5E5EA 70%, #D1D1D6 100%);
+      --glass-base: rgba(255, 255, 255, 0.72);
+      --glass-base-card: rgba(255, 255, 255, 0.82);
+      --glass-hover: rgba(255, 255, 255, 0.95);
+      --glass-rim: inset 0 1px 0 0 rgba(255, 255, 255, 0.8), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+      --glass-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+      --glass-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --text-primary: #1D1D1F;
+      --text-secondary: #6E6E73;
+      --text-tertiary: #86868B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+      background-color: var(--app-bg);
+      color: var(--text-primary);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      transition: background-color 0.5s var(--apple-ease);
+    }
+
+    /* 3D WebGL Canvas Layer */
+    #apple-webgl-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: var(--canvas-bg);
+      transition: background 0.5s var(--apple-ease);
+    }
+
+    .num {
+      font-family: "SF Pro Display", -apple-system, "Inter", sans-serif;
+      font-feature-settings: "tnum" 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Apple Frosted Glass Card */
+    .apple-card {
+      background: var(--glass-base-card);
+      backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+      box-shadow: var(--glass-rim), var(--glass-shadow);
+      border-radius: 28px;
+      transition: all 0.35s var(--apple-spring);
+    }
+
+    /* -------------------------------------------------------------
+       1. APPLE FLOATING VISIONOS TOP BAR & DYNAMIC ISLAND
+       ------------------------------------------------------------- */
+    .apple-top-bar {
+      position: absolute;
+      top: 20px;
+      left: 28px;
+      right: 28px;
+      height: 60px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-radius: 100px;
+    }
+
+    .apple-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .apple-logo-icon {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-primary);
+    }
+
+    .apple-brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .apple-badge {
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: rgba(120, 120, 128, 0.2);
+      color: var(--text-secondary);
+    }
+
+    /* Apple Dynamic Island (Interactive Status Pill) */
+    .apple-dynamic-island {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 18px;
+      border-radius: 100px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.4s var(--apple-spring);
+    }
+
+    body.apple-light .apple-dynamic-island {
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .apple-dynamic-island:hover {
+      transform: scale(1.03);
+    }
+
+    .island-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--current-status-color);
+      box-shadow: 0 0 12px var(--current-status-color);
+      animation: island-glow 2.5s infinite ease-in-out;
+    }
+
+    @keyframes island-glow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .island-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .island-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Apple Segmented Control Pill */
+    .apple-segmented-control {
+      display: flex;
+      align-items: center;
+      background: rgba(120, 120, 128, 0.16);
+      padding: 3px;
+      border-radius: 100px;
+      gap: 2px;
+    }
+
+    .segment-item {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 0.25s var(--apple-spring);
+    }
+
+    .segment-item:hover {
+      color: var(--text-primary);
+    }
+
+    .segment-item.active {
+      background: var(--glass-base-card);
+      color: var(--text-primary);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Top Right Controls (Theme Toggle + Audio) */
+    .top-right-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .apple-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(120, 120, 128, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s var(--apple-spring);
+    }
+
+    .apple-icon-btn:hover {
+      background: rgba(120, 120, 128, 0.28);
+      transform: scale(1.06);
+    }
+
+    .apple-icon-btn:active {
+      transform: scale(0.94);
+    }
+
+    .apple-icon-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
+
+    /* -------------------------------------------------------------
+       2. LEFT MAIN WIDGET: APPLE WATCH ACTIVITY RINGS & PREDICTIVE AI
+       ------------------------------------------------------------- */
+    .apple-widget-container {
+      position: absolute;
+      top: 96px;
+      left: 28px;
+      width: 420px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Hero RUL & Activity Ring Widget */
+    .apple-hero-widget {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .widget-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .widget-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .widget-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+
+    .widget-headline {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    /* Apple Watch Rings Hero Showcase */
+    .rings-hero-display {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 6px 0;
+    }
+
+    /* SVG 3-Concentric Activity Rings */
+    .rings-svg-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+    }
+
+    .rings-svg-wrap svg {
+      transform: rotate(-90deg);
+      width: 110px;
+      height: 110px;
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke-width: 9;
+      opacity: 0.18;
+    }
+
+    .ring-bar {
+      fill: none;
+      stroke-width: 9;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s var(--apple-spring), stroke 0.5s ease;
+    }
+
+    .rings-center-stat {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .rings-center-val {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .rings-center-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    /* Right of Rings: Big Clean Typography */
+    .rings-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .legend-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Apple Bento 2x2 Sensor Cards */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .bento-card {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: var(--glass-base);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.25s var(--apple-spring);
+    }
+
+    .bento-card:hover {
+      background: var(--glass-hover);
+      transform: translateY(-2px);
+    }
+
+    .bento-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-tertiary);
+    }
+
+    .bento-header svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .bento-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .bento-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .bento-number {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .bento-unit {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .bento-status-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(120, 120, 128, 0.18);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .bento-status-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 0.6s var(--apple-spring), background-color 0.4s ease;
+    }
+
+    /* Apple Intelligence Prescriptive Insight */
+    .apple-intelligence-box {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(175, 82, 222, 0.12) 0%, rgba(0, 122, 255, 0.08) 100%);
+      border: 1px solid rgba(175, 82, 222, 0.25);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .ai-siri-orb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #FF2D55, #AF52DE 50%, #5856D6 80%, #007AFF);
+      box-shadow: 0 0 14px rgba(175, 82, 222, 0.5);
+      flex-shrink: 0;
+      animation: siri-breathe 3s infinite ease-in-out;
+    }
+
+    @keyframes siri-breathe {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.1); filter: brightness(1.2); }
+    }
+
+    .ai-insight-content {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .ai-insight-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .ai-insight-desc {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-secondary);
+    }
+
+    /* Apple Standard Pill Buttons */
+    .apple-btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .apple-btn-primary {
+      flex: 1;
+      height: 44px;
+      border-radius: 100px;
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s var(--apple-spring);
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.35);
+    }
+
+    .apple-btn-primary:hover {
+      background: #0071e3;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 122, 255, 0.45);
+    }
+
+    .apple-btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .apple-btn-secondary {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: 100px;
+      background: rgba(120, 120, 128, 0.16);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s var(--apple-spring);
+    }
+
+    .apple-btn-secondary:hover {
+      background: rgba(120, 120, 128, 0.26);
+      transform: translateY(-1px);
+    }
+
+    .apple-btn-secondary:active {
+      transform: scale(0.97);
+    }
+
+    /* -------------------------------------------------------------
+       3. RIGHT WIDGET: SATELLITE TELEMETRY & AUDIT INSPECTION
+       ------------------------------------------------------------- */
+    .apple-inspector-panel {
+      position: absolute;
+      top: 96px;
+      right: 28px;
+      width: 380px;
+      z-index: 10;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transform: translateX(0);
+      transition: transform 0.4s var(--apple-spring), opacity 0.3s ease;
+    }
+
+    .apple-inspector-panel.closed {
+      transform: translateX(430px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .inspector-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inspector-header-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    /* Minimalist Apple Waveform Canvas */
+    .apple-waveform-box {
+      padding: 14px;
+      border-radius: 20px;
+      background: var(--glass-base);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .waveform-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    #apple-waveform-canvas {
+      width: 100%;
+      height: 90px;
+      border-radius: 12px;
+    }
+
+    /* Subsystem List Items */
+    .apple-subsystem-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .subsystem-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: var(--glass-base);
+      font-size: 13px;
+      color: var(--text-primary);
+      transition: background 0.2s ease;
+    }
+
+    .subsystem-row:hover {
+      background: var(--glass-hover);
+    }
+
+    .subsystem-row-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subsystem-status-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .subsystem-score {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    /* -------------------------------------------------------------
+       4. BOTTOM FLOATING VISIONOS CONTROLLER DOCK
+       ------------------------------------------------------------- */
+    .apple-bottom-dock {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 58px;
+      z-index: 20;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 100px;
+    }
+
+    .dock-pill-btn {
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s var(--apple-spring);
+    }
+
+    .dock-pill-btn:hover {
+      background: rgba(120, 120, 128, 0.2);
+      color: var(--text-primary);
+    }
+
+    .dock-pill-btn.active {
+      background: var(--glass-base-card);
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .dock-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(120, 120, 128, 0.24);
+    }
+
+    /* Simulated State Buttons in Dock */
+    .state-pill-capsule {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .state-tag {
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      transition: all 0.2s var(--apple-spring);
+    }
+
+    .state-tag.tag-nominal {
+      background: rgba(52, 199, 89, 0.2);
+      color: #34C759;
+      border: 1px solid rgba(52, 199, 89, 0.4);
+    }
+
+    .state-tag.tag-warning {
+      background: rgba(255, 149, 0, 0.2);
+      color: #FF9500;
+      border: 1px solid rgba(255, 149, 0, 0.4);
+    }
+
+    .state-tag.tag-critical {
+      background: rgba(255, 59, 48, 0.2);
+      color: #FF3B30;
+      border: 1px solid rgba(255, 59, 48, 0.4);
+    }
+
+    .state-tag:hover {
+      transform: scale(1.06);
+    }
+
+    .state-tag.active {
+      box-shadow: 0 0 14px currentColor;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Three.js WebGL Viewport -->
+  <div id="apple-webgl-canvas"></div>
+
+  <!-- 1. Apple VisionOS Top Bar with Dynamic Island -->
+  <header class="apple-top-bar apple-card">
+    <div class="apple-brand" onclick="resetCam()">
+      <!-- Apple Cleanroom Stylized Logo -->
+      <svg class="apple-logo-icon" viewBox="0 0 24 24">
+        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.85-.92.04-2.02.62-2.67 1.37-.56.65-1.07 1.71-.94 2.74 1.04.08 2.08-.51 2.69-1.26z"/>
+      </svg>
+      <div class="apple-brand-title">
+        Belton Industrial Studio
+        <span class="apple-badge">VisionOS</span>
+      </div>
+    </div>
+
+    <!-- Apple Dynamic Island Status Capsule -->
+    <div class="apple-dynamic-island" id="dynamicIsland" onclick="cycleDemoState()">
+      <span class="island-dot" id="islandDot"></span>
+      <div style="display:flex; flex-direction:column; gap:1px;">
+        <span class="island-text" id="islandMainText">Cleanroom 100 • Nominal</span>
+        <span class="island-sub" id="islandSubText">Dispense Tool #04 Operating Peak Efficiency</span>
+      </div>
+    </div>
+
+    <!-- Top Right Controls: Apple Segmented Pill & Light/Dark Switcher -->
+    <div class="top-right-group">
+      <div class="apple-segmented-control">
+        <button class="segment-item active" onclick="setSegment(this, 'overview')">Overview</button>
+        <button class="segment-item" onclick="setSegment(this, 'diagnostics')">Diagnostics</button>
+      </div>
+
+      <!-- Light / Dark Glass Mode Toggle -->
+      <button class="apple-icon-btn" title="Toggle Apple Silver / Space Black" onclick="toggleAppleTheme()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. Main Apple Widget: Activity Rings & Predictive Maintenance -->
+  <main class="apple-widget-container">
+    <div class="apple-card apple-hero-widget" id="heroWidget">
+      <div class="widget-header-row">
+        <div class="widget-title-group">
+          <span class="widget-eyebrow">Predictive Health Rings</span>
+          <h2 class="widget-headline">Micro-Dispenser #04</h2>
+        </div>
+        <span class="apple-badge" id="pillConfidence">99.4% Health</span>
+      </div>
+
+      <!-- Apple Watch 3-Concentric Activity Rings -->
+      <div class="rings-hero-display">
+        <div class="rings-svg-wrap">
+          <svg viewBox="0 0 120 120">
+            <!-- Ring 1: Outer Green (RUL) -->
+            <circle class="ring-bg" cx="60" cy="60" r="50" stroke="#34C759"></circle>
+            <circle class="ring-bar" id="ringRul" cx="60" cy="60" r="50" stroke="#34C759"
+                    stroke-dasharray="314.16" stroke-dashoffset="15"></circle>
+
+            <!-- Ring 2: Middle Blue (Precision Dispense) -->
+            <circle class="ring-bg" cx="60" cy="60" r="38" stroke="#007AFF"></circle>
+            <circle class="ring-bar" id="ringDispense" cx="60" cy="60" r="38" stroke="#007AFF"
+                    stroke-dasharray="238.76" stroke-dashoffset="20"></circle>
+
+            <!-- Ring 3: Inner Purple (Thermal Stability) -->
+            <circle class="ring-bg" cx="60" cy="60" r="26" stroke="#AF52DE"></circle>
+            <circle class="ring-bar" id="ringThermal" cx="60" cy="60" r="26" stroke="#AF52DE"
+                    stroke-dasharray="163.36" stroke-dashoffset="12"></circle>
+          </svg>
+          
+          <div class="rings-center-stat">
+            <span class="rings-center-val num" id="lblCenterRul">142</span>
+            <span class="rings-center-label">HRS</span>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="rings-legend">
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="legend-dot" style="background:#34C759;"></span>
+              <span>Remaining Life</span>
+            </div>
+            <span class="legend-val num" id="lblRulHrs">142 hrs</span>
+          </div>
+
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="legend-dot" style="background:#007AFF;"></span>
+              <span>Dispense Flow</span>
+            </div>
+            <span class="legend-val num" id="lblDispenseFlow">99.2%</span>
+          </div>
+
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="legend-dot" style="background:#AF52DE;"></span>
+              <span>Thermal Curve</span>
+            </div>
+            <span class="legend-val num" id="lblThermalIndex">98.8%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento 2x2 Telemetry Cards -->
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-label">Piezo Temp</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+            </svg>
+          </div>
+          <div class="bento-value-row">
+            <span class="bento-number num" id="valTemp">24.2</span>
+            <span class="bento-unit">°C</span>
+          </div>
+          <div class="bento-status-bar">
+            <div class="bento-status-fill" id="barTemp" style="width: 35%; background: var(--apple-blue);"></div>
+          </div>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-label">Vibration RMS</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </div>
+          <div class="bento-value-row">
+            <span class="bento-number num" id="valVib">0.082</span>
+            <span class="bento-unit">mm/s</span>
+          </div>
+          <div class="bento-status-bar">
+            <div class="bento-status-fill" id="barVib" style="width: 25%; background: var(--apple-green);"></div>
+          </div>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-label">Fluid Rate</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            </svg>
+          </div>
+          <div class="bento-value-row">
+            <span class="bento-number num" id="valFlow">12.4</span>
+            <span class="bento-unit">mg/s</span>
+          </div>
+          <div class="bento-status-bar">
+            <div class="bento-status-fill" id="barFlow" style="width: 55%; background: var(--apple-green);"></div>
+          </div>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-label">Actuator P</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div class="bento-value-row">
+            <span class="bento-number num" id="valPres">4.18</span>
+            <span class="bento-unit">bar</span>
+          </div>
+          <div class="bento-status-bar">
+            <div class="bento-status-fill" id="barPres" style="width: 45%; background: var(--apple-blue);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Apple Intelligence Prescriptive Insight -->
+      <div class="apple-intelligence-box">
+        <div class="ai-siri-orb"></div>
+        <div class="ai-insight-content">
+          <span class="ai-insight-title">Apple Intelligence Engine</span>
+          <span class="ai-insight-desc" id="aiPrescription">
+            Harmonic frequencies centered at 42.1 kHz. Cleanroom HEPA laminar air pressure maintains laminar envelope.
+          </span>
+        </div>
+      </div>
+
+      <!-- Apple Action Pill Buttons -->
+      <div class="apple-btn-row">
+        <button class="apple-btn-primary" onclick="toggleInspectorPanel()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Inspect Diagnostics
+        </button>
+        <button class="apple-btn-secondary" onclick="toggleAppleExplode()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          Explode 3D
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 3. Right Apple Inspector Panel -->
+  <aside class="apple-card apple-inspector-panel" id="inspectorPanel">
+    <div class="inspector-header-row">
+      <h3 class="inspector-header-title">Acoustic & Vibration Telemetry</h3>
+      <button class="apple-icon-btn" onclick="toggleInspectorPanel()" style="width:30px; height:30px;">✕</button>
+    </div>
+
+    <!-- Apple Waveform FFT Canvas -->
+    <div class="apple-waveform-box">
+      <div class="waveform-meta">
+        <span>Harmonic Spectrum</span>
+        <span class="num">Live 0–80 kHz</span>
+      </div>
+      <canvas id="apple-waveform-canvas"></canvas>
+    </div>
+
+    <div class="apple-subsystem-list">
+      <div class="subsystem-row">
+        <div class="subsystem-row-left">
+          <span class="subsystem-status-indicator" style="background:#34C759; box-shadow:0 0 8px #34C759;"></span>
+          <span>Piezo Resonator</span>
+        </div>
+        <span class="subsystem-score num">99.8%</span>
+      </div>
+
+      <div class="subsystem-row">
+        <div class="subsystem-row-left">
+          <span class="subsystem-status-indicator" style="background:#34C759; box-shadow:0 0 8px #34C759;"></span>
+          <span>Ceramic Spindle Bearings</span>
+        </div>
+        <span class="subsystem-score num" id="lblSubBearing">98.9%</span>
+      </div>
+
+      <div class="subsystem-row">
+        <div class="subsystem-row-left">
+          <span class="subsystem-status-indicator" style="background:#34C759; box-shadow:0 0 8px #34C759;"></span>
+          <span>Sapphire Dispense Orifice</span>
+        </div>
+        <span class="subsystem-score num" id="lblSubNozzle">99.2%</span>
+      </div>
+
+      <div class="subsystem-row">
+        <div class="subsystem-row-left">
+          <span class="subsystem-status-indicator" style="background:#34C759; box-shadow:0 0 8px #34C759;"></span>
+          <span>Cleanroom ISO 5 Enclosure</span>
+        </div>
+        <span class="subsystem-score num">100.0%</span>
+      </div>
+    </div>
+
+    <!-- Apple Service Recommendation -->
+    <div class="apple-intelligence-box" style="margin-top:auto;">
+      <div class="ai-insight-content">
+        <span class="ai-insight-title" style="color:var(--text-primary);">Service Window Forecast</span>
+        <span class="ai-insight-desc" id="lblServiceAdvice">
+          Machine is well within aerospace tolerances. Next preventative check scheduled for Sunday 02:00 AM (Cleanroom Idle Phase).
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 4. Bottom Floating Apple Dock -->
+  <footer class="apple-bottom-dock apple-card">
+    <button class="dock-pill-btn active" id="btnCamTurntable" onclick="setAppleCamera('turntable')">
+      Turntable 360°
+    </button>
+    <button class="dock-pill-btn" id="btnCamNozzle" onclick="setAppleCamera('nozzle')">
+      Micro-Nozzle
+    </button>
+    <button class="dock-pill-btn" id="btnCamTop" onclick="setAppleCamera('top')">
+      Plan View
+    </button>
+
+    <div class="dock-sep"></div>
+
+    <!-- State Simulator Pills -->
+    <div class="state-pill-capsule">
+      <button class="state-tag tag-nominal active" id="pillNominal" onclick="setAppleState('nominal')">
+        ● Nominal
+      </button>
+      <button class="state-tag tag-warning" id="pillWarning" onclick="setAppleState('warning')">
+        ● Warning
+      </button>
+      <button class="state-tag tag-critical" id="pillCritical" onclick="setAppleState('critical')">
+        ● Critical
+      </button>
+    </div>
+  </footer>
+
+  <!-- Apple Tock / Haptic Audio Synthesis (Web Audio API) -->
+  <script>
+    let appleAudio = null;
+    function playAppleTock(freq = 520, decay = 0.05) {
+      try {
+        if (!appleAudio) appleAudio = new (window.AudioContext || window.webkitAudioContext)();
+        if (appleAudio.state === 'suspended') appleAudio.resume();
+        const osc = appleAudio.createOscillator();
+        const gain = appleAudio.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, appleAudio.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.5, appleAudio.currentTime + decay);
+        gain.gain.setValueAtTime(0.045, appleAudio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, appleAudio.currentTime + decay);
+        osc.connect(gain);
+        gain.connect(appleAudio.destination);
+        osc.start();
+        osc.stop(appleAudio.currentTime + decay);
+      } catch(e) {}
+    }
+  </script>
+
+  <!-- 3D Three.js Apple Studio Machine Setup -->
+  <script>
+    const canvasBox = document.getElementById('apple-webgl-canvas');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.6, 4.4);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    canvasBox.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.maxPolarAngle = Math.PI / 2 + 0.05;
+    controls.minDistance = 2.0;
+    controls.maxDistance = 7.5;
+    controls.target.set(0, 0.55, 0);
+
+    // Apple Studio Softbox Lighting
+    const ambLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambLight);
+
+    const topSoftbox = new THREE.DirectionalLight(0xffffff, 2.0);
+    topSoftbox.position.set(2, 6, 4);
+    scene.add(topSoftbox);
+
+    const rimSoftbox = new THREE.DirectionalLight(0xdbeafe, 2.8);
+    rimSoftbox.position.set(-5, 3, -4);
+    scene.add(rimSoftbox);
+
+    const accentBottom = new THREE.PointLight(0x34C759, 1.4, 8);
+    accentBottom.position.set(0, -0.4, 0);
+    scene.add(accentBottom);
+
+    // Apple Minimalist Floor Shadow Plate
+    const shadowGeo = new THREE.PlaneGeometry(8, 8);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.35
+    });
+    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowMesh.rotation.x = -Math.PI / 2;
+    shadowMesh.position.y = -0.52;
+    scene.add(shadowMesh);
+
+    // Machine Assembly
+    const machine = new THREE.Group();
+    scene.add(machine);
+
+    // Apple Materials: Space Grey Anodized Aluminum & Polished Titanium
+    const matSpaceGrey = new THREE.MeshStandardMaterial({
+      color: 0x334155,
+      metalness: 0.85,
+      roughness: 0.28,
+    });
+
+    const matPolishedAlum = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      metalness: 0.92,
+      roughness: 0.12,
+    });
+
+    const matGoldRings = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      metalness: 0.95,
+      roughness: 0.15,
+    });
+
+    const matSapphireNozzle = new THREE.MeshPhysicalMaterial({
+      color: 0x38bdf8,
+      metalness: 0.1,
+      roughness: 0.05,
+      transmission: 0.9,
+      thickness: 0.5,
+      ior: 1.77
+    });
+
+    const explodedParts = [];
+
+    // Cylindrical Plinth (Apple Mac Studio style)
+    const plinthGeo = new THREE.CylinderGeometry(1.2, 1.3, 0.22, 64);
+    const plinth = new THREE.Mesh(plinthGeo, matSpaceGrey);
+    plinth.position.y = -0.45;
+    machine.add(plinth);
+    explodedParts.push({ mesh: plinth, origY: -0.45, expY: -0.85 });
+
+    // Inner Turntable Disc
+    const rotorGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.08, 64);
+    const rotor = new THREE.Mesh(rotorGeo, matPolishedAlum);
+    rotor.position.y = -0.32;
+    machine.add(rotor);
+    explodedParts.push({ mesh: rotor, origY: -0.32, expY: -0.58 });
+
+    // Apple Vertical Column (Rounded Box)
+    const colGeo = new THREE.BoxGeometry(0.32, 1.45, 0.32);
+    const column = new THREE.Mesh(colGeo, matSpaceGrey);
+    column.position.set(-0.48, 0.48, 0);
+    machine.add(column);
+    explodedParts.push({ mesh: column, origY: 0.48, expY: 0.48, origX: -0.48, expX: -0.9 });
+
+    // Cantilever Arm
+    const armGeo = new THREE.BoxGeometry(1.15, 0.18, 0.24);
+    const arm = new THREE.Mesh(armGeo, matPolishedAlum);
+    arm.position.set(0.05, 1.05, 0);
+    machine.add(arm);
+    explodedParts.push({ mesh: arm, origY: 1.05, expY: 1.4 });
+
+    // Piezo Head
+    const headGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 48);
+    const head = new THREE.Mesh(headGeo, matSpaceGrey);
+    head.position.set(0.48, 0.8, 0);
+    machine.add(head);
+    explodedParts.push({ mesh: head, origY: 0.8, expY: 1.05 });
+
+    // Piezoelectric Dual Resonator Rings
+    const ringGeo = new THREE.TorusGeometry(0.17, 0.02, 16, 48);
+    const r1 = new THREE.Mesh(ringGeo, matGoldRings);
+    r1.rotation.x = Math.PI / 2;
+    r1.position.set(0.48, 0.88, 0);
+    machine.add(r1);
+    explodedParts.push({ mesh: r1, origY: 0.88, expY: 1.25 });
+
+    const r2 = new THREE.Mesh(ringGeo, matGoldRings);
+    r2.rotation.x = Math.PI / 2;
+    r2.position.set(0.48, 0.74, 0);
+    machine.add(r2);
+    explodedParts.push({ mesh: r2, origY: 0.74, expY: 0.95 });
+
+    // Sapphire Needle Orifice
+    const needleGeo = new THREE.ConeGeometry(0.045, 0.28, 32);
+    const needle = new THREE.Mesh(needleGeo, matSapphireNozzle);
+    needle.rotation.x = Math.PI;
+    needle.position.set(0.48, 0.38, 0);
+    machine.add(needle);
+    explodedParts.push({ mesh: needle, origY: 0.38, expY: 0.15 });
+
+    // Fluid Jet Beam
+    const jetGeo = new THREE.CylinderGeometry(0.007, 0.012, 0.28, 16);
+    const jetMat = new THREE.MeshBasicMaterial({ color: 0x34C759, transparent: true, opacity: 0.85 });
+    const jet = new THREE.Mesh(jetGeo, jetMat);
+    jet.position.set(0.48, 0.12, 0);
+    machine.add(jet);
+
+    // Load Coil GLB
+    const loader = new THREE.GLTFLoader();
+    loader.load('/models/coil.glb', (gltf) => {
+      const coil = gltf.scene;
+      coil.scale.set(0.012, 0.012, 0.012);
+      coil.position.set(0.48, -0.25, 0);
+      machine.add(coil);
+    }, undefined, () => {});
+
+    // Explode Animation State
+    let isAppleExploded = false;
+    let appleExpProgress = 0;
+    function toggleAppleExplode() {
+      isAppleExploded = !isAppleExploded;
+      playAppleTock(isAppleExploded ? 680 : 440, 0.06);
+    }
+
+    // Camera Presets
+    function setAppleCamera(preset) {
+      document.querySelectorAll('.dock-pill-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      playAppleTock(560, 0.05);
+
+      if (preset === 'turntable') {
+        smoothCam(0, 1.6, 4.4, 0, 0.55, 0);
+      } else if (preset === 'nozzle') {
+        smoothCam(0.48, 0.75, 1.6, 0.48, 0.6, 0);
+      } else if (preset === 'top') {
+        smoothCam(0, 4.2, 0.01, 0, 0.4, 0);
+      }
+    }
+
+    function smoothCam(px, py, pz, tx, ty, tz) {
+      const startP = camera.position.clone();
+      const endP = new THREE.Vector3(px, py, pz);
+      const startT = controls.target.clone();
+      const endT = new THREE.Vector3(tx, ty, tz);
+      let t = 0;
+      function step() {
+        t += 0.038;
+        const ease = 1 - Math.pow(1 - Math.min(t, 1), 3);
+        camera.position.lerpVectors(startP, endP, ease);
+        controls.target.lerpVectors(startT, endT, ease);
+        if (t < 1) requestAnimationFrame(step);
+      }
+      step();
+    }
+
+    function resetCam() {
+      smoothCam(0, 1.6, 4.4, 0, 0.55, 0);
+      playAppleTock(600, 0.05);
+    }
+
+    // Render Loop
+    function render() {
+      requestAnimationFrame(render);
+      machine.rotation.y += 0.0025;
+
+      const target = isAppleExploded ? 1.0 : 0.0;
+      appleExpProgress += (target - appleExpProgress) * 0.08;
+
+      explodedParts.forEach(p => {
+        if (p.expY !== undefined) {
+          p.mesh.position.y = p.origY + (p.expY - p.origY) * appleExpProgress;
+        }
+        if (p.expX !== undefined) {
+          p.mesh.position.x = p.origX + (p.expX - p.origX) * appleExpProgress;
+        }
+      });
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    render();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+
+  <!-- Interactive Apple Experience Script -->
+  <script>
+    let currentAppleState = 'nominal';
+
+    const appleStateData = {
+      nominal: {
+        color: '#34C759',
+        islandMain: 'Cleanroom 100 • Nominal',
+        islandSub: 'Dispense Tool #04 Operating Peak Efficiency',
+        rul: 142,
+        rulOffset: 15,
+        dispenseOffset: 20,
+        thermalOffset: 12,
+        healthPill: '99.4% Health',
+        dispenseScore: '99.2%',
+        thermalScore: '98.8%',
+        temp: 24.2,
+        vib: 0.082,
+        flow: 12.4,
+        pres: 4.18,
+        tempBar: '35%',
+        vibBar: '25%',
+        flowBar: '55%',
+        presBar: '45%',
+        aiDesc: 'Harmonic frequencies centered at 42.1 kHz. Cleanroom HEPA laminar air pressure maintains laminar envelope.',
+        serviceText: 'Machine is well within aerospace tolerances. Next preventative check scheduled for Sunday 02:00 AM (Cleanroom Idle Phase).',
+        subBearing: '98.9%',
+        subNozzle: '99.2%'
+      },
+      warning: {
+        color: '#FF9500',
+        islandMain: 'Pre-Fault Flag • Warning',
+        islandSub: 'Thermal Drift Detected at Ceramic Spindle',
+        rul: 68,
+        rulOffset: 140,
+        dispenseOffset: 65,
+        thermalOffset: 85,
+        healthPill: '81.2% Warning',
+        dispenseScore: '83.4%',
+        thermalScore: '78.1%',
+        temp: 31.8,
+        vib: 0.245,
+        flow: 11.8,
+        pres: 4.45,
+        tempBar: '68%',
+        vibBar: '62%',
+        flowBar: '42%',
+        presBar: '58%',
+        aiDesc: 'Micro-vibration frequency shift observed at 1.2 kHz. Ceramic piezo seal showing thermal drift. Recommend re-zeroing dispense offset.',
+        serviceText: 'Recommend re-zeroing dispense nozzle offset within 12 operating hours to prevent adhesive micro-clogging.',
+        subBearing: '82.4%',
+        subNozzle: '79.6%'
+      },
+      critical: {
+        color: '#FF3B30',
+        islandMain: 'Critical Alert • Action Required',
+        islandSub: 'Spindle Bearing RMS Degradation Imminent',
+        rul: 16,
+        rulOffset: 265,
+        dispenseOffset: 190,
+        thermalOffset: 140,
+        healthPill: '42.0% Critical',
+        dispenseScore: '48.5%',
+        thermalScore: '39.2%',
+        temp: 43.6,
+        vib: 0.612,
+        flow: 9.2,
+        pres: 5.12,
+        tempBar: '94%',
+        vibBar: '92%',
+        flowBar: '20%',
+        presBar: '82%',
+        aiDesc: 'Actuator RMS vibration crossed 0.60 mm/s limit. Fluid viscosity shear failure imminent. Spare Tool #A-10 ready in cleanroom buffer.',
+        serviceText: 'Emergency maintenance automated hold recommended before next batch release. Quick-swap tool cartridge #A-10.',
+        subBearing: '38.5%',
+        subNozzle: '44.1%'
+      }
+    };
+
+    function setAppleState(stateKey) {
+      currentAppleState = stateKey;
+      const data = appleStateData[stateKey];
+
+      // Update Root Tint
+      document.documentElement.style.setProperty('--current-status-color', data.color);
+      document.documentElement.style.setProperty('--current-status-bg', data.color + '22');
+
+      // Dynamic Island
+      document.getElementById('islandDot').style.background = data.color;
+      document.getElementById('islandDot').style.boxShadow = `0 0 12px ${data.color}`;
+      document.getElementById('islandMainText').innerText = data.islandMain;
+      document.getElementById('islandSubText').innerText = data.islandSub;
+
+      // Activity Rings
+      document.getElementById('ringRul').style.strokeDashoffset = data.rulOffset;
+      document.getElementById('ringRul').style.stroke = data.color;
+      document.getElementById('ringDispense').style.strokeDashoffset = data.dispenseOffset;
+      document.getElementById('ringThermal').style.strokeDashoffset = data.thermalOffset;
+
+      document.getElementById('lblCenterRul').innerText = data.rul;
+      document.getElementById('lblRulHrs').innerText = `${data.rul} hrs`;
+      document.getElementById('lblDispenseFlow').innerText = data.dispenseScore;
+      document.getElementById('lblThermalIndex').innerText = data.thermalScore;
+      document.getElementById('pillConfidence').innerText = data.healthPill;
+
+      // Bento Cards
+      document.getElementById('valTemp').innerText = data.temp;
+      document.getElementById('valVib').innerText = data.vib;
+      document.getElementById('valFlow').innerText = data.flow;
+      document.getElementById('valPres').innerText = data.pres;
+
+      document.getElementById('barTemp').style.width = data.tempBar;
+      document.getElementById('barVib').style.width = data.vibBar;
+      document.getElementById('barFlow').style.width = data.flowBar;
+      document.getElementById('barPres').style.width = data.presBar;
+
+      // AI Text
+      document.getElementById('aiPrescription').innerText = data.aiDesc;
+      document.getElementById('lblServiceAdvice').innerText = data.serviceText;
+      document.getElementById('lblSubBearing').innerText = data.subBearing;
+      document.getElementById('lblSubNozzle').innerText = data.subNozzle;
+
+      // Dock Tags
+      document.querySelectorAll('.state-tag').forEach(t => t.classList.remove('active'));
+      const activeTag = { nominal: 'pillNominal', warning: 'pillWarning', critical: 'pillCritical' }[stateKey];
+      document.getElementById(activeTag).classList.add('active');
+
+      // 3D Light Tint
+      if (typeof accentBottom !== 'undefined') accentBottom.color.set(data.color);
+      if (typeof jetMat !== 'undefined') jetMat.color.set(data.color);
+
+      playAppleTock(stateKey === 'nominal' ? 640 : (stateKey === 'warning' ? 480 : 360), 0.08);
+    }
+
+    function cycleDemoState() {
+      if (currentAppleState === 'nominal') setAppleState('warning');
+      else if (currentAppleState === 'warning') setAppleState('critical');
+      else setAppleState('nominal');
+    }
+
+    // Toggle Inspector Panel
+    let isInspectorOpen = true;
+    function toggleInspectorPanel() {
+      isInspectorOpen = !isInspectorOpen;
+      const p = document.getElementById('inspectorPanel');
+      if (isInspectorOpen) {
+        p.classList.remove('closed');
+        playAppleTock(620, 0.05);
+      } else {
+        p.classList.add('closed');
+        playAppleTock(400, 0.05);
+      }
+    }
+
+    // Toggle Light / Dark Glass Theme
+    function toggleAppleTheme() {
+      document.body.classList.toggle('apple-light');
+      const isLight = document.body.classList.contains('apple-light');
+      playAppleTock(isLight ? 720 : 480, 0.06);
+
+      // Adjust 3D environment for light mode
+      if (typeof shadowMat !== 'undefined') {
+        shadowMat.opacity = isLight ? 0.12 : 0.35;
+      }
+      if (typeof topSoftbox !== 'undefined') {
+        topSoftbox.intensity = isLight ? 2.5 : 2.0;
+      }
+    }
+
+    function setSegment(btn, tab) {
+      document.querySelectorAll('.segment-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      playAppleTock(540, 0.04);
+      if (tab === 'diagnostics') {
+        if (!isInspectorOpen) toggleInspectorPanel();
+      }
+    }
+
+    // Live Tabular Jitter
+    setInterval(() => {
+      if (currentAppleState === 'nominal') {
+        const jitter = (Math.random() * 0.04 - 0.02);
+        document.getElementById('valTemp').innerText = (24.2 + jitter).toFixed(1);
+        document.getElementById('valVib').innerText = (0.082 + (Math.random() * 0.004 - 0.002)).toFixed(3);
+      }
+    }, 1600);
+
+    // Apple Clean Waveform FFT Animation
+    const waveCanvas = document.getElementById('apple-waveform-canvas');
+    const wCtx = waveCanvas.getContext('2d');
+    function resizeWaveCanvas() {
+      waveCanvas.width = waveCanvas.clientWidth * window.devicePixelRatio;
+      waveCanvas.height = waveCanvas.clientHeight * window.devicePixelRatio;
+    }
+    window.addEventListener('load', resizeWaveCanvas);
+    window.addEventListener('resize', resizeWaveCanvas);
+
+    function drawAppleWave() {
+      requestAnimationFrame(drawAppleWave);
+      const w = waveCanvas.width;
+      const h = waveCanvas.height;
+      wCtx.clearRect(0, 0, w, h);
+
+      const count = 40;
+      const step = w / count;
+      const data = appleStateData[currentAppleState];
+
+      for (let i = 0; i < count; i++) {
+        let val = Math.sin(i * 0.28 + Date.now() * 0.004) * 0.35 + 0.45;
+        if (currentAppleState === 'warning' && i > 15 && i < 28) val += 0.35;
+        if (currentAppleState === 'critical') val += Math.random() * 0.4;
+
+        const barH = Math.max(val * h * 0.75, 4);
+        wCtx.fillStyle = data.color;
+        wCtx.globalAlpha = 0.65 + Math.sin(i + Date.now() * 0.003) * 0.25;
+        wCtx.beginPath();
+        wCtx.roundRect(i * step + 2, (h - barH) / 2, step - 4, barH, 4);
+        wCtx.fill();
+      }
+    }
+    drawAppleWave();
+  </script>
+</body>
+</html>
+

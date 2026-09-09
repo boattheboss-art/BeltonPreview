@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belton Next-Gen Interface | UI Skills Edition</title>
+  
+  <!-- Fonts: Plus Jakarta Sans for clean typography & JetBrains Mono for tabular telemetry -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Three.js for 3D PBR WebGL Viewport -->
+  <script>window.onerror = function(msg, url, line) { window.__lastError = msg + ' at ' + line; };</script>
+  <script src="/js/libs/three.min.js"></script>
+  
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN SYSTEM TOKENS (derived from anthropics/frontend-design 
+       and tjcages/linear-discipline)
+       ------------------------------------------------------------- */
+    :root {
+      --bg-base: #080a0f;
+      --bg-surface: #0e121b;
+      --bg-elevated: #141b27;
+      --bg-glass: rgba(14, 18, 27, 0.72);
+      
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-focus: rgba(56, 189, 248, 0.45);
+      --border-glass: rgba(255, 255, 255, 0.12);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      /* Restrained Accent Palette: Cleanroom Precision */
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-belton: #dc2626;
+
+      /* Emil Kowalski Animation Tokens (from emilkowalski/animate) */
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out: cubic-bezier(0, 0, 0.2, 1);
+      --ease-in: cubic-bezier(0.4, 0, 1, 1);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-smooth: 400ms;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(1000px 500px at 50% -100px, rgba(56, 189, 248, 0.12), transparent 70%),
+        radial-gradient(800px 400px at 100% 40%, rgba(16, 185, 129, 0.06), transparent 60%);
+    }
+
+    /* Monospace Tabular Telemetry Numbers (Rule: use-tabular-nums-for-data) */
+    .tabular {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum" 1, "zero" 1;
+      letter-spacing: -0.02em;
+    }
+
+    /* Top Navigation Bar: Linear-Discipline Luxury */
+    .header-bar {
+      height: 64px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(8, 10, 15, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo-pill {
+      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      border-left: 1px solid var(--border-subtle);
+      padding-left: 12px;
+      margin-left: 4px;
+    }
+
+    .skill-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .skill-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .skill-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    /* Main Container Layout */
+    .app-viewport {
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 24px 28px 60px;
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1200px) {
+      .app-viewport {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Column: 3D Cleanroom Digital Twin with Physics Overlay */
+    .viewport-3d-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      height: 640px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
+    }
+
+    .canvas-3d {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    .canvas-3d:active {
+      cursor: grabbing;
+    }
+
+    /* 3D Viewport Controls & HUD Overlays */
+    .viewport-overlay-top {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .station-status-pill {
+      pointer-events: auto;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 8px 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .pulse-ring {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      position: relative;
+    }
+    .pulse-ring::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent-emerald);
+      animation: ripple 2s infinite var(--ease-out);
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .station-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .station-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* 3D Camera & Lighting Control Ribbon */
+    .viewport-controls {
+      pointer-events: auto;
+      display: flex;
+      gap: 8px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(16px);
+      padding: 6px;
+      border-radius: 10px;
+    }
+
+    /* Interactive Buttons following Emil Kowalski spring micro-interaction */
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background var(--duration-fast) var(--ease-out),
+                  color var(--duration-fast) var(--ease-out),
+                  transform var(--duration-fast) var(--ease-spring);
+    }
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .btn-icon:active {
+      transform: scale(0.92);
+    }
+
+    /* 3D Interactive Hotspot Tooltip */
+    .hotspot-tag {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(20px);
+      padding: 12px 18px;
+      border-radius: 12px;
+      max-width: 360px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+    }
+
+    .hotspot-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hotspot-desc {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    /* Right Column: Predictive Maintenance AI & Mission Control */
+    .telemetry-column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Hero AI Predictive Card (ตรงกับที่ผู้ใช้เน้น: "จุดเด่นของ AI เรา") */
+    .ai-hero-card {
+      background: linear-gradient(160deg, rgba(14, 22, 38, 0.92) 0%, rgba(9, 13, 21, 0.98) 100%);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+        0 24px 48px -12px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: border-color var(--duration-normal) var(--ease-out),
+                  box-shadow var(--duration-normal) var(--ease-out);
+    }
+
+    .ai-hero-card:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      box-shadow: 
+        0 28px 56px -12px rgba(0, 0, 0, 0.8),
+        0 0 24px rgba(56, 189, 248, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    }
+
+    .ai-card-glow {
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 70%);
+      pointer-events: none;
+      filter: blur(30px);
+    }
+
+    .ai-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .ai-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      letter-spacing: 0.05em;
+    }
+
+    .ai-model-tag {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Main RUL Display Grid */
+    .rul-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .rul-main-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rul-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .rul-number-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .rul-big-number {
+      font-size: 44px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .rul-unit {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .rul-sub-message {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    /* Radial Gauge Mini */
+    .gauge-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .gauge-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      line-height: 1;
+    }
+
+    .gauge-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Telemetry Progress Bar with Physics */
+    .wear-progress-track {
+      height: 7px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .wear-progress-fill {
+      height: 100%;
+      width: 78.4%;
+      background: linear-gradient(90deg, #10b981 0%, #38bdf8 70%, #f59e0b 100%);
+      border-radius: 999px;
+      transition: width 0.8s var(--ease-spring);
+    }
+
+    /* AI Recommendation Card */
+    .ai-recommendation {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .ai-rec-icon {
+      font-size: 16px;
+      color: var(--accent-emerald);
+      line-height: 1.2;
+    }
+
+    .ai-rec-text {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+
+    .ai-rec-text strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Live Telemetry Sensors Grid (Sub-pixel borders) */
+    .telemetry-sensors-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .sensor-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--duration-fast) var(--ease-spring),
+                  border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sensor-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .sensor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .sensor-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .sensor-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+    }
+
+    .sensor-val-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .sensor-val {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .sensor-unit {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .sensor-mini-chart {
+      width: 100%;
+      height: 28px;
+      margin-top: 10px;
+    }
+
+    /* Interactive Simulation Controller */
+    .sim-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sim-info h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .sim-info p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .sim-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sim {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--duration-fast) var(--ease-spring);
+    }
+    .btn-sim:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-color: var(--border-glass);
+    }
+    .btn-sim:active {
+      transform: scale(0.96);
+    }
+    .btn-sim.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--accent-cyan);
+    }
+
+    /* ESC Resume Menu Modal (Polished non-disappearing state) */
+    .menu-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--duration-normal) var(--ease-out);
+    }
+
+    .menu-modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-modal-box {
+      background: linear-gradient(145deg, #111726 0%, #090c13 100%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 20px;
+      width: 480px;
+      max-width: 90vw;
+      padding: 32px;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85);
+      transform: translateY(12px);
+      transition: transform var(--duration-normal) var(--ease-spring);
+    }
+
+    .menu-modal-overlay.open .menu-modal-box {
+      transform: translateY(0);
+    }
+
+    .menu-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .menu-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .menu-btn {
+      width: 100%;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 18px;
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-spring);
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateX(4px);
+    }
+
+    .menu-btn:active {
+      transform: scale(0.98) translateX(4px);
+    }
+
+    .menu-btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .menu-btn-primary:hover {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    /* Pill keyboard shortcut badge */
+    .kbd-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="header-bar">
+    <div class="brand-wrap">
+      <span class="brand-logo-pill">BELTON</span>
+      <span class="brand-title">DIGITAL TWIN · NAVANAKORN 2F</span>
+      <span class="brand-subtitle">Class 1000 Cleanroom Micro-Dispensing AI</span>
+    </div>
+
+    <div class="skill-badges">
+      <div class="skill-badge">
+        <span class="dot"></span>
+        <span>Linear Aesthetic</span>
+      </div>
+      <div class="skill-badge">
+        <span class="dot"></span>
+        <span>Spring Physics</span>
+      </div>
+      <div class="skill-badge">
+        <span class="dot"></span>
+        <span>Anti-AI Slop</span>
+      </div>
+      <button class="btn-sim" id="openMenuBtn" style="margin-left: 8px;">
+        <span>MENU</span>
+        <span class="kbd-badge">ESC</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Viewport Layout -->
+  <main class="app-viewport">
+
+    <!-- Left Column: 3D Cleanroom WebGL Viewport -->
+    <div class="viewport-3d-card">
+      <canvas id="cleanroomCanvas" class="canvas-3d"></canvas>
+
+      <!-- 3D HUD Header Overlay -->
+      <div class="viewport-overlay-top">
+        <div class="station-status-pill">
+          <div class="pulse-ring"></div>
+          <div>
+            <div class="station-name">STATION #04: ACA HIGH-PRECISION DISPENSING</div>
+            <div class="station-sub">Dual-axis Vision Guided Micro-Nozzle · 0.05mm Pitch</div>
+          </div>
+        </div>
+
+        <div class="viewport-controls">
+          <button class="btn-icon" id="resetCamBtn" title="Reset Viewpoint">⊙</button>
+          <button class="btn-icon" id="toggleExplodeBtn" title="Exploded View">⤢</button>
+          <button class="btn-icon" id="toggleWireframeBtn" title="X-Ray Mode">◈</button>
+        </div>
+      </div>
+
+      <!-- 3D Hotspot Inspection Card -->
+      <div class="hotspot-tag">
+        <div class="hotspot-title">
+          <span>●</span> 3D Digital Twin Inspection
+        </div>
+        <div class="hotspot-desc">
+          Drag mouse to orbit 360°. Interactive real-time PBR metal/glass materials with dynamic directional cleanroom illumination.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Predictive Maintenance AI & Sensor Telemetry -->
+    <div class="telemetry-column">
+
+      <!-- AI Predictive Maintenance Hero Card (จุดเด่น AI ทำนายการบำรุงรักษา) -->
+      <div class="ai-hero-card" id="aiHeroCard">
+        <div class="ai-card-glow"></div>
+        
+        <div class="ai-header-row">
+          <div class="ai-hero-badge">
+            <span>✦</span>
+            <span>PREDICTIVE MAINTENANCE AI</span>
+          </div>
+          <span class="ai-model-tag">LSTM-Autoencoder v2.4</span>
+        </div>
+
+        <div class="rul-grid">
+          <div class="rul-main-stat">
+            <span class="rul-label">Remaining Useful Life (RUL)</span>
+            <div class="rul-number-wrap">
+              <span class="rul-big-number tabular" id="rulNumber">142.8</span>
+              <span class="rul-unit">Hours</span>
+            </div>
+            <div class="rul-sub-message" id="rulSubMsg">
+              <span>✓</span> Tooling Health Optimal · Zero Anomaly Risk
+            </div>
+          </div>
+
+          <div class="gauge-box">
+            <span class="gauge-value tabular" id="healthScore">98.4%</span>
+            <span class="gauge-sub">Health Index</span>
+          </div>
+        </div>
+
+        <!-- Progress Track -->
+        <div class="wear-progress-track">
+          <div class="wear-progress-fill" id="wearFill"></div>
+        </div>
+
+        <!-- AI Prescriptive Recommendation -->
+        <div class="ai-recommendation" id="aiRecBox">
+          <div class="ai-rec-icon">⚡</div>
+          <div class="ai-rec-text" id="aiRecText">
+            <strong>AI Forecast:</strong> Nozzle orifice degradation is within Class-A tolerance. Optimal window for preventative flush is scheduled in <strong>4 shifts (32 operating hours)</strong>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Telemetry Sensors (Tabular Monospace Numbers) -->
+      <div class="telemetry-sensors-grid">
+        <!-- Sensor 1: Fluid Viscosity -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-label">ACA Fluid Viscosity</span>
+            <span class="sensor-dot"></span>
+          </div>
+          <div class="sensor-val-wrap">
+            <span class="sensor-val tabular" id="valViscosity">1,245</span>
+            <span class="sensor-unit">mPa·s</span>
+          </div>
+          <canvas class="sensor-mini-chart" id="chartViscosity"></canvas>
+        </div>
+
+        <!-- Sensor 2: Dispensing Pressure -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-label">Nozzle Pressure</span>
+            <span class="sensor-dot"></span>
+          </div>
+          <div class="sensor-val-wrap">
+            <span class="sensor-val tabular" id="valPressure">42.8</span>
+            <span class="sensor-unit">bar</span>
+          </div>
+          <canvas class="sensor-mini-chart" id="chartPressure"></canvas>
+        </div>
+
+        <!-- Sensor 3: Cleanroom Ambient Temp -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-label">Cleanroom Temp</span>
+            <span class="sensor-dot"></span>
+          </div>
+          <div class="sensor-val-wrap">
+            <span class="sensor-val tabular" id="valTemp">22.4</span>
+            <span class="sensor-unit">°C</span>
+          </div>
+          <canvas class="sensor-mini-chart" id="chartTemp"></canvas>
+        </div>
+
+        <!-- Sensor 4: Micro-Vibration -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-label">Axis Vibration</span>
+            <span class="sensor-dot"></span>
+          </div>
+          <div class="sensor-val-wrap">
+            <span class="sensor-val tabular" id="valVib">0.012</span>
+            <span class="sensor-unit">mm/s</span>
+          </div>
+          <canvas class="sensor-mini-chart" id="chartVib"></canvas>
+        </div>
+      </div>
+
+      <!-- Simulation State Toggle: Test Normal vs Degradation Anomaly -->
+      <div class="sim-card">
+        <div class="sim-info">
+          <h4>Interactive AI Demonstration</h4>
+          <p>Toggle simulated machine degradation to witness dynamic UI reaction</p>
+        </div>
+        <div class="sim-actions">
+          <button class="btn-sim active" id="simNormalBtn">Normal State</button>
+          <button class="btn-sim" id="simWarnBtn">Simulate Wear Warning</button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ESC Resume Menu Modal (Demonstrating robust state handling) -->
+  <div class="menu-modal-overlay" id="menuModal">
+    <div class="menu-modal-box">
+      <h3 class="menu-title">Digital Twin Navigation</h3>
+      <p class="menu-subtitle">Press ESC or click Resume to return to cleanroom view</p>
+
+      <div class="menu-list">
+        <button class="menu-btn menu-btn-primary" id="resumeBtn">
+          <span>Resume Digital Twin</span>
+          <span class="kbd-badge">ESC</span>
+        </button>
+        <button class="menu-btn" onclick="location.href='/explorer'">
+          <span>3D Coil Exploded Model</span>
+          <span>→</span>
+        </button>
+        <button class="menu-btn" onclick="location.href='/manufacturing'">
+          <span>Legacy & Cleanroom Lab</span>
+          <span>→</span>
+        </button>
+        <button class="menu-btn" onclick="location.href='/product'">
+          <span>Product Specifications</span>
+          <span>→</span>
+        </button>
+      </div>
+
+      <div style="font-size: 11px; color: var(--text-muted); text-align: center;">
+        Belton Technology · Industry 4.0 Smart Manufacturing
+      </div>
+    </div>
+  </div>
+
+  <!-- Client-side Logic: Three.js 3D Viewport & Emil Kowalski Micro-animations -->
+  <script>
+    // -------------------------------------------------------------
+    // THREE.JS 3D CLEANROOM DISPENSING STATION SCENE
+    // -------------------------------------------------------------
+    const canvas = document.getElementById('cleanroomCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0d14);
+
+    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.set(3.5, 2.5, 4.5);
+    camera.lookAt(0, 0, 0);
+
+    // Precision Cleanroom Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0x38bdf8, 2.5);
+    keyLight.position.set(5, 8, 4);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x10b981, 1.8);
+    rimLight.position.set(-5, -2, -4);
+    scene.add(rimLight);
+
+    // Cleanroom Grid Floor
+    const gridHelper = new THREE.GridHelper(10, 20, 0x1e293b, 0x0f172a);
+    gridHelper.position.y = -1.2;
+    scene.add(gridHelper);
+
+    // Build Precision Dispensing Station Assembly
+    const stationGroup = new THREE.Group();
+    scene.add(stationGroup);
+
+    // 1. Heavy Granite Base
+    const baseGeo = new THREE.BoxGeometry(3, 0.25, 2.5);
+    const baseMat = new THREE.MeshStandardMaterial({
+      color: 0x1e2638,
+      metalness: 0.85,
+      roughness: 0.25
+    });
+    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+    baseMesh.position.y = -1.05;
+    stationGroup.add(baseMesh);
+
+    // 2. High-precision Vacuum Chuck (Wafer/HDD Carrier)
+    const chuckGeo = new THREE.CylinderGeometry(0.85, 0.85, 0.1, 48);
+    const chuckMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      metalness: 0.95,
+      roughness: 0.15
+    });
+    const chuckMesh = new THREE.Mesh(chuckGeo, chuckMat);
+    chuckMesh.position.y = -0.85;
+    stationGroup.add(chuckMesh);
+
+    // 3. Dual Gantry Columns
+    const colGeo = new THREE.BoxGeometry(0.2, 1.8, 0.25);
+    const colMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.7, roughness: 0.3 });
+    const colLeft = new THREE.Mesh(colGeo, colMat);
+    colLeft.position.set(-1.1, 0, 0);
+    const colRight = new THREE.Mesh(colGeo, colMat);
+    colRight.position.set(1.1, 0, 0);
+    stationGroup.add(colLeft);
+    stationGroup.add(colRight);
+
+    // 4. Gantry Crossbeam
+    const beamGeo = new THREE.BoxGeometry(2.4, 0.25, 0.3);
+    const beamMesh = new THREE.Mesh(beamGeo, colMat);
+    beamMesh.position.set(0, 0.85, 0);
+    stationGroup.add(beamMesh);
+
+    // 5. Dispensing Head Carriage
+    const carriageGeo = new THREE.BoxGeometry(0.45, 0.5, 0.4);
+    const carriageMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8, roughness: 0.2 });
+    const carriageMesh = new THREE.Mesh(carriageGeo, carriageMat);
+    carriageMesh.position.set(0, 0.7, 0);
+    stationGroup.add(carriageMesh);
+
+    // 6. Dispensing Syringe Barrel & Micro-Nozzle
+    const barrelGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.6, 24);
+    const barrelMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transmission: 0.9,
+      opacity: 1,
+      transparent: true,
+      roughness: 0.1,
+      ior: 1.5
+    });
+    const barrelMesh = new THREE.Mesh(barrelGeo, barrelMat);
+    barrelMesh.position.set(0, 0.25, 0);
+    stationGroup.add(barrelMesh);
+
+    // Gold Plated Micro-Nozzle Tip
+    const tipGeo = new THREE.ConeGeometry(0.04, 0.2, 16);
+    tipGeo.rotateX(Math.PI);
+    const tipMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1 });
+    const tipMesh = new THREE.Mesh(tipGeo, tipMat);
+    tipMesh.position.set(0, -0.15, 0);
+    stationGroup.add(tipMesh);
+
+    // Fluid Droplet Laser / Optical Sensor Beam
+    const laserGeo = new THREE.CylinderGeometry(0.005, 0.005, 0.6, 8);
+    const laserMat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.6 });
+    const laserMesh = new THREE.Mesh(laserGeo, laserMat);
+    laserMesh.position.set(0, -0.55, 0);
+    stationGroup.add(laserMesh);
+
+    // Simple Orbit Controls via mouse drag
+    let isDragging = false;
+    let prevMouseX = 0;
+    let prevMouseY = 0;
+    let rotationY = 0.4;
+    let rotationX = 0.2;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      prevMouseX = e.clientX;
+      prevMouseY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - prevMouseX;
+      const deltaY = e.clientY - prevMouseY;
+      rotationY += deltaX * 0.006;
+      rotationX += deltaY * 0.006;
+      rotationX = Math.max(-0.2, Math.min(1.0, rotationX));
+      prevMouseX = e.clientX;
+      prevMouseY = e.clientY;
+    });
+
+    // Reset Camera
+    document.getElementById('resetCamBtn').addEventListener('click', () => {
+      rotationY = 0.4;
+      rotationX = 0.2;
+    });
+
+    // Exploded View Toggle
+    let isExploded = false;
+    document.getElementById('toggleExplodeBtn').addEventListener('click', () => {
+      isExploded = !isExploded;
+      targetColOffset = isExploded ? 0.6 : 0;
+      targetBeamY = isExploded ? 1.4 : 0.85;
+    });
+
+    let colOffset = 0;
+    let targetColOffset = 0;
+    let beamY = 0.85;
+    let targetBeamY = 0.85;
+
+    // Responsive Canvas Resize
+    function resizeRenderer() {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (canvas.width !== w || canvas.height !== h) {
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+    }
+
+    // Animation Loop
+    let clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      resizeRenderer();
+
+      const elapsed = clock.getElapsedTime();
+
+      // Smooth Spring Lerp for Orbit
+      stationGroup.rotation.y += (rotationY - stationGroup.rotation.y) * 0.1;
+      stationGroup.rotation.x += (rotationX - stationGroup.rotation.x) * 0.1;
+
+      // Subtle Idle Floating Animation (Rule: deliberate & calm)
+      chuckMesh.rotation.y = elapsed * 0.5;
+
+      // Explode Lerp
+      colOffset += (targetColOffset - colOffset) * 0.1;
+      beamY += (targetBeamY - beamY) * 0.1;
+      colLeft.position.x = -1.1 - colOffset;
+      colRight.position.x = 1.1 + colOffset;
+      beamMesh.position.y = beamY;
+      carriageMesh.position.y = beamY - 0.15;
+      barrelMesh.position.y = beamY - 0.6;
+      tipMesh.position.y = beamY - 1.0;
+      laserMesh.position.y = beamY - 1.4;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // -------------------------------------------------------------
+    // LIVE TELEMETRY SPARKLINE MINI-CHARTS (Canvas 2D)
+    // -------------------------------------------------------------
+    function initSparkline(id, color) {
+      const cv = document.getElementById(id);
+      const ctx = cv.getContext('2d');
+      cv.width = cv.clientWidth * 2;
+      cv.height = cv.clientHeight * 2;
+
+      const history = Array.from({ length: 24 }, () => 0.4 + Math.random() * 0.2);
+
+      function draw() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        ctx.beginPath();
+        const step = cv.width / (history.length - 1);
+        history.forEach((val, i) => {
+          const x = i * step;
+          const y = cv.height - (val * cv.height * 0.8) - cv.height * 0.1;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      }
+
+      setInterval(() => {
+        history.shift();
+        const last = history[history.length - 1];
+        const next = Math.max(0.1, Math.min(0.9, last + (Math.random() - 0.5) * 0.15));
+        history.push(next);
+        draw();
+      }, 600);
+
+      draw();
+    }
+
+    initSparkline('chartViscosity', '#38bdf8');
+    initSparkline('chartPressure', '#10b981');
+    initSparkline('chartTemp', '#f59e0b');
+    initSparkline('chartVib', '#a855f7');
+
+    // -------------------------------------------------------------
+    // REAL-TIME TELEMETRY JITTER (Tabular Numbers)
+    // -------------------------------------------------------------
+    setInterval(() => {
+      const visc = 1240 + Math.floor(Math.random() * 12);
+      document.getElementById('valViscosity').textContent = visc.toLocaleString();
+
+      const press = (42.5 + Math.random() * 0.6).toFixed(1);
+      document.getElementById('valPressure').textContent = press;
+
+      const temp = (22.3 + Math.random() * 0.3).toFixed(1);
+      document.getElementById('valTemp').textContent = temp;
+
+      const vib = (0.011 + Math.random() * 0.003).toFixed(3);
+      document.getElementById('valVib').textContent = vib;
+    }, 1200);
+
+    // -------------------------------------------------------------
+    // INTERACTIVE AI STATE SIMULATION (Normal vs Wear Warning)
+    // -------------------------------------------------------------
+    const simNormalBtn = document.getElementById('simNormalBtn');
+    const simWarnBtn = document.getElementById('simWarnBtn');
+    const aiHeroCard = document.getElementById('aiHeroCard');
+    const rulNumber = document.getElementById('rulNumber');
+    const healthScore = document.getElementById('healthScore');
+    const rulSubMsg = document.getElementById('rulSubMsg');
+    const wearFill = document.getElementById('wearFill');
+    const aiRecBox = document.getElementById('aiRecBox');
+    const aiRecText = document.getElementById('aiRecText');
+
+    simNormalBtn.addEventListener('click', () => {
+      simNormalBtn.classList.add('active');
+      simWarnBtn.classList.remove('active');
+
+      rulNumber.textContent = '142.8';
+      rulNumber.style.color = '#fff';
+      healthScore.textContent = '98.4%';
+      healthScore.style.color = 'var(--accent-cyan)';
+      wearFill.style.width = '78.4%';
+      wearFill.style.background = 'linear-gradient(90deg, #10b981 0%, #38bdf8 70%, #f59e0b 100%)';
+
+      rulSubMsg.innerHTML = '<span>✓</span> Tooling Health Optimal · Zero Anomaly Risk';
+      rulSubMsg.style.color = 'var(--accent-emerald)';
+
+      aiRecBox.style.background = 'rgba(16, 185, 129, 0.06)';
+      aiRecBox.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+      aiRecText.innerHTML = '<strong>AI Forecast:</strong> Nozzle orifice degradation is within Class-A tolerance. Optimal window for preventative flush is scheduled in <strong>4 shifts (32 operating hours)</strong>.';
+
+      laserMat.color.setHex(0x10b981);
+    });
+
+    simWarnBtn.addEventListener('click', () => {
+      simWarnBtn.classList.add('active');
+      simNormalBtn.classList.remove('active');
+
+      rulNumber.textContent = '18.4';
+      rulNumber.style.color = 'var(--accent-rose)';
+      healthScore.textContent = '62.1%';
+      healthScore.style.color = 'var(--accent-amber)';
+      wearFill.style.width = '24.5%';
+      wearFill.style.background = 'linear-gradient(90deg, #ef4444 0%, #f59e0b 100%)';
+
+      rulSubMsg.innerHTML = '<span>⚠</span> Rapid Orifice Erosion Detected · Maintenance Imminent';
+      rulSubMsg.style.color = 'var(--accent-rose)';
+
+      aiRecBox.style.background = 'rgba(239, 68, 68, 0.08)';
+      aiRecBox.style.borderColor = 'rgba(239, 68, 68, 0.35)';
+      aiRecText.innerHTML = '<strong>AI Action Required:</strong> High fluid viscosity friction detected. Recommend replacing <strong>Dispensing Nozzle Assembly (Part #N-402)</strong> before next shift start to prevent yield loss.';
+
+      laserMat.color.setHex(0xef4444);
+    });
+
+    // -------------------------------------------------------------
+    // ESC KEY & MENU MODAL LOGIC (Non-disappearing & Rock-solid)
+    // -------------------------------------------------------------
+    const menuModal = document.getElementById('menuModal');
+    const openMenuBtn = document.getElementById('openMenuBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+
+    function toggleMenu(show) {
+      if (show) {
+        menuModal.classList.add('open');
+      } else {
+        menuModal.classList.remove('open');
+      }
+    }
+
+    openMenuBtn.addEventListener('click', () => toggleMenu(true));
+    resumeBtn.addEventListener('click', () => toggleMenu(false));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const isOpen = menuModal.classList.contains('open');
+        toggleMenu(!isOpen);
+      }
+    });
+
+    menuModal.addEventListener('click', (e) => {
+      if (e.target === menuModal) {
+        toggleMenu(false);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -22,6 +22,16 @@
     }
   }
   </script>
+  <!-- Preloader Fail-safe (Never get stuck on black screen) -->
+  <script>
+    setTimeout(function() {
+      var pre = document.getElementById('sitePreloader');
+      if (pre && !pre.classList.contains('flash-out')) {
+        pre.classList.add('flash-out');
+        setTimeout(function() { pre.style.display = 'none'; }, 600);
+      }
+    }, 1500);
+  </script>
 </head>
 <body>
   <!-- STEP 1: SPINNING STAR LOADING SCREEN (No progress bar) -->

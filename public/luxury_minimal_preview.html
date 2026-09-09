@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belton Luxury Minimalist Digital Twin | Aero-Glass Edition</title>
+  
+  <!-- Premium Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Three.js Suite -->
+  <script src="/js/libs/three.min.js"></script>
+  <script src="/js/libs/OrbitControls.js"></script>
+  <script src="/js/libs/GLTFLoader.js"></script>
+
+  <style>
+    /* -------------------------------------------------------------
+       SCANDINAVIAN LUXURY MINIMALIST TOKENS
+       (Inspired by VisionOS Aero-Glass, Dieter Rams & Swiss Typographic Order)
+       ------------------------------------------------------------- */
+    :root {
+      /* Palette: Quiet, calm, non-fatiguing */
+      --obsidian-base: #07090e;
+      --glass-surface: rgba(15, 23, 42, 0.38);
+      --glass-surface-hover: rgba(30, 41, 59, 0.48);
+      --glass-blur: 40px;
+      --glass-opacity: 0.38;
+      
+      /* Optical Borders & Specular Rim */
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --glass-rim-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+      --glass-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.55), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+
+      /* Typography & Contrast */
+      --text-hero: #ffffff;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-faint: rgba(148, 163, 184, 0.6);
+
+      /* Accents: Confident & Restrained (Never neon rainbow) */
+      --status-nominal: #10b981; /* Emerald */
+      --status-nominal-bg: rgba(16, 185, 129, 0.12);
+      --status-nominal-rim: rgba(16, 185, 129, 0.28);
+
+      --status-warning: #f59e0b; /* Amber */
+      --status-warning-bg: rgba(245, 158, 11, 0.12);
+      --status-warning-rim: rgba(245, 158, 11, 0.32);
+
+      --status-critical: #f43f5e; /* Rose */
+      --status-critical-bg: rgba(244, 63, 94, 0.14);
+      --status-critical-rim: rgba(244, 63, 94, 0.35);
+
+      /* Current Active Theme Tint */
+      --theme-tint: var(--status-nominal);
+      --theme-tint-bg: var(--status-nominal-bg);
+      --theme-tint-rim: var(--status-nominal-rim);
+
+      /* Springs & Transitions (Emil Kowalski) */
+      --spring-physics: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-calm: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background-color: var(--obsidian-base);
+      color: var(--text-hero);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+    }
+
+    /* 3D Fullscreen Background Canvas */
+    #webgl-canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: radial-gradient(circle at 50% 35%, #131d2e 0%, #080c14 60%, #030508 100%);
+    }
+
+    /* Tabular Numeric Precision (No Jitter) */
+    .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum" 1, "zero" 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Core Glass Primitive */
+    .aero-glass {
+      background: var(--glass-surface);
+      backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-rim-top), var(--glass-shadow);
+      border-radius: 20px;
+      transition: background 0.3s var(--ease-calm), border-color 0.3s var(--ease-calm), box-shadow 0.3s var(--ease-calm);
+    }
+
+    /* -------------------------------------------------------------
+       1. MINIMALIST TOP NAV / CONTROL BAR
+       ------------------------------------------------------------- */
+    .top-nav {
+      position: absolute;
+      top: 24px;
+      left: 32px;
+      right: 32px;
+      height: 64px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(255,255,255,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    .brand-mark svg {
+      width: 18px;
+      height: 18px;
+      stroke: #fff;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-sub);
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    /* Environmental Telemetry Capsules */
+    .env-cluster {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .env-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .env-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .env-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .env-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--status-nominal);
+      box-shadow: 0 0 8px var(--status-nominal);
+    }
+
+    /* State Switcher & Glass Tuners */
+    .controls-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .state-btn {
+      padding: 7px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-sub);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s var(--spring-physics);
+    }
+
+    .state-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .state-btn.active {
+      background: var(--theme-tint-bg);
+      border-color: var(--theme-tint-rim);
+      color: #fff;
+      box-shadow: 0 0 16px -4px var(--theme-tint-rim);
+    }
+
+    .state-btn .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* -------------------------------------------------------------
+       2. HERO PREDICTIVE MAINTENANCE CARD (FROSTED GLASS HUD)
+       Group with space, not lines — Spacious, calm & readable
+       ------------------------------------------------------------- */
+    .hero-hud-card {
+      position: absolute;
+      top: 104px;
+      left: 32px;
+      width: 440px;
+      z-index: 10;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .hud-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .hud-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hud-caption {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hud-title {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+    }
+
+    .status-capsule {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      border-radius: 100px;
+      background: var(--theme-tint-bg);
+      border: 1px solid var(--theme-tint-rim);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .status-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--theme-tint);
+      box-shadow: 0 0 10px var(--theme-tint);
+      animation: gentle-pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes gentle-pulse {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* RUL Big Metric — Restrained Scandinavian Typography */
+    .rul-showcase {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding-bottom: 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .rul-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rul-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .rul-digits-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .rul-number {
+      font-size: 58px;
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+      transition: color 0.4s ease;
+    }
+
+    .rul-unit {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Health Score Dial / Capsule */
+    .health-badge-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .health-badge-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .health-score-val {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--theme-tint);
+      letter-spacing: -0.03em;
+    }
+
+    /* Telemetry Spatial Grid (Space instead of lines) */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px 24px;
+    }
+
+    .metric-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .metric-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .metric-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-unit {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .metric-sparkline-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 100px;
+      margin-top: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .metric-sparkline-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: var(--theme-tint);
+      width: 45%;
+      transition: width 0.5s ease, background-color 0.4s ease;
+    }
+
+    /* AI Prescriptive Insight Box */
+    .ai-insight-box {
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ai-insight-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--theme-tint);
+    }
+
+    .ai-insight-text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-sub);
+      font-weight: 400;
+    }
+
+    /* Action Buttons (Restrained contrast, zero aggressive glow) */
+    .hud-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-luxury-primary {
+      flex: 1;
+      height: 44px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #07090e;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s var(--spring-physics);
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-luxury-primary:hover {
+      background: #f1f5f9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-luxury-primary:active {
+      transform: scale(0.97);
+    }
+
+    .btn-luxury-secondary {
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s var(--spring-physics);
+    }
+
+    .btn-luxury-secondary:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    /* -------------------------------------------------------------
+       3. RIGHT INSPECTOR DRAWER (SPRING INTERACTIVE SLIDE-OUT)
+       ------------------------------------------------------------- */
+    .inspector-drawer {
+      position: absolute;
+      top: 104px;
+      right: 32px;
+      bottom: 100px;
+      width: 400px;
+      z-index: 10;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      transform: translateX(0);
+      transition: transform 0.4s var(--spring-physics), opacity 0.3s ease;
+    }
+
+    .inspector-drawer.closed {
+      transform: translateX(450px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .drawer-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .drawer-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .drawer-close-btn:hover {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+
+    /* Spectrum Canvas */
+    .spectrum-card {
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .spectrum-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    #spectrum-canvas {
+      width: 100%;
+      height: 120px;
+      border-radius: 8px;
+    }
+
+    /* Precision Inspection Breakdown */
+    .health-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .health-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .health-row-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .health-tag {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .health-score-pill {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* -------------------------------------------------------------
+       4. BOTTOM FLOATING INTERACTIVE GLASS DOCK
+       Camera angles, 3D exploded view, & Live Glass Customization
+       ------------------------------------------------------------- */
+    .bottom-glass-dock {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 56px;
+      z-index: 10;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-radius: 100px;
+    }
+
+    .dock-btn {
+      padding: 8px 16px;
+      border-radius: 100px;
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s var(--spring-physics);
+    }
+
+    .dock-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .dock-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .dock-separator {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Live Glass Sliders in Dock */
+    .glass-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .glass-slider-wrap input[type=range] {
+      appearance: none;
+      width: 80px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .glass-slider-wrap input[type=range]::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Three.js WebGL Viewport -->
+  <div id="webgl-canvas-container"></div>
+
+  <!-- 1. Scandinavian Minimalist Top Navigation -->
+  <header class="top-nav aero-glass">
+    <div class="brand-cluster">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">
+          BELTON CLEANROOM 100
+          <span class="brand-badge">Aero-Glass v2</span>
+        </div>
+        <div class="brand-subtitle">High-Precision Micro-Actuator Automated Line</div>
+      </div>
+    </div>
+
+    <!-- Live Ambient Telemetry -->
+    <div class="env-cluster">
+      <div class="env-item">
+        <div class="env-label">Laminar Flow</div>
+        <div class="env-value"><span class="env-dot"></span>0.45 m/s</div>
+      </div>
+      <div class="env-item">
+        <div class="env-label">Differential P</div>
+        <div class="env-value num">+24.6 Pa</div>
+      </div>
+      <div class="env-item">
+        <div class="env-label">Air Purity</div>
+        <div class="env-value">ISO Class 5</div>
+      </div>
+      <div class="env-item">
+        <div class="env-label">IoT Latency</div>
+        <div class="env-value num">12 ms</div>
+      </div>
+    </div>
+
+    <!-- Interactive Simulator State Switcher -->
+    <div class="controls-cluster">
+      <button class="state-btn active" id="btn-state-nominal" onclick="setDemoState('nominal')">
+        <span class="dot" style="background:#10b981;"></span>
+        Optimal
+      </button>
+      <button class="state-btn" id="btn-state-warning" onclick="setDemoState('warning')">
+        <span class="dot" style="background:#f59e0b;"></span>
+        Warning
+      </button>
+      <button class="state-btn" id="btn-state-critical" onclick="setDemoState('critical')">
+        <span class="dot" style="background:#f43f5e;"></span>
+        Critical
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. Hero Predictive Maintenance Card (Pure Frosted Glass HUD) -->
+  <main class="hero-hud-card aero-glass" id="heroCard">
+    <div class="hud-header">
+      <div class="hud-header-left">
+        <span class="hud-caption">Bayesian Neural Forecaster</span>
+        <h2 class="hud-title">Dispense Head #04</h2>
+      </div>
+      <div class="status-capsule" id="statusCapsule">
+        <span class="status-pulse-dot" id="statusDot"></span>
+        <span id="statusText">Optimal Nominal</span>
+      </div>
+    </div>
+
+    <!-- Big RUL Metric — Scandinavian Breathing Room -->
+    <div class="rul-showcase">
+      <div class="rul-left">
+        <span class="rul-label">Remaining Useful Life (RUL)</span>
+        <div class="rul-digits-wrap">
+          <span class="rul-number num" id="rulNumber">142</span>
+          <span class="rul-unit">Hours</span>
+        </div>
+      </div>
+      <div class="health-badge-wrap">
+        <span class="health-badge-label">Health Index</span>
+        <span class="health-score-val num" id="healthScore">99.4%</span>
+      </div>
+    </div>
+
+    <!-- Telemetry Spatial Grid (Space instead of lines) -->
+    <div class="telemetry-grid">
+      <div class="metric-cell">
+        <span class="metric-name">Piezo Temp</span>
+        <div class="metric-value-row">
+          <span class="metric-val num" id="valTemp">24.2</span>
+          <span class="metric-unit">°C</span>
+        </div>
+        <div class="metric-sparkline-bar">
+          <div class="metric-sparkline-fill" id="fillTemp" style="width: 32%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-cell">
+        <span class="metric-name">Vibration RMS</span>
+        <div class="metric-value-row">
+          <span class="metric-val num" id="valVib">0.082</span>
+          <span class="metric-unit">mm/s</span>
+        </div>
+        <div class="metric-sparkline-bar">
+          <div class="metric-sparkline-fill" id="fillVib" style="width: 22%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-cell">
+        <span class="metric-name">Dispense Flow</span>
+        <div class="metric-value-row">
+          <span class="metric-val num" id="valFlow">12.4</span>
+          <span class="metric-unit">mg/s</span>
+        </div>
+        <div class="metric-sparkline-bar">
+          <div class="metric-sparkline-fill" id="fillFlow" style="width: 58%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-cell">
+        <span class="metric-name">Actuator Pressure</span>
+        <div class="metric-value-row">
+          <span class="metric-val num" id="valPres">4.18</span>
+          <span class="metric-unit">bar</span>
+        </div>
+        <div class="metric-sparkline-bar">
+          <div class="metric-sparkline-fill" id="fillPres" style="width: 48%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Prescriptive Insight Box -->
+    <div class="ai-insight-box">
+      <div class="ai-insight-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span id="aiInsightTitle">Predictive Diagnostics</span>
+      </div>
+      <p class="ai-insight-text" id="aiInsightText">
+        Harmonics resonance normal at 42 kHz. Piezo nozzle micro-dispensing variance within ±0.03 mg/s tolerance.
+      </p>
+    </div>
+
+    <!-- Restrained Actions -->
+    <div class="hud-actions">
+      <button class="btn-luxury-primary" onclick="triggerInspectionDrawer()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        Open Diagnostics
+      </button>
+      <button class="btn-luxury-secondary" onclick="toggleExplode()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M2 12h20"></path>
+        </svg>
+        Explode 3D
+      </button>
+    </div>
+  </main>
+
+  <!-- 3. Inspector Side Drawer -->
+  <aside class="inspector-drawer aero-glass" id="inspectorDrawer">
+    <div class="drawer-title-row">
+      <h3 class="drawer-title">Acoustic & Vibration FFT</h3>
+      <button class="drawer-close-btn" onclick="triggerInspectionDrawer()">✕</button>
+    </div>
+
+    <!-- Real-time Canvas Spectrogram -->
+    <div class="spectrum-card">
+      <div class="spectrum-header">
+        <span>Harmonic Spectrum (0 - 80 kHz)</span>
+        <span class="num">Live FFT</span>
+      </div>
+      <canvas id="spectrum-canvas"></canvas>
+    </div>
+
+    <div class="health-breakdown">
+      <div class="spectrum-header">
+        <span>Subsystem Integrity</span>
+        <span>Confidence</span>
+      </div>
+
+      <div class="health-row">
+        <div class="health-row-left">
+          <span class="health-tag" style="background:#10b981;"></span>
+          <span>Piezo Transducer</span>
+        </div>
+        <span class="health-score-pill num">99.8%</span>
+      </div>
+
+      <div class="health-row">
+        <div class="health-row-left">
+          <span class="health-tag" style="background:#10b981;"></span>
+          <span>Spindle Bearings</span>
+        </div>
+        <span class="health-score-pill num" id="lblBearing">98.9%</span>
+      </div>
+
+      <div class="health-row">
+        <div class="health-row-left">
+          <span class="health-tag" style="background:#10b981;"></span>
+          <span>HEPA Cleanliness</span>
+        </div>
+        <span class="health-score-pill num">100.0%</span>
+      </div>
+
+      <div class="health-row">
+        <div class="health-row-left">
+          <span class="health-tag" style="background:#10b981;"></span>
+          <span>Nozzle Orifice</span>
+        </div>
+        <span class="health-score-pill num" id="lblNozzle">99.2%</span>
+      </div>
+    </div>
+
+    <div class="ai-insight-box" style="margin-top:auto;">
+      <div class="ai-insight-header">
+        <span>Calibration Recommendation</span>
+      </div>
+      <p class="ai-insight-text" id="drawerAdviceText">
+        Optimal operating curve. Next scheduled preventative maintenance window: Sunday 02:00 AM (Cleanroom Idle Phase).
+      </p>
+    </div>
+  </aside>
+
+  <!-- 4. Bottom Floating Glass Dock -->
+  <div class="bottom-glass-dock aero-glass">
+    <button class="dock-btn active" id="btnCamTurntable" onclick="setCameraView('turntable')">
+      Turntable 360°
+    </button>
+    <button class="dock-btn" id="btnCamDetail" onclick="setCameraView('detail')">
+      Micro-Nozzle
+    </button>
+    <button class="dock-btn" id="btnCamTop" onclick="setCameraView('top')">
+      Plan View
+    </button>
+    
+    <div class="dock-separator"></div>
+
+    <!-- Live Glass Blur Tuner -->
+    <div class="glass-slider-wrap">
+      <span>Blur</span>
+      <input type="range" id="sliderBlur" min="5" max="60" value="40" oninput="updateGlassProps()">
+    </div>
+
+    <!-- Live Glass Opacity Tuner -->
+    <div class="glass-slider-wrap">
+      <span>Glass</span>
+      <input type="range" id="sliderOpacity" min="10" max="70" value="38" oninput="updateGlassProps()">
+    </div>
+  </div>
+
+  <!-- Audio Chime Synthesis (Web Audio API) -->
+  <script>
+    let audioCtx = null;
+    function playSleekChime(freq = 600, type = 'sine', duration = 0.08) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.7, audioCtx.currentTime + duration);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+  </script>
+
+  <!-- 3D Three.js Scene Setup with Precision Cleanroom Machinery -->
+  <script>
+    const container = document.getElementById('webgl-canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x07090e, 0.015);
+
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.8, 4.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 + 0.05;
+    controls.minDistance = 2.0;
+    controls.maxDistance = 8.0;
+    controls.target.set(0, 0.6, 0);
+
+    // High-End Studio Lighting for Frosted Glass Reflections
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xe2e8f0, 2.2);
+    keyLight.position.set(4, 8, 5);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 3.5);
+    rimLight.position.set(-6, 3, -4);
+    scene.add(rimLight);
+
+    const bottomGlow = new THREE.PointLight(0x10b981, 1.2, 10);
+    bottomGlow.position.set(0, -0.5, 0);
+    scene.add(bottomGlow);
+
+    // Cleanroom Floor Grid
+    const gridHelper = new THREE.GridHelper(30, 60, 0x334155, 0x1e293b);
+    gridHelper.position.y = -0.6;
+    gridHelper.material.opacity = 0.25;
+    gridHelper.material.transparent = true;
+    scene.add(gridHelper);
+
+    // Floating Cleanroom Aerosol Particles (Airflow visualization)
+    const particleCount = 200;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePos = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      particlePos[i] = (Math.random() - 0.5) * 12;
+      particlePos[i + 1] = Math.random() * 5 - 0.5;
+      particlePos[i + 2] = (Math.random() - 0.5) * 12;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+    const particleMat = new THREE.PointsMaterial({
+      color: 0x38bdf8,
+      size: 0.035,
+      transparent: true,
+      opacity: 0.45,
+      blending: THREE.AdditiveBlending
+    });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+
+    // Precision Machinery Assembly Group
+    const assembly = new THREE.Group();
+    scene.add(assembly);
+
+    // PBR Materials: Precision Brushed Titanium & Sapphire Glass
+    const matBrushedMetal = new THREE.MeshStandardMaterial({
+      color: 0x94a3b8,
+      metalness: 0.88,
+      roughness: 0.22,
+    });
+
+    const matDarkCarbon = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.7,
+      roughness: 0.35,
+    });
+
+    const matGoldContact = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      metalness: 0.95,
+      roughness: 0.15,
+    });
+
+    const matNozzleChrome = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 0.98,
+      roughness: 0.08,
+    });
+
+    const parts = [];
+
+    // Base Plinth
+    const baseGeo = new THREE.CylinderGeometry(1.2, 1.35, 0.2, 48);
+    const plinth = new THREE.Mesh(baseGeo, matDarkCarbon);
+    plinth.position.y = -0.5;
+    assembly.add(plinth);
+    parts.push({ mesh: plinth, origY: -0.5, expY: -0.9 });
+
+    // Rotating Precision Turntable
+    const rotorGeo = new THREE.CylinderGeometry(1.0, 1.0, 0.12, 48);
+    const rotor = new THREE.Mesh(rotorGeo, matBrushedMetal);
+    rotor.position.y = -0.34;
+    assembly.add(rotor);
+    parts.push({ mesh: rotor, origY: -0.34, expY: -0.6 });
+
+    // Linear Actuator Column
+    const colGeo = new THREE.BoxGeometry(0.35, 1.4, 0.35);
+    const column = new THREE.Mesh(colGeo, matDarkCarbon);
+    column.position.set(-0.5, 0.45, 0);
+    assembly.add(column);
+    parts.push({ mesh: column, origY: 0.45, expY: 0.45, origX: -0.5, expX: -0.9 });
+
+    // Cantilever Dispense Arm
+    const armGeo = new THREE.BoxGeometry(1.1, 0.2, 0.25);
+    const arm = new THREE.Mesh(armGeo, matBrushedMetal);
+    arm.position.set(0.0, 1.0, 0);
+    assembly.add(arm);
+    parts.push({ mesh: arm, origY: 1.0, expY: 1.35 });
+
+    // Piezoelectric Micro-Dispense Head
+    const headGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.55, 32);
+    const head = new THREE.Mesh(headGeo, matBrushedMetal);
+    head.position.set(0.45, 0.75, 0);
+    assembly.add(head);
+    parts.push({ mesh: head, origY: 0.75, expY: 0.95 });
+
+    // Gold Piezo Ceramic Resonator Rings
+    const ringGeo = new THREE.TorusGeometry(0.18, 0.02, 16, 32);
+    const ring1 = new THREE.Mesh(ringGeo, matGoldContact);
+    ring1.rotation.x = Math.PI / 2;
+    ring1.position.set(0.45, 0.82, 0);
+    assembly.add(ring1);
+    parts.push({ mesh: ring1, origY: 0.82, expY: 1.15 });
+
+    const ring2 = new THREE.Mesh(ringGeo, matGoldContact);
+    ring2.rotation.x = Math.PI / 2;
+    ring2.position.set(0.45, 0.70, 0);
+    assembly.add(ring2);
+    parts.push({ mesh: ring2, origY: 0.70, expY: 0.90 });
+
+    // Laser/Piezo Needle
+    const needleGeo = new THREE.ConeGeometry(0.04, 0.25, 32);
+    const needle = new THREE.Mesh(needleGeo, matNozzleChrome);
+    needle.rotation.x = Math.PI;
+    needle.position.set(0.45, 0.35, 0);
+    assembly.add(needle);
+    parts.push({ mesh: needle, origY: 0.35, expY: 0.15 });
+
+    // Subtle Optical Dispense Fluid Beam (glow)
+    const beamGeo = new THREE.CylinderGeometry(0.008, 0.015, 0.3, 16);
+    const beamMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      transparent: true,
+      opacity: 0.75
+    });
+    const beam = new THREE.Mesh(beamGeo, beamMat);
+    beam.position.set(0.45, 0.1, 0);
+    assembly.add(beam);
+
+    // Try loading coil.glb if present on server to enhance detail
+    const loader = new THREE.GLTFLoader();
+    loader.load('/models/coil.glb', (gltf) => {
+      const model = gltf.scene;
+      model.scale.set(0.012, 0.012, 0.012);
+      model.position.set(0.45, -0.26, 0);
+      assembly.add(model);
+    }, undefined, () => {
+      // Fallback: assembly already looks exceptional
+    });
+
+    // Explode Animation State
+    let isExploded = false;
+    let explodeProgress = 0;
+
+    function toggleExplode() {
+      isExploded = !isExploded;
+      playSleekChime(isExploded ? 750 : 500, 'sine', 0.1);
+    }
+
+    // Camera Presets
+    function setCameraView(preset) {
+      document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      playSleekChime(640, 'sine', 0.06);
+
+      if (preset === 'turntable') {
+        gsapSmoothCam(0, 1.8, 4.5, 0, 0.6, 0);
+      } else if (preset === 'detail') {
+        gsapSmoothCam(0.45, 0.75, 1.6, 0.45, 0.6, 0);
+      } else if (preset === 'top') {
+        gsapSmoothCam(0, 4.5, 0.01, 0, 0.5, 0);
+      }
+    }
+
+    function gsapSmoothCam(px, py, pz, tx, ty, tz) {
+      const startPos = camera.position.clone();
+      const endPos = new THREE.Vector3(px, py, pz);
+      const startTar = controls.target.clone();
+      const endTar = new THREE.Vector3(tx, ty, tz);
+      let t = 0;
+
+      function camStep() {
+        t += 0.04;
+        const ease = 1 - Math.pow(1 - Math.min(t, 1), 3);
+        camera.position.lerpVectors(startPos, endPos, ease);
+        controls.target.lerpVectors(startTar, endTar, ease);
+        if (t < 1) requestAnimationFrame(camStep);
+      }
+      camStep();
+    }
+
+    // Animation Loop
+    let clock = new THREE.Clock();
+    function renderLoop() {
+      requestAnimationFrame(renderLoop);
+      const dt = clock.getDelta();
+      const time = clock.getElapsedTime();
+
+      // Gentle continuous turntable rotation
+      assembly.rotation.y += 0.003;
+
+      // Particle subtle drifting
+      const pos = particles.geometry.attributes.position.array;
+      for (let i = 1; i < particleCount * 3; i += 3) {
+        pos[i] -= dt * 0.2;
+        if (pos[i] < -0.6) pos[i] = 4.5;
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
+
+      // Explode Lerp
+      const targetExp = isExploded ? 1.0 : 0.0;
+      explodeProgress += (targetExp - explodeProgress) * 0.08;
+
+      parts.forEach(p => {
+        if (p.expY !== undefined) {
+          p.mesh.position.y = p.origY + (p.expY - p.origY) * explodeProgress;
+        }
+        if (p.expX !== undefined) {
+          p.mesh.position.x = p.origX + (p.expX - p.origX) * explodeProgress;
+        }
+      });
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    renderLoop();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+
+  <!-- Interactive Demo States & Glass Customization Script -->
+  <script>
+    let currentState = 'nominal';
+
+    const stateConfigs = {
+      nominal: {
+        tint: '#10b981',
+        tintBg: 'rgba(16, 185, 129, 0.12)',
+        tintRim: 'rgba(16, 185, 129, 0.28)',
+        statusText: 'Optimal Nominal',
+        rul: 142,
+        health: '99.4%',
+        temp: 24.2,
+        vib: 0.082,
+        flow: 12.4,
+        pres: 4.18,
+        tempBar: '32%',
+        vibBar: '22%',
+        aiTitle: 'Predictive Diagnostics',
+        aiText: 'Harmonics resonance normal at 42 kHz. Piezo nozzle micro-dispensing variance within ±0.03 mg/s tolerance.',
+        adviceText: 'Optimal operating curve. Next scheduled preventative maintenance window: Sunday 02:00 AM (Cleanroom Idle Phase).',
+        bearing: '98.9%',
+        nozzle: '99.2%'
+      },
+      warning: {
+        tint: '#f59e0b',
+        tintBg: 'rgba(245, 158, 11, 0.12)',
+        tintRim: 'rgba(245, 158, 11, 0.32)',
+        statusText: 'Elevated Friction',
+        rul: 68,
+        health: '81.2%',
+        temp: 31.8,
+        vib: 0.245,
+        flow: 11.8,
+        pres: 4.45,
+        tempBar: '64%',
+        vibBar: '58%',
+        aiTitle: 'Pre-Fault Detected',
+        aiText: 'Micro-vibration frequency shift observed at 1.2 kHz harmonics. Ceramic piezo seal showing thermal drift.',
+        adviceText: 'Recommend re-zeroing dispense nozzle flow offset within 12 operating hours to prevent adhesive clogging.',
+        bearing: '82.4%',
+        nozzle: '79.6%'
+      },
+      critical: {
+        tint: '#f43f5e',
+        tintBg: 'rgba(244, 63, 94, 0.14)',
+        tintRim: 'rgba(244, 63, 94, 0.35)',
+        statusText: 'Bearing Degradation',
+        rul: 16,
+        health: '42.0%',
+        temp: 43.6,
+        vib: 0.612,
+        flow: 9.2,
+        pres: 5.12,
+        tempBar: '92%',
+        vibBar: '89%',
+        aiTitle: 'Critical Intervention Required',
+        aiText: 'Actuator RMS vibration crossed 0.60 mm/s limit. Fluid viscosity shear failure imminent. Immediate tool swap recommended.',
+        adviceText: 'Emergency maintenance automated hold recommended before next batch release. Spare unit #A-10 ready in buffer.',
+        bearing: '38.5%',
+        nozzle: '44.1%'
+      }
+    };
+
+    function setDemoState(stateKey) {
+      currentState = stateKey;
+      const conf = stateConfigs[stateKey];
+
+      // Update Root Tokens
+      document.documentElement.style.setProperty('--theme-tint', conf.tint);
+      document.documentElement.style.setProperty('--theme-tint-bg', conf.tintBg);
+      document.documentElement.style.setProperty('--theme-tint-rim', conf.tintRim);
+
+      // Buttons
+      document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-state-' + stateKey).classList.add('active');
+
+      // Update HUD Values with smooth numbers
+      document.getElementById('statusText').innerText = conf.statusText;
+      document.getElementById('rulNumber').innerText = conf.rul;
+      document.getElementById('healthScore').innerText = conf.health;
+
+      document.getElementById('valTemp').innerText = conf.temp;
+      document.getElementById('valVib').innerText = conf.vib;
+      document.getElementById('valFlow').innerText = conf.flow;
+      document.getElementById('valPres').innerText = conf.pres;
+
+      document.getElementById('fillTemp').style.width = conf.tempBar;
+      document.getElementById('fillVib').style.width = conf.vibBar;
+
+      document.getElementById('aiInsightTitle').innerText = conf.aiTitle;
+      document.getElementById('aiInsightText').innerText = conf.aiText;
+
+      document.getElementById('drawerAdviceText').innerText = conf.adviceText;
+      document.getElementById('lblBearing').innerText = conf.bearing;
+      document.getElementById('lblNozzle').innerText = conf.nozzle;
+
+      // Update 3D Light Tint
+      if (typeof bottomGlow !== 'undefined') {
+        bottomGlow.color.set(conf.tint);
+      }
+      if (typeof beamMat !== 'undefined') {
+        beamMat.color.set(conf.tint);
+      }
+
+      playSleekChime(stateKey === 'nominal' ? 680 : (stateKey === 'warning' ? 520 : 380), 'sine', 0.1);
+    }
+
+    // Toggle Inspector Drawer
+    let drawerOpen = true;
+    function triggerInspectionDrawer() {
+      drawerOpen = !drawerOpen;
+      const drawer = document.getElementById('inspectorDrawer');
+      if (drawerOpen) {
+        drawer.classList.remove('closed');
+        playSleekChime(700, 'sine', 0.08);
+      } else {
+        drawer.classList.add('closed');
+        playSleekChime(450, 'sine', 0.08);
+      }
+    }
+
+    // Live Glass Customization Sliders
+    function updateGlassProps() {
+      const blur = document.getElementById('sliderBlur').value;
+      const opacity = document.getElementById('sliderOpacity').value / 100;
+
+      document.documentElement.style.setProperty('--glass-blur', blur + 'px');
+      document.documentElement.style.setProperty('--glass-surface', `rgba(15, 23, 42, ${opacity})`);
+    }
+
+    // Subtle Live Ticking on Sensor Numbers (Tabular figures demonstration)
+    setInterval(() => {
+      if (currentState === 'nominal') {
+        const jitter = (Math.random() * 0.04 - 0.02);
+        const curTemp = parseFloat(document.getElementById('valTemp').innerText);
+        document.getElementById('valTemp').innerText = (24.2 + jitter).toFixed(1);
+
+        const curVib = (0.082 + (Math.random() * 0.006 - 0.003)).toFixed(3);
+        document.getElementById('valVib').innerText = curVib;
+      }
+    }, 1800);
+
+    // Live FFT Spectrogram Canvas Simulation
+    const specCanvas = document.getElementById('spectrum-canvas');
+    const sCtx = specCanvas.getContext('2d');
+    function resizeSpecCanvas() {
+      specCanvas.width = specCanvas.clientWidth * window.devicePixelRatio;
+      specCanvas.height = specCanvas.clientHeight * window.devicePixelRatio;
+    }
+    window.addEventListener('load', resizeSpecCanvas);
+    window.addEventListener('resize', resizeSpecCanvas);
+
+    function drawSpectrogram() {
+      requestAnimationFrame(drawSpectrogram);
+      const w = specCanvas.width;
+      const h = specCanvas.height;
+      sCtx.clearRect(0, 0, w, h);
+
+      const bars = 48;
+      const barW = w / bars;
+      const conf = stateConfigs[currentState];
+
+      for (let i = 0; i < bars; i++) {
+        let baseHeight = Math.sin(i * 0.35 + Date.now() * 0.005) * 0.2 + 0.3;
+        if (currentState === 'warning' && i > 20 && i < 30) {
+          baseHeight += 0.45;
+        } else if (currentState === 'critical') {
+          baseHeight += Math.random() * 0.5;
+        }
+
+        const barH = Math.min(Math.max(baseHeight * h * 0.8, 4), h * 0.95);
+        sCtx.fillStyle = conf.tint;
+        sCtx.globalAlpha = 0.5 + Math.sin(i + Date.now() * 0.002) * 0.3;
+        sCtx.fillRect(i * barW + 1, h - barH, barW - 2, barH);
+      }
+    }
+    drawSpectrogram();
+  </script>
+</body>
+</html>
+
