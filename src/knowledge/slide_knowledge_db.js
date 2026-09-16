@@ -15,8 +15,8 @@ function getDb() {
   return db;
 }
 
-function loadAllSlides() {
-  if (!inMemorySlides) {
+function loadAllSlides(forceReload = false) {
+  if (!inMemorySlides || forceReload) {
     if (fs.existsSync(JSON_PATH)) {
       try {
         inMemorySlides = JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
@@ -39,7 +39,13 @@ function loadAllSlides() {
 // Domain keywords for segmenting Thai text queries without spaces
 const DOMAIN_KEYWORDS = [
   // Exam, Passing Criteria, HR
-  'เกณฑ์', 'คะแนน', 'สอบ', 'ผ่าน', 'เปอร์เซ็นต์', '80%', '100%', 'อบรม', 'แบบทดสอบ', 'ประเมิน', 'hr', 'human resource',
+  'เกณฑ์', 'คะแนน', 'สอบ', 'ผ่าน', 'เปอร์เซ็นต์', '80%', '100%', 'อบรม', 'แบบทดสอบ', 'ประเมิน', 'hr', 'human resource', 'ข้อสอบ',
+  // Seagate Workmanship Standards & Quality Inspection
+  'seagate', 'ซีเกท', 'spe', 'raw material', 'วัตถุดิบ', 'hookup', 'ฮุกอัพ', 'tray', 'tray washing', 'ถาดล้าง', 'ถาดเปียก', 'wet tray', 'cover damper',
+  'broken wire', 'ลวดหัก', 'ลวดขาด', 'expose wire', 'ลวดเปลือย', 'poor tinning', 'tinning', 'ชุบดีบุก', 'loose coil', 'คอยล์หลวม',
+  'dent wire', 'ลวดบี้', 'kink', 'ลวดงอ', 'solder ball', 'เม็ดบัดกรี', 'ลูกตะกั่ว', 'flux', 'ฟลักซ์', 'void epoxy', 'epoxy', 'กาวอีพอกซี',
+  'stiffener', 'bent', 'บิดงอ', 'scratch', 'รอยขีดข่วน', 'dent', 'รอยบุบ', 'burr', 'เสี้ยน', 'particle', 'ฝุ่น', 'สิ่งแปลกปลอม',
+  'oxidation', 'สนิม', 'rust', 'grease', 'คราบน้ำมัน', 'oil', 'accept', 'reject', 'ยอมรับ', 'ปฏิเสธ', 'เกณฑ์สเปค', 'defect', 'ของเสีย',
   // Gowning & Cleanroom Entry / Exit
   'แต่งตัว', 'ถอดชุด', 'ชุดคลีนรูม', 'หมวก', 'hairnet', 'หน้ากาก', 'mask', 'face mask',
   'จั๊มสูท', 'jumpsuit', 'smock', 'รองเท้า', 'booties', 'ถุงมือ', 'gloves',
@@ -61,6 +67,8 @@ const DOMAIN_KEYWORDS = [
 ];
 
 const HIGH_PRIORITY_TERMS = [
+  'spe', 'seagate', 'broken wire', 'expose wire', 'tinning', 'solder ball', 'wet tray', 'tray washing',
+  'raw material', 'hookup', 'stiffener', 'accept', 'reject', 'defect', 'รอยบุบ', 'ลวดหัก', 'ลวดเปลือย',
   'fcof', 'aca', 'apfa', 'coil', 'silicone', 'ซิลิโคน', 'nvs', 'talc', 'ทัลค์', 'แป้ง',
   'wrist strap', 'ionizer', 'hbm', 'cdm', 'mm', 'major', 'minor', 'critical', '80%',
   'gowning', 'air shower', 'penalty', 'เกณฑ์', 'สอบ', 'คะแนน', 'บทลงโทษ', 'ผ้าดำ',
@@ -68,7 +76,7 @@ const HIGH_PRIORITY_TERMS = [
 ];
 
 /**
- * Smart Search across all 273 Belton training slides
+ * Smart Search across all 669 Belton & Seagate training slides
  * Sub-millisecond execution, robust Thai segmentation, priority scoring
  * @param {string} query - The search query (Thai or English)
  * @param {number} limit - Maximum number of results to return (default: 3)
@@ -81,11 +89,19 @@ function searchSlideKnowledge(query, limit = 3) {
   const slides = loadAllSlides();
   const lowerQ = query.toLowerCase();
 
-  // Extract domain keywords from Thai query
+  // Extract domain keywords from Thai and English query with boundary safety
   const tokens = new Set();
   for (const kw of DOMAIN_KEYWORDS) {
-    if (lowerQ.includes(kw.toLowerCase())) {
-      tokens.add(kw.toLowerCase());
+    const kwLower = kw.toLowerCase();
+    if (/^[a-z0-9_-]+$/.test(kwLower)) {
+      const regex = new RegExp(`\\b${kwLower}\\b`, 'i');
+      if (regex.test(lowerQ)) {
+        tokens.add(kwLower);
+      }
+    } else {
+      if (lowerQ.includes(kwLower)) {
+        tokens.add(kwLower);
+      }
     }
   }
 
@@ -105,10 +121,30 @@ function searchSlideKnowledge(query, limit = 3) {
 
   if (tokens.size === 0) return [];
 
+  const DEFECT_SPECIFIC_TERMS = [
+    'broken wire', 'expose wire', 'loose coil', 'poor tinning', 'dent wire', 'kink',
+    'wet tray', 'solder ball', 'void epoxy', 'stiffener', 'burr', 'oxidation',
+    'ลวดหัก', 'ลวดเปลือย', 'ถาดเปียก', 'เม็ดบัดกรี', 'รอยบุบ', 'รอยขีดข่วน'
+  ];
+
   const scored = slides.map(s => {
     let score = 0;
     const sTitle = (s.title || '').toLowerCase();
     const sContent = (s.content || '').toLowerCase();
+    const sDocCode = (s.doc_code || '').toLowerCase();
+
+    // Exact doc_code match bonus (e.g. SPE-01-08-01, TM-00-00-05)
+    if (lowerQ.includes(sDocCode)) {
+      score += 200;
+    }
+
+    // Specific defect phrase bonus
+    for (const dt of DEFECT_SPECIFIC_TERMS) {
+      if (lowerQ.includes(dt)) {
+        if (sTitle.includes(dt)) score += 350;
+        if (sContent.includes(dt)) score += 80;
+      }
+    }
 
     // Exact phrase match bonus
     if (sContent.includes(lowerQ)) score += 80;
@@ -167,7 +203,16 @@ function getSlidePage(docCode, pageNumber) {
   return slides.find(s => s.doc_code === docCode && s.page_number === num) || null;
 }
 
+/**
+ * Reload slide knowledge base from disk
+ */
+function reloadSlideKnowledge() {
+  inMemorySlides = null;
+  return loadAllSlides(true);
+}
+
 module.exports = {
   searchSlideKnowledge,
-  getSlidePage
+  getSlidePage,
+  reloadSlideKnowledge
 };

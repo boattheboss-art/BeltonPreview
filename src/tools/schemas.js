@@ -65,13 +65,13 @@ const toolsDefinition = [
     type: 'function',
     function: {
       name: 'search_training_slides',
-      description: 'Search the official Belton training slides database (273 pages of engineering slides) for Cleanroom procedures, FCOF/ACA/APFA/Coil Winding manufacturing steps, ESD controls, gowning rules, contamination standards, and penalties. Call this whenever specific technical knowledge or slide citations are needed.',
+      description: 'Search the official Belton & Seagate training slides database (669 pages) for Seagate Workmanship Standards (Raw material, Hookup, FCOF, Tray washing, ACA, Coil winding, Broken wire, Expose wire, Solder ball, Defect criteria), Cleanroom procedures, FCOF/ACA/APFA/Coil Winding manufacturing steps, ESD controls, gowning rules, contamination standards, and penalties. Call this whenever specific technical knowledge, Seagate defect criteria, or slide citations are needed.',
       parameters: {
         type: 'object',
         properties: {
           query: {
             type: 'string',
-            description: 'Search keyword or query in Thai or English (e.g. FCOF, silicone, ESD, การแต่งตัว, บทลงโทษ, 80%)'
+            description: 'Search keyword or query in Thai or English (e.g. Broken wire, SPE-01-08-01, Wet tray, FCOF, silicone, ESD, การแต่งตัว, บทลงโทษ, 80%)'
           }
         },
         required: ['query']
