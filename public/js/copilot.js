@@ -73,7 +73,13 @@
     scrollToBottom();
   }
 
-  // Create Bot message container with typing cursor & thinking indicator
+  // SVG Icon definitions (No emojis)
+  const SVG_SPARK = `<svg class="thought-svg-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
+  const SVG_CHEVRON = `<svg class="thought-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+  const SVG_CHECK = `<svg class="step-check-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const HTML_SPINNER = `<span class="step-spinner"></span>`;
+
+  // Create Bot message container with live open thought process
   function createBotMessageContainer() {
     const row = document.createElement('div');
     row.className = 'message-row bot is-thinking';
@@ -82,13 +88,19 @@
         <img src="belton_logo.png" alt="BELTON AI Logo" class="bot-avatar-img" />
       </div>
       <div class="bot-content">
-        <!-- Minimal Thinking Status Indicator -->
-        <div class="thinking-status-pill">
-          <span class="thinking-sparkle-icon">✦</span>
-          <span class="thinking-label">กำลังคิด</span>
-          <span class="thinking-dots">
-            <span class="dot d1">.</span><span class="dot d2">.</span><span class="dot d3">.</span>
-          </span>
+        <!-- Live Open Thought Box (flowing downwards during thinking) -->
+        <div class="thought-box is-open is-thinking">
+          <button type="button" class="thought-toggle" aria-expanded="true">
+            <span class="thought-toggle-left">
+              ${SVG_SPARK}
+              <span class="thought-title">กำลังคิดวิเคราะห์...</span>
+              <span class="thought-time">0.0s</span>
+            </span>
+            ${SVG_CHEVRON}
+          </button>
+          <div class="thought-dropdown">
+            <div class="thought-steps-list"></div>
+          </div>
         </div>
         <span class="bot-text" style="display: none;"></span>
         <span class="typing-cursor" style="display: none;"></span>
@@ -97,9 +109,26 @@
     feed.appendChild(row);
     scrollToBottom();
 
+    const thoughtBox = row.querySelector('.thought-box');
+    const thoughtToggle = row.querySelector('.thought-toggle');
+    const thoughtTitle = row.querySelector('.thought-title');
+    const thoughtTime = row.querySelector('.thought-time');
+    const thoughtDropdown = row.querySelector('.thought-dropdown');
+    const thoughtStepsList = row.querySelector('.thought-steps-list');
+
+    // Manual toggle on click
+    thoughtToggle.addEventListener('click', () => {
+      thoughtBox.classList.toggle('is-open');
+      scrollToBottom();
+    });
+
     return {
       rowEl: row,
-      thinkingPill: row.querySelector('.thinking-status-pill'),
+      thoughtBox,
+      thoughtTitle,
+      thoughtTime,
+      thoughtDropdown,
+      thoughtStepsList,
       textEl: row.querySelector('.bot-text'),
       cursorEl: row.querySelector('.typing-cursor'),
       contentEl: row.querySelector('.bot-content')
@@ -112,156 +141,56 @@
     }, 20);
   }
 
-  // Define Dynamic Thinking Stages based on user query intent
+  // Define Dynamic Thinking Stages based on user query intent (No Emojis)
   function getThinkingStages(query) {
     const q = query.toLowerCase();
 
     // Cleanroom / Gowning / Training procedures
     if (/ชุด|คลีนรูม|สวม|ถอด|hairnet|jumpsuit|booties|glove|mask|หน้ากาก|หมวก|รองเท้าบูท|แต่งตัว/i.test(q)) {
       return [
-        'กำลังอ่านคำถามและวิเคราะห์หัวข้อคลีนรูม...',
-        'กำลังสืบค้นสไลด์ TM-00-00-05 เรื่อง Cleanroom Discipline...',
-        'กำลังตรวจสอบลำดับ 5 อุปกรณ์ตามมาตรฐานสากล Belton...',
-        'กำลังประมวลผลคำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+        'อ่านคำถามและวิเคราะห์หัวข้อคลีนรูม',
+        'สืบค้นสไลด์ TM-00-00-05 เรื่อง Cleanroom Discipline',
+        'ตรวจสอบลำดับ 5 อุปกรณ์ตามมาตรฐานสากล Belton',
+        'ประมวลผลคำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050'
       ];
     }
 
     // Machine / Telemetry / SCADA
     if (/เครื่อง|เบอร์|ตู้|#\s*\d+|telemetry|dispenser|aca-disp|yield|พัง|เสีย|เตือน|warning|hold|ความดัน|อุณหภูมิ/i.test(q)) {
       return [
-        'กำลังอ่านคำสั่งและระบุหมายเลขเครื่องจักร...',
-        'กำลังเชื่อมต่อฐานข้อมูล SCADA ตรวจสอบ Telemetry เครื่องจักร...',
-        'กำลังวิเคราะห์สถานะ Yield, Cycle Time และแรงดันพารามิเตอร์...',
-        'กำลังสังเคราะห์คำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+        'อ่านคำสั่งและระบุหมายเลขเครื่องจักร',
+        'เชื่อมต่อฐานข้อมูล SCADA ตรวจสอบ Telemetry เครื่องจักร',
+        'วิเคราะห์สถานะ Yield, Cycle Time และแรงดันพารามิเตอร์',
+        'สังเคราะห์คำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050'
       ];
     }
 
     // Exam verification / Spec standard / Acceptance Criteria
     if (/ข้อสอบ|เกณฑ์|สเปก|สเปค|seagate|spe-|reject|accept|ยอมรับ|ของเสีย|defect|damper|broken wire|tinning|หัก/i.test(q)) {
       return [
-        'กำลังวิเคราะห์ประเด็นคำถามและข้อกำหนดทางวิศวกรรม...',
-        'กำลังตรวจสอบเปรียบเทียบกับคลังข้อสอบทางการ Master Exam...',
-        'กำลังสืบค้นคู่มือมาตรฐาน Seagate และสไลด์อบรม (669 หน้า)...',
-        'กำลังประมวลผลการตัดสินด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+        'วิเคราะห์ประเด็นคำถามและข้อกำหนดทางวิศวกรรม',
+        'ตรวจสอบเปรียบเทียบกับคลังข้อสอบทางการ Master Exam',
+        'สืบค้นคู่มือมาตรฐาน Seagate และสไลด์อบรม (669 หน้า)',
+        'ประมวลผลการตัดสินด้วย Qwen 2.5 บนการ์ดจอ RTX 3050'
       ];
     }
 
     // Camera / 3D Teleport
     if (/วาร์ป|กล้อง|ซูม|ไปดู|ส่อง/i.test(q)) {
       return [
-        'กำลังคำนวณพิกัดมุมมอง 3D ภายในโรงงานคลีนรูม...',
-        'กำลังส่งคำสั่งควบคุมมุมมองกล้อง Real-time...',
-        'กำลังประมวลผลมุมมองด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+        'คำนวณพิกัดมุมมอง 3D ภายในโรงงานคลีนรูม',
+        'ส่งคำสั่งควบคุมมุมมองกล้อง Real-time',
+        'ประมวลผลมุมมองด้วย Qwen 2.5 บนการ์ดจอ RTX 3050'
       ];
     }
 
     // Default / General
     return [
-      'กำลังอ่านและทำความเข้าใจคำถาม...',
-      'กำลังสืบค้นฐานข้อมูลสไลด์อบรมและเอกสารโรงงาน Belton...',
-      'กำลังตรวจสอบความถูกต้องตามมาตรฐานงานผลิต...',
-      'กำลังประมวลผลคำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+      'อ่านและทำความเข้าใจคำถาม',
+      'สืบค้นฐานข้อมูลสไลด์อบรมและเอกสารโรงงาน Belton',
+      'ตรวจสอบความถูกต้องตามมาตรฐานงานผลิต',
+      'ประมวลผลคำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050'
     ];
-  }
-
-  // Create Collapsible Thought Process & Source Citation Card (ChatGPT / DeepSeek style)
-  function createThoughtBox(metadata) {
-    if (!metadata) return null;
-    const box = document.createElement('div');
-    box.className = 'thought-box';
-
-    const durationSec = metadata.durationMs ? (metadata.durationMs / 1000).toFixed(1) : '1.0';
-    const hasSources = metadata.sources && metadata.sources.length > 0;
-    const hasExam = metadata.examMatch;
-    const hasTools = metadata.tools && metadata.tools.length > 0;
-
-    // Header / Toggle button
-    const toggleBtn = document.createElement('button');
-    toggleBtn.type = 'button';
-    toggleBtn.className = 'thought-toggle';
-    toggleBtn.innerHTML = `
-      <span class="thought-toggle-left">
-        <span class="thought-icon">💭</span>
-        <span class="thought-title">กระบวนการคิดและแหล่งข้อมูล</span>
-        <span class="thought-time">${durationSec} วินาที</span>
-      </span>
-      <span class="thought-chevron">▼</span>
-    `;
-
-    // Dropdown content
-    const dropdown = document.createElement('div');
-    dropdown.className = 'thought-dropdown';
-    dropdown.style.display = 'none';
-
-    let dropdownHTML = '';
-
-    // 1. Sources retrieved
-    if (hasSources) {
-      dropdownHTML += `
-        <div class="thought-section">
-          <span class="thought-section-label">📚 แหล่งข้อมูลสไลด์ที่สืบค้นพบ (${metadata.sources.length} หน้า)</span>
-          <div class="thought-tags-list">
-            ${metadata.sources.map(s => `
-              <span class="thought-source-tag" title="${s.docName || ''}">
-                📄 <b>[${s.docCode}]</b> หน้า ${s.pageNumber}: ${s.title ? s.title.replace(/</g, '&lt;').slice(0, 45) : 'ข้อกำหนด'}
-              </span>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    // 2. Exam Ground Truth Match
-    if (hasExam) {
-      const isCorrect = hasExam.correctAnswer === 'ถูก';
-      dropdownHTML += `
-        <div class="thought-section">
-          <span class="thought-section-label">📑 การตรวจสอบกับคลังข้อสอบทางการ Master Exam</span>
-          <div class="thought-tags-list">
-            <span class="thought-exam-tag">
-              ${isCorrect ? '✅' : '❌'} <b>[${hasExam.docCode}]</b> ข้อที่ ${hasExam.questionNumber} (${hasExam.product || 'Standard'}) ➔ เฉลยสเปก: <b>${hasExam.correctAnswer}</b>
-            </span>
-          </div>
-        </div>
-      `;
-    }
-
-    // 3. Tools executed
-    if (hasTools) {
-      dropdownHTML += `
-        <div class="thought-section">
-          <span class="thought-section-label">⚙️ เครื่องมือที่ระบบเรียกใช้งาน</span>
-          <div class="thought-tags-list">
-            ${metadata.tools.map(t => `<span class="thought-tool-tag">⚡ ${t}</span>`).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    // 4. Hardware / Model
-    dropdownHTML += `
-      <div class="thought-section">
-        <span class="thought-section-label">⚡ โมเดลและชิปประมวลผล</span>
-        <div class="thought-tags-list">
-          <span class="thought-gpu-tag">
-            🟢 NVIDIA GeForce RTX 3050 (Local GPU) • Qwen 2.5:3b
-          </span>
-        </div>
-      </div>
-    `;
-
-    dropdown.innerHTML = dropdownHTML;
-
-    // Toggle event
-    toggleBtn.addEventListener('click', () => {
-      const isOpen = box.classList.toggle('is-open');
-      dropdown.style.display = isOpen ? 'flex' : 'none';
-      scrollToBottom();
-    });
-
-    box.appendChild(toggleBtn);
-    box.appendChild(dropdown);
-    return box;
   }
 
   // Send message to Backend
@@ -274,29 +203,59 @@
     appendUserMessage(cleanText);
     dialogueHistory.push({ role: 'user', content: cleanText });
 
-    // 2. Prepare bot bubble
-    const { rowEl, thinkingPill, textEl, cursorEl, contentEl } = createBotMessageContainer();
+    // 2. Prepare bot bubble with live open thought box
+    const {
+      rowEl,
+      thoughtBox,
+      thoughtTitle,
+      thoughtTime,
+      thoughtDropdown,
+      thoughtStepsList,
+      textEl,
+      cursorEl
+    } = createBotMessageContainer();
 
-    // Setup Dynamic Live Thinking Status Ticker
+    // 3. Live Step Flow Execution (Steps flow downwards without disappearing)
     const stages = getThinkingStages(cleanText);
-    let stageIdx = 0;
-    const labelEl = thinkingPill ? thinkingPill.querySelector('.thinking-label') : null;
-    if (labelEl && stages.length > 0) {
-      labelEl.textContent = stages[0];
+    const startTime = Date.now();
+    let currentStepItem = null;
+
+    function appendStep(stepText) {
+      if (currentStepItem) {
+        currentStepItem.classList.remove('active');
+        currentStepItem.classList.add('completed');
+        const iconWrapper = currentStepItem.querySelector('.step-icon-wrapper');
+        if (iconWrapper) iconWrapper.innerHTML = SVG_CHECK;
+      }
+
+      const item = document.createElement('div');
+      item.className = 'thought-step-item active';
+      item.innerHTML = `
+        <span class="step-icon-wrapper">${HTML_SPINNER}</span>
+        <span class="step-text">${stepText}</span>
+      `;
+      thoughtStepsList.appendChild(item);
+      currentStepItem = item;
+      scrollToBottom();
     }
 
-    const tickerInterval = setInterval(() => {
-      stageIdx++;
-      if (labelEl && stageIdx < stages.length) {
-        labelEl.style.opacity = '0';
-        labelEl.style.transform = 'translateY(2px)';
-        setTimeout(() => {
-          labelEl.textContent = stages[stageIdx];
-          labelEl.style.opacity = '1';
-          labelEl.style.transform = 'translateY(0)';
-        }, 150);
+    // Add Step 1 immediately
+    appendStep(stages[0]);
+
+    // Live timer ticking
+    const timerInterval = setInterval(() => {
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      thoughtTime.textContent = `${elapsed}s`;
+    }, 100);
+
+    // Flow subsequent steps downwards one by one
+    let nextStageIdx = 1;
+    const stepInterval = setInterval(() => {
+      if (nextStageIdx < stages.length) {
+        appendStep(stages[nextStageIdx]);
+        nextStageIdx++;
       }
-    }, 1100);
+    }, 1150);
 
     try {
       const response = await fetch('/api/copilot/chat', {
@@ -315,8 +274,17 @@
       const data = await response.json();
       let reply = data.reply || '';
 
-      // Clear dynamic thinking ticker
-      clearInterval(tickerInterval);
+      // Stop tickers
+      clearInterval(timerInterval);
+      clearInterval(stepInterval);
+
+      // Finalize the last active step as completed
+      if (currentStepItem) {
+        currentStepItem.classList.remove('active');
+        currentStepItem.classList.add('completed');
+        const iconWrapper = currentStepItem.querySelector('.step-icon-wrapper');
+        if (iconWrapper) iconWrapper.innerHTML = SVG_CHECK;
+      }
 
       // If action was triggered, append action badge if not in text
       if (data.action && data.action.type === 'teleport' && data.action.targetNum) {
@@ -325,24 +293,89 @@
         }
       }
 
-      // Remove thinking indicator
-      if (thinkingPill && thinkingPill.parentNode) {
-        thinkingPill.parentNode.removeChild(thinkingPill);
-      }
-      if (rowEl) rowEl.classList.remove('is-thinking');
+      // Append verified telemetry data (Sources, Exam, SCADA, Model)
+      if (data.thoughtMetadata) {
+        const meta = data.thoughtMetadata;
+        const finalSec = (meta.durationMs / 1000).toFixed(1);
+        thoughtTime.textContent = `${finalSec} วินาที`;
+        thoughtTitle.textContent = 'กระบวนการคิดและแหล่งข้อมูล';
 
-      // Insert Collapsible Thought Box above text if metadata is present
-      if (data.thoughtMetadata && contentEl) {
-        const thoughtBox = createThoughtBox(data.thoughtMetadata);
-        if (thoughtBox) {
-          contentEl.insertBefore(thoughtBox, textEl);
+        // 1. Sources retrieved
+        if (meta.sources && meta.sources.length > 0) {
+          const sec = document.createElement('div');
+          sec.className = 'thought-section';
+          sec.innerHTML = `
+            <span class="thought-section-label">เอกสารและสไลด์ที่สืบค้นพบ (${meta.sources.length} หน้า)</span>
+            <div class="thought-tags-list">
+              ${meta.sources.map(s => `
+                <span class="thought-source-tag" title="${(s.docName || '').replace(/"/g, '&quot;')}">
+                  <b>[${s.docCode}]</b> หน้า ${s.pageNumber}: ${s.title ? s.title.replace(/</g, '&lt;').slice(0, 48) : 'ข้อกำหนด'}
+                </span>
+              `).join('')}
+            </div>
+          `;
+          thoughtDropdown.appendChild(sec);
         }
+
+        // 2. Exam Ground Truth match
+        if (meta.examMatch) {
+          const ex = meta.examMatch;
+          const isCorrect = ex.correctAnswer === 'ถูก';
+          const sec = document.createElement('div');
+          sec.className = 'thought-section';
+          sec.innerHTML = `
+            <span class="thought-section-label">การตรวจสอบกับคลังข้อสอบทางการ Master Exam</span>
+            <div class="thought-tags-list">
+              <span class="thought-exam-tag">
+                <b>[${ex.docCode}]</b> ข้อ ${ex.questionNumber} (${ex.product || 'Standard'}) · เฉลยสเปก: <b>${ex.correctAnswer}</b> (${isCorrect ? 'ตรงตามมาตรฐาน' : 'ไม่ถูกต้องตามมาตรฐาน'})
+              </span>
+            </div>
+          `;
+          thoughtDropdown.appendChild(sec);
+        }
+
+        // 3. Tools executed
+        if (meta.tools && meta.tools.length > 0) {
+          const sec = document.createElement('div');
+          sec.className = 'thought-section';
+          sec.innerHTML = `
+            <span class="thought-section-label">เครื่องมือและฐานข้อมูลที่เรียกใช้</span>
+            <div class="thought-tags-list">
+              ${meta.tools.map(t => `<span class="thought-tool-tag">${t}</span>`).join('')}
+            </div>
+          `;
+          thoughtDropdown.appendChild(sec);
+        }
+
+        // 4. GPU spec
+        const gpuSec = document.createElement('div');
+        gpuSec.className = 'thought-section';
+        gpuSec.innerHTML = `
+          <span class="thought-section-label">ระบบประมวลผล Local AI</span>
+          <div class="thought-tags-list">
+            <span class="thought-gpu-tag">
+              NVIDIA GeForce RTX 3050 (Local GPU) · Qwen 2.5:3b
+            </span>
+          </div>
+        `;
+        thoughtDropdown.appendChild(gpuSec);
+      } else {
+        thoughtTitle.textContent = 'กระบวนการคิดและแหล่งข้อมูล';
       }
 
+      // Finish thinking state
+      thoughtBox.classList.remove('is-thinking');
+      rowEl.classList.remove('is-thinking');
+      scrollToBottom();
+
+      // Auto-collapse thought box after short pause so user sees steps complete
+      await new Promise(r => setTimeout(r, 600));
+      thoughtBox.classList.remove('is-open');
+
+      // Start typewriter effect for reply
       textEl.style.display = 'inline';
       cursorEl.style.display = 'inline-block';
 
-      // Typewriter effect simulation for smooth visual streaming
       let charIdx = 0;
       const chunkSize = Math.max(3, Math.floor(reply.length / 25));
 
@@ -363,16 +396,16 @@
       }, 25);
 
     } catch (err) {
-      clearInterval(tickerInterval);
+      clearInterval(timerInterval);
+      clearInterval(stepInterval);
       console.error('Copilot Error:', err);
-      if (thinkingPill && thinkingPill.parentNode) {
-        thinkingPill.parentNode.removeChild(thinkingPill);
-      }
-      if (rowEl) rowEl.classList.remove('is-thinking');
+      thoughtBox.classList.remove('is-thinking');
+      thoughtBox.classList.remove('is-open');
+      rowEl.classList.remove('is-thinking');
       textEl.style.display = 'block';
       if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
       textEl.innerHTML = `<div style="color:#ef4444;background:rgba(239,68,68,0.1);padding:12px 16px;border-radius:12px;border:1px solid rgba(239,68,68,0.25);">
-        <b>⚠️ ขออภัยครับ:</b> ${err.message}<br>
+        <b>ข้อผิดพลาด:</b> ${err.message}<br>
         <span style="font-size:12px;opacity:0.8;">กรุณาตรวจสอบว่าได้เปิดคำสั่ง <code>gpu</code> หรือ <code>StartGpuTunnel.bat</code> ในเครื่องของคุณแล้วหรือไม่ครับ</span>
       </div>`;
       isThinking = false;
