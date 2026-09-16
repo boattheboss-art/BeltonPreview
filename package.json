@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "gpu": "\"C:\\Program Files (x86)\\cloudflared\\cloudflared.exe\" tunnel --url http://127.0.0.1:11434 --http-host-header localhost:11434",
-    "tunnel": "\"C:\\Program Files (x86)\\cloudflared\\cloudflared.exe\" tunnel --url http://127.0.0.1:11434 --http-host-header localhost:11434"
+    "gpu": "gpu.bat",
+    "tunnel": "gpu.bat"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
