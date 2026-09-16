@@ -266,6 +266,26 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
      ลำดับที่ 4: Booties (สวมรองเท้าบูทคลีนรูม) ➔ สวมทับขากางเกง รูดซิปและติดกระดุมให้เรียบร้อย
      ลำดับที่ 5: Gloves (สวมถุงมือ) ➔ สวม Wrist strap และสวมถุงมือ โดยดึงถุงมือทับแขนใน และแขนเสื้อนอกทับถุงมือ
    - สำหรับการถอดชุด (Degowning Sequence): เริ่มจาก Booties (ถอดรองเท้า) ➔ Gloves (ถอดถุงมือ) ➔ Facemask (ถอดหน้ากาก) ➔ Jumpsuit (ถอดชุดหมี) ➔ Hairnet (ถอดหมวก)
+8. ลำดับขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จากสไลด์ [TM-00-00-01]):
+   - หากผู้ใช้ถามเรื่องขั้นตอนการผลิต ACA (Actuator Coil Assembly) ว่ามีกี่ขั้นตอน หรือมีอะไรบ้าง:
+     ให้อ้างอิงตาม [TM-00-00-01 หน้า 28-49] โดยระบุว่ากระบวนการผลิต ACA มีขั้นตอนการทำงานหลักตามลำดับดังนี้:
+     1. E-block cleaning (ทำความสะอาด E-block ด้วย Ultrasonic)
+     2. Pre-curing / Plasma bobbin (เตรียมผิวและอบ Pre-cure บ็อบบิน)
+     3. Laser engraving (ยิงเลเซอร์ระบุรหัสชิ้นงาน)
+     4. Coil pre-heating (อุ่นขดลวดคอยล์)
+     5. E-block & Coil dispensing / Coil & bobbin dispensing (หยอดกาวประกอบชิ้นส่วน)
+     6. Epoxy inspection / mending (ตรวจและแต่งแนวกาว)
+     7. 1st curing & unload (อบกาวรอบที่ 1)
+     8. 2nd curing & unload (อบกาวรอบที่ 2)
+     9. DI water cleaning (ทำความสะอาดด้วยน้ำ DI)
+     10. Hi-pot & open test (ทดสอบทางไฟฟ้าและฉนวน Hi-pot)
+     11. Combine DVT & Coil height inspection (ตรวจวัด DVT และความสูงคอยล์)
+     12. Damper install (ติดตั้งแดมเปอร์)
+     13. Tube length / Slit height / Resonance checking (ตรวจสอบขนาดและเรโซแนนซ์)
+     14. Arm height & tweaking (ตรวจวัดความสูงอาร์มและปรับแต่ง)
+     15. Visual inspection (ตรวจสอบความเรียบร้อยด้วยสายตา)
+     16. OQA & Packing (ตรวจปล่อยคุณภาพขั้นสุดท้ายและบรรจุลงถาด)
+   - ต้องตอบสรุปจำนวนขั้นตอนและลำดับให้ครบถ้วน ห้ามพิมพ์ค้างหรือตัดบทกลางคัน
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
@@ -290,7 +310,7 @@ ${dynamicSlideExcerpts}`;
       options: {
         num_ctx: NUM_CTX,
         num_gpu: NUM_GPU,
-        num_predict: 128,
+        num_predict: toolsToProvide ? 128 : 850,
         temperature: isCasualMessage ? 0.35 : 0.08,
         top_p: 0.9,
         repeat_penalty: 1.15,
@@ -466,7 +486,7 @@ ${dynamicSlideExcerpts}`;
       options: {
         num_ctx: NUM_CTX,
         num_gpu: NUM_GPU,
-        num_predict: 350,
+        num_predict: 850,
         temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,
