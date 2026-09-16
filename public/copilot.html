@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belton Gemini Copilot | Industrial AI Intelligence</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234285F4'/><stop offset='50%25' stop-color='%239B72CB'/><stop offset='100%25' stop-color='%23D96570'/></linearGradient></defs><path fill='url(%23g)' d='M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="copilot.css?v=20260916_v1">
+</head>
+<body class="gemini-theme">
+
+  <!-- Main App Shell -->
+  <div class="gemini-app">
+    
+    <!-- Top Navigation Bar -->
+    <header class="gemini-topbar">
+      <div class="topbar-left">
+        <a href="/" class="brand-link" title="กลับหน้าแรก">
+          <svg class="gemini-sparkle-icon" viewBox="0 0 24 24" width="28" height="28">
+            <defs>
+              <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4285F4" />
+                <stop offset="50%" stop-color="#9B72CB" />
+                <stop offset="100%" stop-color="#D96570" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#geminiGrad)" d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/>
+          </svg>
+          <div class="brand-text">
+            <span class="brand-title">Belton Gemini</span>
+            <span class="brand-subtitle">Copilot</span>
+          </div>
+        </a>
+        <div class="model-badge">
+          <span class="status-dot online"></span>
+          <span class="model-name">Qwen 2.5:3b (Local RTX 3050 GPU)</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button type="button" id="btnClearChat" class="topbar-btn" title="ล้างประวัติการสนทนา">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+          <span>ล้างแชท</span>
+        </button>
+
+        <a href="/factory" class="topbar-action-btn primary" title="เข้าสู่โรงงานคลีนรูม 3D">
+          <span class="btn-icon">🏭</span>
+          <span>ไปที่ 3D Cleanroom</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Chat Viewport -->
+    <main class="gemini-main" id="geminiMain">
+      <div class="chat-container" id="chatContainer">
+        
+        <!-- Welcome Hero (Shown on Empty State) -->
+        <div class="gemini-hero" id="geminiHero">
+          <div class="hero-sparkle-wrap">
+            <svg class="hero-sparkle" viewBox="0 0 24 24" width="64" height="64">
+              <path fill="url(#geminiGrad)" d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/>
+            </svg>
+          </div>
+          <h1 class="hero-greeting">
+            <span class="greeting-highlight">สวัสดีครับ</span> คุณโบ๊ท
+          </h1>
+          <p class="hero-subtext">วันนี้มีอะไรให้สมองกล AI ช่วยตรวจสอบในโรงงาน Belton บ้างครับ?</p>
+
+          <!-- Suggestion Cards Grid -->
+          <div class="suggestion-grid">
+            <div class="suggestion-card" data-query="สรุปภาพรวมยอดผลิตและสถานะเครื่องจักร ACA ทั้ง 50 เครื่องตอนนี้">
+              <div class="card-icon">📊</div>
+              <div class="card-text">
+                <div class="card-title">สรุปภาพรวมทั้งโรงงาน</div>
+                <div class="card-desc">ดูยอดผลิตรวม, อัตรา Yield, และจำนวนเครื่องปกติ</div>
+              </div>
+            </div>
+
+            <div class="suggestion-card" data-query="เครื่องจักร ACA เบอร์ 27 สถานะเป็นอย่างไร ทำไมถึงแจ้งเตือน">
+              <div class="card-icon">🚨</div>
+              <div class="card-text">
+                <div class="card-title">วินิจฉัยเครื่องเบอร์ 27</div>
+                <div class="card-desc">ตรวจสอบการสึกหรอหัวเข็มและสาเหตุการหยุดทำงาน</div>
+              </div>
+            </div>
+
+            <div class="suggestion-card" data-query="ขั้นตอนการแต่งกายเข้าห้อง Cleanroom Class 100 มีลำดับอย่างไร">
+              <div class="card-icon">🧼</div>
+              <div class="card-text">
+                <div class="card-title">ระเบียบ Cleanroom 100</div>
+                <div class="card-desc">5 ขั้นตอนการสวมชุด, Air Shower, และการถอดชุด</div>
+              </div>
+            </div>
+
+            <div class="suggestion-card" data-query="สิ่งปนเปื้อน NVS, Silicone, Talc และ SiO2 ส่งผลเสียต่อชิ้นส่วนอย่างไร">
+              <div class="card-icon">🔬</div>
+              <div class="card-text">
+                <div class="card-title">สารปนเปื้อนต้องห้าม</div>
+                <div class="card-desc">เจาะลึก NVS, ซิลิโคน, แป้งทัลคัม และคราบ Mesa/Ghost</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Message Feed -->
+        <div class="messages-feed" id="messagesFeed"></div>
+
+      </div>
+    </main>
+
+    <!-- Bottom Floating Gemini Pill Input -->
+    <footer class="gemini-footer">
+      <div class="input-container">
+        <form id="geminiChatForm" class="gemini-input-pill">
+          <div class="input-sparkle-pill">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path fill="url(#geminiGrad)" d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/>
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            id="chatInput" 
+            class="gemini-text-input" 
+            placeholder="ถามสถานะเครื่องจักร, สถิติ SCADA, หรือระเบียบคลีนรูมที่นี่..." 
+            autocomplete="off" 
+            required 
+          />
+          <button type="submit" id="btnSubmit" class="gemini-send-btn" title="ส่งคำถาม">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </form>
+        <div class="input-disclaimer">
+          🔒 Belton AI Copilot เชื่อมต่อฐานข้อมูล SCADA สด และประมวลผลผ่านการ์ดจอ NVIDIA RTX ในเครื่องของคุณ 100%
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/copilot.js?v=20260916_v1"></script>
+</body>
+</html>

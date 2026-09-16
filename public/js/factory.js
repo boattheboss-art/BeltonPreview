@@ -983,11 +983,26 @@
       e.stopPropagation();
       chatWindow.classList.toggle('is-hidden');
       if (!chatWindow.classList.contains('is-hidden')) {
-        document.exitPointerLock();
+        if (document.pointerLockElement) document.exitPointerLock();
         input.focus();
         tryInitWebLLM();
       }
     });
+
+    // Dynamic Island Capsule also toggles Gemini Copilot
+    const island = document.getElementById('appleDynamicIsland');
+    if (island) {
+      island.style.cursor = 'pointer';
+      island.addEventListener('click', (e) => {
+        if (e.target.closest('#btnToggleCopilot')) return;
+        e.stopPropagation();
+        chatWindow.classList.toggle('is-hidden');
+        if (!chatWindow.classList.contains('is-hidden')) {
+          if (document.pointerLockElement) document.exitPointerLock();
+          input.focus();
+        }
+      });
+    }
 
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -3209,8 +3224,31 @@
   window.__wallColliders = wallColliders;
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      checkUrlTargetParam();
+    });
   } else {
     init();
+    checkUrlTargetParam();
+  }
+
+  function checkUrlTargetParam() {
+    setTimeout(() => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const target = urlParams.get('target') || urlParams.get('machine');
+        if (target) {
+          const mNum = parseInt(target, 10);
+          if (mNum >= 1 && mNum <= 50 && dispensingMachines && dispensingMachines[mNum - 1]) {
+            const tm = dispensingMachines[mNum - 1];
+            if (typeof window.__teleport === 'function') {
+              window.__teleport(tm.pos.x, tm.pos.z + 1.8, Math.PI);
+              showToast('📍 COPILOT TARGET', `วาร์ปมาที่เครื่อง ACA-DISP-${mNum < 10 ? '0' + mNum : mNum}`);
+            }
+          }
+        }
+      } catch (err) {}
+    }, 1500);
   }
 })();

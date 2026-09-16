@@ -110,6 +110,10 @@ app.get('/factory', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'factory.html'));
 });
 
+app.get('/copilot', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'copilot.html'));
+});
+
 app.get('/api/model-status', (req, res) => {
     const glbPath = path.join(__dirname, 'public', 'models', 'belton_factory_cleanroom_full.glb');
     try {

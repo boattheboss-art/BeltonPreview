@@ -35,13 +35,26 @@
         </div>
       </a>
 
-      <!-- Apple Dynamic Island Status Capsule -->
-      <div class="apple-dynamic-island" id="appleDynamicIsland" title="Cleanroom 100 Dynamic Island Status">
+      <!-- Apple Dynamic Island Status Capsule with Gemini AI Trigger -->
+      <div class="apple-dynamic-island" id="appleDynamicIsland" title="คลิกเพื่อเปิด Belton Gemini Copilot">
         <span class="island-dot" id="islandPulseDot"></span>
         <div class="island-info">
           <span class="island-main" id="islandStatusTitle">Cleanroom 100 • Nominal</span>
           <span class="island-meta" id="islandStatusDesc">ISO Class 5 · 50 Dispensers Active · +24.6 Pa</span>
         </div>
+        <button type="button" id="btnToggleCopilot" class="island-gemini-btn" title="เปิด Belton Gemini Copilot">
+          <svg class="gemini-svg" viewBox="0 0 24 24" width="16" height="16">
+            <defs>
+              <linearGradient id="gemGradIsland" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4285F4" />
+                <stop offset="50%" stop-color="#9B72CB" />
+                <stop offset="100%" stop-color="#D96570" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#gemGradIsland)" d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/>
+          </svg>
+          <span class="gemini-txt">AI COPILOT</span>
+        </button>
       </div>
 
       <!-- Navigation Segmented Control (Apple Pill Style) -->
@@ -52,6 +65,7 @@
           <li><a href="/product" class="nav-item">PRODUCT</a></li>
           <li><a href="/manufacturing" class="nav-item">LEGACY & LAB</a></li>
           <li><a href="/factory" class="nav-item active">DIGITAL TWIN</a></li>
+          <li><a href="/copilot" class="nav-item nav-gemini" title="Open Full-Screen Google Gemini AI Copilot">✨ GEMINI AI</a></li>
           <li><button type="button" id="factoryLogoutBtn" class="nav-item nav-logout">LOGOUT</button></li>
         </ul>
       </nav>
@@ -141,81 +155,62 @@
     </div>
   </aside>
 
-  <!-- Belton Cleanroom AI Copilot (Trained ML Neural Network) -->
-  <div id="copilotWidget" class="copilot-widget">
-    <!-- Floating Launcher Pill -->
-    <button type="button" id="btnToggleCopilot" class="copilot-launcher-btn" title="Open Belton AI Copilot (Ollama Qwen 2.5:3b)">
-      <span class="copilot-pulse-dot" style="background:#10b981;box-shadow:0 0 10px #10b981;"></span>
-      <span class="copilot-btn-icon">🤖</span>
-      <span class="copilot-btn-title">AI COPILOT</span>
-      <span class="copilot-badge" style="background:#10b981;">Qwen 3B</span>
-    </button>
-
-    <!-- Frosted Glass Chat Window -->
-    <div id="copilotChatWindow" class="copilot-chat-window is-hidden" aria-live="polite">
-      <div class="copilot-header">
-        <div class="copilot-header-info">
-          <div class="copilot-avatar">🤖</div>
-          <div class="copilot-meta">
-            <span class="copilot-name">BELTON AI COPILOT</span>
-            <span id="copilotStatusBadge" class="copilot-status" style="color:#10b981;">⚡ Qwen 2.5:3b (Ollama SCADA Agent 🟢)</span>
+  <!-- Belton Gemini Copilot (Top Dropdown Cockpit from Dynamic Island) -->
+  <div id="copilotChatWindow" class="gemini-dropdown-modal is-hidden" aria-live="polite">
+    <div class="gemini-dropdown-inner">
+      <div class="gemini-dropdown-header">
+        <div class="gemini-header-left">
+          <svg class="gemini-header-sparkle" viewBox="0 0 24 24" width="22" height="22">
+            <defs>
+              <linearGradient id="geminiGradDropdown" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4285F4" />
+                <stop offset="50%" stop-color="#9B72CB" />
+                <stop offset="100%" stop-color="#D96570" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#geminiGradDropdown)" d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/>
+          </svg>
+          <div class="gemini-header-text">
+            <span class="gemini-title">BELTON GEMINI COPILOT</span>
+            <span id="copilotStatusBadge" class="gemini-status">⚡ Qwen 2.5:3b (Local RTX GPU Connected)</span>
           </div>
         </div>
-        <div class="copilot-header-actions">
-          <button type="button" id="btnClearCopilotMemory" class="copilot-action-btn" title="ล้างประวัติการสนทนา (Reset Memory)">🧹</button>
-          <button type="button" id="btnCloseCopilot" class="copilot-close-btn" title="Close Copilot">✕</button>
+        <div class="gemini-header-right">
+          <a href="/copilot" class="gemini-action-btn btn-expand" title="ขยายเต็มหน้าจอ (Open Full Page)" target="_blank">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+            </svg>
+            <span>เต็มจอ</span>
+          </a>
+          <button type="button" id="btnClearCopilotMemory" class="gemini-action-btn" title="ล้างประวัติการสนทนา (Reset Memory)">🧹</button>
+          <button type="button" id="btnCloseCopilot" class="gemini-close-btn" title="ปิดหน้าต่าง">✕</button>
         </div>
       </div>
 
-      <!-- WebGPU Qwen 2.5 Generative Brain Progress Banner -->
-      <div id="webllmProgressBanner" class="webllm-progress-banner is-hidden">
-        <div class="webllm-progress-bar is-loading">
-          <div id="webllmProgressBarFill" class="webllm-progress-fill" style="width: 0%;"></div>
-        </div>
-        <div class="webllm-progress-info">
-          <div class="webllm-status-wrap">
-            <span class="webllm-spinner-dot"></span>
-            <span id="webllmProgressText">กำลังดาวน์โหลดสมองกล Qwen 2.5 (350MB ในพื้นหลัง)...</span>
-          </div>
-          <div class="webllm-pct-actions">
-            <span id="webllmProgressPct">0%</span>
-            <button type="button" id="btnDismissWebLLM" class="webllm-dismiss-btn" title="ซ่อนแถบสถานะ">✕</button>
-          </div>
-        </div>
-        <div class="webllm-subhint">
-          💡 <b>กำลังโหลดเข้าเครื่อง:</b> โหลดเก็บในแคชการ์ดจอ RTX 3050 ครั้งเดียว (เปิดครั้งถัดไปจะพร้อมใช้งานทันทีครับ)
-        </div>
-      </div>
-
-      <div id="copilotMessages" class="copilot-messages">
+      <div id="copilotMessages" class="copilot-messages gemini-messages">
         <div class="copilot-msg bot">
           <div class="msg-bubble">
-            สวัสดีครับ! ผมคือ <b>Belton AI Copilot</b> สมองกล Machine Learning ประจำโรงงาน Cleanroom ครับ 🏭<br><br>
-            คุณสามารถถามสถานะเครื่องจักร ยอดผลิต สเปก Belton หรือสั่งให้ผมพาเดินไปดูเครื่องต่างๆ ได้เลยครับ เช่น:<br>
-            • <i>"ทำไมเครื่อง 27 ถึงพัง"</i><br>
-            • <i>"พาไปดูเครื่อง 27 หน่อย"</i><br>
-            • <i>"วันนี้ผลิตไปกี่ชิ้นแล้ว"</i>
+            สวัสดีครับ! ผมคือ <b>Belton Gemini Copilot</b> ผู้ช่วยวิศวกรประจำโรงงาน Cleanroom ครับ 🏭<br><br>
+            คุณสามารถถามสถานะเครื่องจักร ยอดผลิต หรือสั่งให้ผมพากล้อง 3D ไปดูเครื่องต่างๆ ได้ทันทีครับ เช่น:<br>
+            • <i>"ขอข้อมูลเครื่อง 27 หน่อย"</i> (กล้อง 3D จะวาร์ปไปโฟกัสเครื่อง 27 ให้ทันที)<br>
+            • <i>"ตอนนี้มีเครื่องจักรไหนที่มีปัญหาบ้าง"</i><br>
+            • <i>"สรุปภาพรวมยอดผลิตวันนี้"</i>
           </div>
         </div>
       </div>
 
       <!-- Quick Suggestion Chips -->
       <div class="copilot-chips">
-        <button type="button" class="copilot-chip" data-query="ตอนนี้มีเครื่องที่อาการดี กี่เครื่อง">🏥 เครื่องดีกี่เครื่อง</button>
-        <button type="button" class="copilot-chip" data-query="ทำไมเครื่อง 27 ถึงพัง">🚨 ทำไมเครื่อง 27 พัง</button>
-        <button type="button" class="copilot-chip" data-query="Coil Winding มีขั้นตอนอะไรบ้าง">🌀 Coil Winding</button>
-        <button type="button" class="copilot-chip" data-query="ACA มีกี่ขั้นตอน">⚙️ ACA (21 ขั้นตอน)</button>
-        <button type="button" class="copilot-chip" data-query="FCOF มีขั้นตอนอะไรบ้าง">🔬 FCOF Process</button>
-        <button type="button" class="copilot-chip" data-query="APFA คืออะไร">🦾 APFA Process</button>
-        <button type="button" class="copilot-chip" data-query="กาว lot ล่าสุดเบอร์อะไร">🗄️ กาว Lot ล่าสุด</button>
-        <button type="button" class="copilot-chip" data-query="พาไปดูเครื่อง 27 หน่อย">📍 พาไปดูเครื่อง 27</button>
-        <button type="button" class="copilot-chip" data-query="วันนี้ผลิตไปกี่ชิ้นแล้ว">📊 ยอดผลิตวันนี้</button>
+        <button type="button" class="copilot-chip" data-query="สรุปภาพรวมยอดผลิตและสถานะเครื่องจักร ACA ทั้ง 50 เครื่อง">📊 ยอดผลิตรวม</button>
+        <button type="button" class="copilot-chip" data-query="เครื่องจักร ACA เบอร์ 27 สถานะเป็นอย่างไร">🚨 เครื่อง 27 เป็นไง</button>
+        <button type="button" class="copilot-chip" data-query="มีเครื่องไหนที่มีปัญหา หรือเสี่ยงชำรุดบ้าง">⚠️ เครื่องที่มีปัญหา</button>
+        <button type="button" class="copilot-chip" data-query="พาไปดูเครื่อง 27 หน่อย">📍 วาร์ปไปเครื่อง 27</button>
       </div>
 
       <!-- Input Form -->
-      <form id="copilotForm" class="copilot-form">
-        <input type="text" id="copilotInput" class="copilot-input" placeholder="ถามสถานะ หรือสั่งให้พาไปดูเครื่อง..." autocomplete="off" />
-        <button type="submit" id="btnSendCopilot" class="copilot-send-btn" title="Send Message">
+      <form id="copilotForm" class="copilot-form gemini-form">
+        <input type="text" id="copilotInput" class="copilot-input gemini-input" placeholder="ถามสถานะ หรือสั่งให้พากล้องไปดูเครื่องจักร..." autocomplete="off" />
+        <button type="submit" id="btnSendCopilot" class="copilot-send-btn gemini-send" title="Send Message">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>
