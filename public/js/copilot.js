@@ -73,25 +73,33 @@
     scrollToBottom();
   }
 
-  // Create Bot message container with typing cursor
+  // Create Bot message container with typing cursor & thinking indicator
   function createBotMessageContainer() {
     const row = document.createElement('div');
-    row.className = 'message-row bot';
+    row.className = 'message-row bot is-thinking';
     row.innerHTML = `
-      <div class="bot-avatar">
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <path fill="url(#geminiGrad)" d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/>
-        </svg>
+      <div class="bot-avatar" title="BELTON AI">
+        <img src="belton_logo.png" alt="BELTON AI Logo" class="bot-avatar-img" />
       </div>
       <div class="bot-content">
-        <span class="bot-text"></span>
-        <span class="typing-cursor"></span>
+        <!-- Minimal Thinking Status Indicator -->
+        <div class="thinking-status-pill">
+          <span class="thinking-sparkle-icon">✦</span>
+          <span class="thinking-label">กำลังคิด</span>
+          <span class="thinking-dots">
+            <span class="dot d1">.</span><span class="dot d2">.</span><span class="dot d3">.</span>
+          </span>
+        </div>
+        <span class="bot-text" style="display: none;"></span>
+        <span class="typing-cursor" style="display: none;"></span>
       </div>
     `;
     feed.appendChild(row);
     scrollToBottom();
 
     return {
+      rowEl: row,
+      thinkingPill: row.querySelector('.thinking-status-pill'),
       textEl: row.querySelector('.bot-text'),
       cursorEl: row.querySelector('.typing-cursor'),
       contentEl: row.querySelector('.bot-content')
@@ -115,7 +123,7 @@
     dialogueHistory.push({ role: 'user', content: cleanText });
 
     // 2. Prepare bot bubble
-    const { textEl, cursorEl, contentEl } = createBotMessageContainer();
+    const { rowEl, thinkingPill, textEl, cursorEl, contentEl } = createBotMessageContainer();
 
     try {
       const response = await fetch('/api/copilot/chat', {
@@ -141,6 +149,14 @@
         }
       }
 
+      // Remove thinking indicator and reveal text stream
+      if (thinkingPill && thinkingPill.parentNode) {
+        thinkingPill.parentNode.removeChild(thinkingPill);
+      }
+      if (rowEl) rowEl.classList.remove('is-thinking');
+      textEl.style.display = 'inline';
+      cursorEl.style.display = 'inline-block';
+
       // Typewriter effect simulation for smooth visual streaming
       let charIdx = 0;
       const chunkSize = Math.max(3, Math.floor(reply.length / 25));
@@ -163,6 +179,11 @@
 
     } catch (err) {
       console.error('Copilot Error:', err);
+      if (thinkingPill && thinkingPill.parentNode) {
+        thinkingPill.parentNode.removeChild(thinkingPill);
+      }
+      if (rowEl) rowEl.classList.remove('is-thinking');
+      textEl.style.display = 'block';
       if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
       textEl.innerHTML = `<div style="color:#ef4444;background:rgba(239,68,68,0.1);padding:12px 16px;border-radius:12px;border:1px solid rgba(239,68,68,0.25);">
         <b>⚠️ ขออภัยครับ:</b> ${err.message}<br>

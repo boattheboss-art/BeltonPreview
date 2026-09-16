@@ -292,12 +292,100 @@ body.gemini-theme {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: #18181b;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.bot-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Minimal Thinking Status Indicator */
+.thinking-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #a1a1aa;
+  font-size: 13.5px;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  animation: thinkingFadeIn 0.3s ease-out;
+  margin-top: 2px;
+}
+
+.thinking-sparkle-icon {
+  display: inline-block;
+  font-size: 14px;
+  background: linear-gradient(135deg, #60a5fa, #c084fc, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sparkleSpinPulse 2.4s infinite linear;
+}
+
+@keyframes sparkleSpinPulse {
+  0% { transform: scale(0.9) rotate(0deg); opacity: 0.75; }
+  50% { transform: scale(1.18) rotate(180deg); opacity: 1; filter: drop-shadow(0 0 5px rgba(192, 132, 252, 0.6)); }
+  100% { transform: scale(0.9) rotate(360deg); opacity: 0.75; }
+}
+
+.thinking-label {
+  color: #e4e4e7;
+  letter-spacing: 0.3px;
+  font-size: 13.5px;
+}
+
+.thinking-dots {
+  display: inline-flex;
+  font-weight: 700;
+  color: #c084fc;
+  letter-spacing: 1px;
+}
+
+.thinking-dots .dot {
+  animation: dotPulse 1.4s infinite ease-in-out both;
+}
+
+.thinking-dots .d1 {
+  animation-delay: 0s;
+}
+
+.thinking-dots .d2 {
+  animation-delay: 0.2s;
+}
+
+.thinking-dots .d3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes thinkingFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .bot-content {
