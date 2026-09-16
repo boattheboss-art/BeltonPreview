@@ -171,17 +171,25 @@ function searchSlideKnowledge(query, limit = 3) {
 
   return matched.map(item => {
     let text = item.content || '';
-    if (text.length > 650) {
+    if (text.length > 1200) {
       let bestPos = 0;
       const lowerText = text.toLowerCase();
       for (const t of tokens) {
         const pos = lowerText.indexOf(t);
         if (pos > 0) {
-          bestPos = Math.max(0, pos - 100);
+          bestPos = Math.max(0, pos - 80);
           break;
         }
       }
-      text = (bestPos > 0 ? '...' : '') + text.substring(bestPos, bestPos + 600) + '...';
+      text = (bestPos > 0 ? '...' : '') + text.substring(bestPos, bestPos + 1100) + '...';
+
+      // If enriched rejection note was cut off, ensure it is appended
+      if (item.content.includes('[สรุปเกณฑ์ปฏิเสธ') && !text.includes('[สรุปเกณฑ์ปฏิเสธ')) {
+        const noteMatch = item.content.match(/\[สรุปเกณฑ์ปฏิเสธ.*?$/s);
+        if (noteMatch) {
+          text += '\n' + noteMatch[0];
+        }
+      }
     }
 
     return {

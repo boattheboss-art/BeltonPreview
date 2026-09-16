@@ -199,6 +199,32 @@ def clean_text(raw_text):
     clean = '\n'.join(lines).strip()
     return clean
 
+def enrich_rejection_criteria(content):
+    """
+    Auto-enriches slides where 'Reject criteria' only says 'ไม่เป็นไปตามข้อกำหนดข้างต้น'
+    by extracting the concrete conditions from 'Acceptance criteria' and appending them
+    directly into the Reject section.
+    """
+    accept_match = re.search(r'(?:Acceptable|Acceptance criteria|Acceptance|เกณฑ์การยอมรับ)\s*[:\n]', content, re.IGNORECASE)
+    reject_match = re.search(r'(?:Reject criteria|Rejection criteria|Reject|Rejection|เกณฑ์การปฏิเสธ)\s*[:\n]', content, re.IGNORECASE)
+    
+    if accept_match and reject_match and accept_match.start() < reject_match.start():
+        accept_text = content[accept_match.end():reject_match.start()].strip()
+        reject_text = content[reject_match.end():].strip()
+        
+        refers_back = re.search(r'(?:ไม่เป็นไปตาม|ข้อก[ำา]หนดข้างต้น|ข้อก[ำา]หนดของ acceptable|violat|not follow acceptable|if not meet)', reject_text, re.IGNORECASE)
+        
+        if refers_back and len(accept_text) > 5:
+            clean_lines = [l.strip() for l in accept_text.split('\n') if l.strip() and not l.strip().lower().startswith(('rel. date', 'rev.', 'page', 'date:'))]
+            clean_accept = ' '.join(clean_lines)
+            if len(clean_accept) > 350:
+                clean_accept = clean_accept[:350] + '...'
+            
+            enrichment_tag = f"\n\n[สรุปเกณฑ์ปฏิเสธ (Reject) เชิงรูปธรรม]: ปฏิเสธ (Reject) ทันทีหากไม่เป็นไปตามเกณฑ์ Acceptance criteria ข้างต้น (นั่นคือ: {clean_accept})"
+            return content + enrichment_tag
+
+    return content
+
 def extract_title(content, default_doc_name, page_num):
     lines = [l.strip() for l in content.split('\n') if l.strip()]
     skip_patterns = [
@@ -246,6 +272,7 @@ def main():
             page_num = idx + 1
             raw_text = page.extract_text() or ""
             cleaned = clean_text(raw_text)
+            cleaned = enrich_rejection_criteria(cleaned)
             title = extract_title(cleaned, doc["doc_name"], page_num)
             char_count = len(cleaned)
 

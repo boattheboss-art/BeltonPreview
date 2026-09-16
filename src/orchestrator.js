@@ -67,8 +67,8 @@ function cleanOutputText(text) {
     .replace(/\[คำสั่ง.*?$/is, '')
     .replace(/\[คำแนะนำ.*?$/is, '')
     .replace(/\[ข้อมูลสไลด์.*?$/is, '')
-    // Strip trailing pleasantries if emitted
-    .replace(/\n+(?:หากคุณมีข้อสงสัย|หากมีข้อสงสัย|สามารถสอบถามเพิ่มเติม|มีอะไรให้ผมช่วยอีกไหม|หวังว่าข้อมูลนี้|หากมีข้อมูลเพิ่มเติม|หากมีคำถามเพิ่มเติม|ต้องการข้อมูล).*$/is, '');
+    // Strip trailing pleasantries or dismissive phrases if emitted
+    .replace(/\n+(?:หากคุณมีข้อสงสัย|หากมีข้อสงสัย|สามารถสอบถามเพิ่มเติม|มีอะไรให้ผมช่วยอีกไหม|หวังว่าข้อมูลนี้|หากมีข้อมูลเพิ่มเติม|หากมีคำถามเพิ่มเติม|ต้องการข้อมูล|มีเพียงแค่นี้เท่านั้น(?:ค่ะ|ครับ)|มีเพียงแค่นี้(?:ค่ะ|ครับ)|มีแค่นี้(?:ค่ะ|ครับ)).*$/is, '');
 
   // Intercept & translate any Chinese fragments to Thai
   for (const [pat, rep] of CHINESE_TO_THAI_MAP) {
@@ -96,11 +96,49 @@ function cleanOutputText(text) {
   return cleaned;
 }
 
+function extractContextKeywords(history) {
+  if (!history || !Array.isArray(history) || history.length === 0) return '';
+  for (let i = history.length - 1; i >= 0; i--) {
+    const text = history[i].content || history[i].text || '';
+    const docMatch = text.match(/\b(SPE|TM)-[0-9]{2}-[0-9]{2}-[0-9]{2}(?:_[0-9]+)?\b/gi);
+    const terms = text.match(/\b(broken wire|expose wire|loose coil|tin wire|tinning|wet tray|damper|hard burr|scratch|dent|solder ball|stiffener|hookup|pcca|fcof|aca|apfa|cleanroom|esd|silicone|wire|coil)\b/gi);
+    const parts = [];
+    if (docMatch) parts.push(...docMatch);
+    if (terms) parts.push(...terms);
+    if (parts.length > 0) {
+      return [...new Set(parts)].join(' ');
+    }
+  }
+  return '';
+}
+
+function isFollowUpQuery(userMsg) {
+  const m = userMsg.trim().toLowerCase();
+  if (m.length <= 25) return true;
+  if (/^(มีอะไรบ้าง|มีอะไรบ้างละ|มีอะไรอีก|แล้วยังไง|แล้วไง|เท่าไหร่|ทำไม|ขยายความ|ขอรายละเอียด|ยังไงต่อ|แล้วต้องทำไง|แล้วสเปก|แล้วเกณฑ์|กี่|ทำไมล่ะ)/i.test(m)) {
+    return true;
+  }
+  if (!/\b(SPE|TM)-[0-9]{2}/i.test(m) && !/(broken wire|wire|tray|damper|burr|scratch|coil|cleanroom|esd|aca|fcof|เครื่อง)/i.test(m)) {
+    return true;
+  }
+  return false;
+}
+
 async function runOrchestrator(userMessage, conversationHistory = []) {
-  // 1. Dynamic Slide Retrieval (RAG) from local SQLite FTS5 database (669 pages: Belton + Seagate)
+  // 1. Dynamic Context Augmentation for Multi-turn follow-up queries
+  let effectiveSearchQuery = userMessage;
+  if (conversationHistory && conversationHistory.length > 0 && isFollowUpQuery(userMessage)) {
+    const contextKeywords = extractContextKeywords(conversationHistory);
+    if (contextKeywords) {
+      effectiveSearchQuery = `${contextKeywords} ${userMessage}`;
+      console.log(`🧠 [Orchestrator Multi-turn] Context augmented search: "${userMessage}" -> "${effectiveSearchQuery}"`);
+    }
+  }
+
+  // 2. Dynamic Slide Retrieval (RAG) from local SQLite FTS5 database (669 pages: Belton + Seagate)
   let dynamicSlideExcerpts = '';
   try {
-    const retrievedSlides = searchSlideKnowledge(userMessage, 3);
+    const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
     if (retrievedSlides && retrievedSlides.length > 0) {
       dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
         retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
@@ -121,12 +159,13 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
    - Exit wire = สายออก / ลวดทางออก
    - Wet Tray = ถาดเปียก
 3. อ้างอิงเอกสาร: หากเป็นคำถามเกี่ยวกับมาตรฐาน สเปก หรือข้อสอบ ให้อ้างอิงรหัสเอกสารและเลขหน้ากำกับเสมอ เช่น [SPE-01-08-01 หน้า 10]
-4. โครงสร้างคำตอบเกณฑ์มาตรฐาน (Defect Criteria):
-   - นิยาม / ลักษณะอาการ
-   - เกณฑ์ Acceptance (ยอมรับ): หากหัวข้อหรือข้อกำหนดระบุว่า NOT ALLOW หรือไม่อนุญาต ให้ระบุว่า "ยอมรับไม่ได้ / ไม่อนุญาตเด็ดขาด (Reject เสมอ)"
-   - เกณฑ์ Reject (ปฏิเสธ): (หากเกณฑ์ระบุว่า "ไม่เป็นไปตามข้อกำหนดข้างต้น" ให้อธิบายเงื่อนไขตรงข้ามของ Acceptance ให้ชัดเจน เช่น ความยาว tin wire เหลือน้อยกว่า 80%)
-5. ไม่เกริ่นนำ: ห้ามทักทาย ห้ามมีคำว่า "สวัสดีครับ" หรือ "จากการตรวจสอบ" ให้เริ่มที่คำตอบตรงๆ ทันที
-6. ห้ามตอบปนเรื่องอื่น: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเฉพาะเกณฑ์มาตรฐาน ห้ามดึงเรื่องเครื่องจักรมาตอบ และหากถามเรื่องเครื่องจักร ให้ตอบเฉพาะสถานะเครื่องจักร
+4. กฎสากลสำหรับเกณฑ์การตัดสิน (Universal Decision Logic):
+   - ห้ามตอบแค่ "ไม่เป็นไปตามข้อกำหนดข้างต้น" หรือ "มีเพียงแค่นี้" โดยเด็ดขาดในทุกหัวข้อและทุกสเปก
+   - เมื่อผู้ใช้ถามถึงเกณฑ์ Reject: ต้องนำเงื่อนไขในช่อง Acceptance criteria มาแจกแจงเป็นตัวเลขและอาการจริงเสมอ (เช่น หาก Accept คือ >= 80% เกณฑ์ Reject คือต้องระบุว่า < 80% หรือหากระบุ NOT ALLOW ให้ตอบว่าไม่อนุญาตเด็ดขาด)
+   - ให้สรุปให้ครบ: (1) นิยามลักษณะของเสีย (2) เกณฑ์ Acceptance (3) เกณฑ์ Reject
+5. การตอบคำถามต่อเนื่อง (Follow-up Questions): หากผู้ใช้ถามต่อ เช่น "มีอะไรบ้างละ", "ตัวเลขเท่าไหร่", "ทำไม", "ขยายความหน่อย" ให้ตอบอธิบายขยายความจากข้อกำหนดของหัวข้อที่สนทนาอยู่ ห้ามตอบตัดบท ห้ามพูดว่า "มีเพียงแค่นี้เท่านั้น"
+6. ไม่เกริ่นนำ: ห้ามทักทาย ห้ามมีคำว่า "สวัสดีครับ" หรือ "จากการตรวจสอบ" ให้เริ่มที่คำตอบตรงๆ ทันที
+7. ห้ามตอบปนเรื่องอื่น: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเฉพาะเกณฑ์มาตรฐาน ห้ามดึงเรื่องเครื่องจักรมาตอบ และหากถามเรื่องเครื่องจักร ให้ตอบเฉพาะสถานะเครื่องจักร
 ${dynamicSlideExcerpts}`;
 
   const messages = [
@@ -135,7 +174,10 @@ ${dynamicSlideExcerpts}`;
     { role: 'user', content: userMessage }
   ];
 
-  console.log(`🤖 [Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME})...`);
+  const isMachineOrSystemQuery = /(เครื่อง|ตู้|วาร์ป|กล้อง|ส่อง|teleport|telemetry|scada|สรุปยอด|ผลิตรวม|ภาพรวมโรงงาน|กี่เครื่อง|ปัญหาเครื่อง|เครื่องเสีย|เครื่องพัง|เบอร์\s*\d+|#\s*\d+)/i.test(userMessage);
+  const toolsToProvide = (!isMachineOrSystemQuery && dynamicSlideExcerpts) ? undefined : toolsDefinition;
+
+  console.log(`🤖 [Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
 
   const firstRes = await fetch(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
@@ -143,7 +185,7 @@ ${dynamicSlideExcerpts}`;
     body: JSON.stringify({
       model: MODEL_NAME,
       messages: messages,
-      tools: toolsDefinition,
+      tools: toolsToProvide,
       options: {
         num_ctx: 8192,
         temperature: 0.08,
