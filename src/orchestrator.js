@@ -39,13 +39,7 @@ const CHINESE_TO_THAI_MAP = [
   [/影响生产效率和质量控制/g, 'กระทบต่อประสิทธิภาพการผลิต'],
   [/在\s*([a-zA-Z0-9_\s-]+)\s*上/g, 'บริเวณ $1'],
   [/上的/g, ' บน '],
-  [/上/g, ' บน '],
-  [/的/g, ' ของ '],
-  [/或/g, ' หรือ '],
-  [/和/g, ' และ '],
-  [/是/g, ' คือ '],
-  [/有/g, ' มี '],
-  [/无/g, ' ไม่มี ']
+  [/上/g, ' บน ']
 ];
 
 function cleanOutputText(text) {
@@ -57,6 +51,10 @@ function cleanOutputText(text) {
     .replace(/<query>.*?<\/query>/gis, '')
     // Strip repetitive robotic opening filler phrases if emitted
     .replace(/^(?:จากการตรวจสอบข้อมูลในระบบ(?:ฐานข้อมูล)?(?:พบว่า)?[,\s]*|ตามข้อมูล(?:ในระบบฐานข้อมูล)?[,\s]*)/i, '')
+    // Normalize pronouns and polite particles to consistent engineering persona
+    .replace(/สวัสดีค่ะ/g, 'สวัสดีครับ')
+    .replace(/ฉัน/g, 'ผม')
+    .replace(/ค่ะ/g, 'ครับ')
     // Strip echoed prompt headers if leaked
     .replace(/\[EXECUTIVE COMMUNICATION PROTOCOL.*?$/is, '')
     .replace(/\[FEW-SHOT.*?$/is, '')
@@ -87,7 +85,9 @@ function cleanOutputText(text) {
     .replace(/】/g, '] ')
     .replace(/[“”]/g, '"')
     .replace(/[‘’]/g, "'")
+    .replace(/？/g, '')
     .replace(/[\u2e80-\u2eff\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/g, '')
+    .replace(/[,，、\s]+$/g, '')
     .replace(/[ ]{2,}/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
@@ -127,19 +127,6 @@ function isThankYou(userMsg) {
   return /^(?:ขอบคุณ(?:ครับ|ค่ะ|มาก)?|ขอบใจ(?:ครับ|ค่ะ|จ้า)?|thx|thanks|thank you)\s*[!~.]*$/i.test(m);
 }
 
-function getNaturalGreetingReply(userMsg) {
-  const m = userMsg.trim().toLowerCase();
-  if (/คุณคือใคร|นายคือใคร|ทำอะไรได้บ้าง|ช่วยอะไรได้บ้าง|แนะนำตัว|ทำอะไรได้|ช่วยอะไรได้|มีความสามารถอะไร/i.test(m)) {
-    return `สวัสดีครับ! ผม **BELTON AI** วิศวกรผู้ช่วยประจำโรงงาน Belton Technology (นวนคร) ครับ 👋\n\nผมพร้อมช่วยสนับสนุนงานในสายการผลิตและงานวิศวกรรมในด้านต่างๆ ดังนี้ครับ:\n\n1. 📋 **ตรวจสอบมาตรฐานของเสีย & สเปกชิ้นงาน Seagate**\n   - ค้นหาเกณฑ์ Acceptance / Reject ของชิ้นงาน เช่น Coil, ACA, FCOF, Tray, Hookup, Raw Material\n   - อ้างอิงเอกสารสเปกทางการ เช่น SPE-01-08-01, SPE-01-06-01 พร้อมระบุเลขหน้าอย่างแม่นยำ\n\n2. 📝 **ตรวจข้อสอบ & Fact-Checking (Master Exam 180 ข้อ)**\n   - ตรวจสอบความถูกต้องของโจทย์ข้อสอบและเฉลยความจริงตามคู่มือสเปก\n\n3. ⚙️ **ตรวจสอบสถานะเครื่องจักร SCADA Telemetry & สั่งการ 3D**\n   - ดูสถานะเครื่องจักรรายตู้ (เช่น "ขอข้อมูลเครื่อง 20")\n   - ค้นหาเครื่องที่มีปัญหาเตือน Alarm / Warning / Hold\n   - สั่งวาร์ปกล้อง 3D ไปส่องเครื่องจักรแบบ Real-time\n\nวันนี้มีเรื่องไหนอยากให้ผมช่วยตรวจสอบ หรืออยากดูข้อมูลอะไร ถามเข้ามาได้เลยครับ!`;
-  }
-
-  if (isThankYou(userMsg)) {
-    return `ยินดีเป็นอย่างยิ่งครับ! หากมีข้อสงสัยเรื่องสเปกงาน ตรวจข้อสอบ หรือต้องการดูสถานะเครื่องจักรเพิ่มเติม สอบถามผมได้ตลอดเวลาเลยนะครับ 😊`;
-  }
-
-  return `สวัสดีครับ! ผม **BELTON AI** วิศวกรผู้ช่วยประจำโรงงาน Belton Technology นวนคร ครับ 👋\n\nวันนี้มีข้อมูลสเปกงาน Seagate, ตรวจสอบข้อสอบ หรืออยากให้เช็กสถานะเครื่องจักรตัวไหน บอกผมได้เลยนะครับ พร้อมช่วยเหลือเต็มที่ครับ!`;
-}
-
 function extractContextKeywords(history) {
   if (!history || !Array.isArray(history) || history.length === 0) return '';
   for (let i = history.length - 1; i >= 0; i--) {
@@ -169,19 +156,11 @@ function isFollowUpQuery(userMsg) {
 }
 
 async function runOrchestrator(userMessage, conversationHistory = []) {
-  // 0. Fast-path: Greetings and casual pleasantries (Natural, instant & friendly)
-  if (isGreetingOrChitchat(userMessage) || isThankYou(userMessage)) {
-    console.log(`👋 [Orchestrator Greeting] Intercepted casual message: "${userMessage}"`);
-    return {
-      reply: getNaturalGreetingReply(userMessage),
-      toolsUsed: [],
-      action: null
-    };
-  }
+  const isCasualMessage = isGreetingOrChitchat(userMessage) || isThankYou(userMessage);
 
   // 1. Check if query is an exam statement / verification question from Master Exam database
   let examGroundTruthSnippet = '';
-  const matchedExam = searchExamQuestion(userMessage);
+  const matchedExam = !isCasualMessage ? searchExamQuestion(userMessage) : null;
   if (matchedExam) {
     console.log(`📑 [Orchestrator Exam Match] Found Master Exam Q#${matchedExam.question_number} [${matchedExam.doc_code}]: Answer="${matchedExam.correct_answer}"`);
     examGroundTruthSnippet = `\n\n[ผลการตรวจสอบคลังข้อสอบทางการ (Master Exam Ground Truth)]:
@@ -195,7 +174,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
   let effectiveSearchQuery = userMessage;
   if (matchedExam) {
     effectiveSearchQuery = `${matchedExam.doc_code} ${matchedExam.question_text.slice(0, 60)}`;
-  } else if (conversationHistory && conversationHistory.length > 0 && isFollowUpQuery(userMessage)) {
+  } else if (!isCasualMessage && conversationHistory && conversationHistory.length > 0 && isFollowUpQuery(userMessage)) {
     const contextKeywords = extractContextKeywords(conversationHistory);
     if (contextKeywords) {
       effectiveSearchQuery = `${contextKeywords} ${userMessage}`;
@@ -205,44 +184,46 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
 
   // 3. Dynamic Slide Retrieval (RAG) from local SQLite FTS5 database (669 pages: Belton + Seagate)
   let dynamicSlideExcerpts = '';
-  try {
-    const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
-    if (retrievedSlides && retrievedSlides.length > 0) {
-      dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
-        retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
-        `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}]`;
+  if (!isCasualMessage) {
+    try {
+      const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
+      if (retrievedSlides && retrievedSlides.length > 0) {
+        dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
+          retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
+          `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}]`;
+      }
+    } catch (searchErr) {
+      console.warn('⚠️ [Orchestrator] Slide knowledge retrieval error:', searchErr.message);
     }
-  } catch (searchErr) {
-    console.warn('⚠️ [Orchestrator] Slide knowledge retrieval error:', searchErr.message);
   }
 
-  const systemPrompt = `คุณคือ "BELTON AI" วิศวกรผู้เชี่ยวชาญด้านมาตรฐานการผลิต, การควบคุมคุณภาพ (QA/QC) และระบบ SCADA ของ Belton Technology (โรงงานนวนคร)
+  const systemPrompt = `คุณคือ "BELTON AI" วิศวกรผู้ช่วยประจำโรงงาน Belton Technology นวนคร
 บุคลิกและน้ำเสียง:
-- ตอบอย่างสุภาพ เป็นมิตร เป็นธรรมชาติเหมือนวิศวกรผู้ช่วยมืออาชีพ มีคำลงท้าย "ครับ", "ผม"
-- อธิบายตรงประเด็น ชัดเจน น่าอ่าน ใช้การจัดหัวข้อย่อยและเน้นประเด็นสำคัญ (ตัวหนา) ให้อ่านง่าย สบายตา
-- ไม่ตอบแข็งทื่อเป็นหุ่นยนต์ และไม่พูดว่า "มีเพียงแค่นี้เท่านั้น"
+- สุภาพ มีมารยาท เป็นมิตร และเป็นธรรมชาติ พูดคุยเหมือนวิศวกรผู้ช่วยมืออาชีพ
+- สรรพนามและการลงท้าย: ให้แทนตัวเองว่า "ผม" และลงท้ายด้วย "ครับ" เสมอ (ห้ามใช้ "ค่ะ" หรือ "ฉัน")
+- การทักทายและพูดคุยทั่วไป (Chitchat): หากผู้ใช้ทักทาย (สวัสดี, หวัดดี, HI, ดีครับ), ขอบคุณ หรือชวนคุยเล่น ให้ตอบรับอย่างอบอุ่น สุภาพ เป็นมิตร และแนะนำตัวว่าเป็นวิศวกรผู้ช่วย BELTON AI พร้อมช่วยเหลือเรื่องสเปกงาน Seagate, ตรวจสอบข้อสอบ หรือระบบเครื่องจักร SCADA
+- ภาษาไทย 100%: ต้องตอบเป็นภาษาไทยที่สละสลวยเท่านั้น ห้ามใช้ภาษาจีน (ห้ามมีอักษรจีนแม้แต่ตัวเดียว) หากไม่แน่ใจให้ใช้ภาษาไทยหรืออังกฤษ
 
-ข้อกำหนดสำคัญ:
-1. ภาษาไทย 100%: ต้องตอบเป็นภาษาไทยเท่านั้น ห้ามใช้ภาษาจีน (中文) หรืออักษรจีนปนมาเด็ดขาด
-2. คำศัพท์เทคนิค:
+ข้อกำหนดสำคัญสำหรับงานเทคนิคและมาตรฐาน:
+1. คำศัพท์เทคนิค:
    - Coil = คอยล์ / ขดลวด (ห้ามแปลว่า เส้นโค้ง)
    - Coil pack = แพ็คคอยล์ / มัดขดลวด
    - Tin wire / Tinning = ลวดเคลือบดีบุก / จุดบัดกรี
    - Exit wire = สายออก / ลวดทางออก
    - Wet Tray = ถาดเปียก
-3. อ้างอิงเอกสาร: หากเป็นคำถามเกี่ยวกับมาตรฐาน สเปก หรือข้อสอบ ให้อ้างอิงรหัสเอกสารและเลขหน้ากำกับเสมอ เช่น [SPE-01-08-01 หน้า 10]
-4. กฎสากลสำหรับเกณฑ์การตัดสิน (Universal Decision Logic):
+2. อ้างอิงเอกสาร: หากเป็นคำถามเกี่ยวกับมาตรฐาน สเปก หรือข้อสอบ ให้อ้างอิงรหัสเอกสารและเลขหน้ากำกับเสมอ เช่น [SPE-01-08-01 หน้า 10]
+3. กฎสากลสำหรับเกณฑ์การตัดสิน (Universal Decision Logic):
    - ห้ามตอบแค่ "ไม่เป็นไปตามข้อกำหนดข้างต้น" หรือ "มีเพียงแค่นี้" โดยเด็ดขาดในทุกหัวข้อและทุกสเปก
    - เมื่อกล่าวถึงเกณฑ์ Reject: ต้องนำเงื่อนไขในช่อง Acceptance criteria มาแจกแจงเป็นตัวเลขและอาการจริงเสมอ (เช่น หาก Accept คือ >= 80% เกณฑ์ Reject คือต้องระบุว่า < 80% หรือหากระบุ NOT ALLOW ให้ตอบว่าไม่อนุญาตเด็ดขาด)
    - สรุปให้ครบถ้วน: (1) นิยามลักษณะของเสีย (2) เกณฑ์ Acceptance (3) เกณฑ์ Reject
-5. การตอบคำถามต่อเนื่อง (Follow-up Questions): หากผู้ใช้ถามต่อ เช่น "มีอะไรบ้างละ", "ตัวเลขเท่าไหร่", "ทำไม", "ขยายความหน่อย" ให้ตอบอธิบายขยายความจากข้อกำหนดของหัวข้อที่สนทนาอยู่ ห้ามตอบตัดบท
-6. โหมดตรวจข้อสอบ (Exam Verification & Fact-Checking Mode):
+4. การตอบคำถามต่อเนื่อง (Follow-up Questions): หากผู้ใช้ถามต่อ เช่น "มีอะไรบ้างละ", "ตัวเลขเท่าไหร่", "ทำไม", "ขยายความหน่อย" ให้ตอบอธิบายขยายความจากข้อกำหนดของหัวข้อที่สนทนาอยู่ ห้ามตอบตัดบท
+5. โหมดตรวจข้อสอบ (Exam Verification & Fact-Checking Mode):
    - หากผู้ใช้ป้อนข้อความที่เป็นข้อสอบ หรือประโยคที่มีการกล่าวอ้างเกณฑ์สเปก (เช่น "กรณีนี้ยอมรับได้ (Accept)" หรือ "ถือเป็นงานเสีย (Reject)"):
    - ให้ทำหน้าที่เป็น "กรรมการตรวจข้อสอบ" เทียบกับ [ข้อมูลสไลด์และเกณฑ์มาตรฐาน] คำต่อคำ
    - ห้ามเชื่อตัวเลขหรือเงื่อนไขที่โจทย์อ้างเด็ดขาด ให้ยึดข้อมูลในสไลด์และ [ผลการตรวจสอบคลังข้อสอบทางการ] เป็นเกณฑ์จริงเท่านั้น
    - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "❌ เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้งและอธิบายเกณฑ์จริง
    - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "✅ เฉลย: ถูก" พร้อมสรุปเหตุผลยืนยัน
-7. แยกแยะขอบเขต: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเกณฑ์มาตรฐาน ไม่ดึงเรื่องสถานะเครื่องจักรมาปน และหากถามเรื่องเครื่องจักร ให้ตอบสถานะหรือเรียก Tool ที่เกี่ยวข้อง
+6. แยกแยะขอบเขต: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเกณฑ์มาตรฐาน ไม่ดึงเรื่องสถานะเครื่องจักรมาปน และหากถามเรื่องเครื่องจักร ให้ตอบสถานะหรือเรียก Tool ที่เกี่ยวข้อง
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
@@ -253,7 +234,7 @@ ${dynamicSlideExcerpts}`;
   ];
 
   const isMachineOrSystemQuery = /(เครื่อง|ตู้|วาร์ป|กล้อง|ส่อง|teleport|telemetry|scada|สรุปยอด|ผลิตรวม|ภาพรวมโรงงาน|กี่เครื่อง|ปัญหาเครื่อง|เครื่องเสีย|เครื่องพัง|เบอร์\s*\d+|#\s*\d+)/i.test(userMessage);
-  const toolsToProvide = (!isMachineOrSystemQuery && dynamicSlideExcerpts) ? undefined : toolsDefinition;
+  const toolsToProvide = isCasualMessage ? undefined : ((!isMachineOrSystemQuery && dynamicSlideExcerpts) ? undefined : toolsDefinition);
 
   console.log(`🤖 [Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
 
@@ -266,8 +247,8 @@ ${dynamicSlideExcerpts}`;
       tools: toolsToProvide,
       options: {
         num_ctx: 8192,
-        temperature: 0.08,
-        top_p: 0.85,
+        temperature: isCasualMessage ? 0.35 : 0.08,
+        top_p: 0.9,
         repeat_penalty: 1.15,
         stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "User:", "Assistant:", "<|im_end|>"]
       },
