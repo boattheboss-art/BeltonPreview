@@ -55,8 +55,8 @@ function cleanOutputText(text) {
     .replace(/<function[_-]name>.*?<\/function[_-]name>/gis, '')
     .replace(/<tool[_-]call>.*?<\/tool[_-]call>/gis, '')
     .replace(/<query>.*?<\/query>/gis, '')
-    // Strip common filler opening pleasantries if emitted
-    .replace(/^(สวัสดีครับ[,\s]*|ยินดีที่ได้ช่วยเหลือครับ[,\s]*|จากการตรวจสอบข้อมูลในระบบ(?:ฐานข้อมูล)?(?:พบว่า)?[,\s]*|ตามข้อมูล(?:ในระบบ)?[,\s]*)/i, '')
+    // Strip repetitive robotic opening filler phrases if emitted
+    .replace(/^(?:จากการตรวจสอบข้อมูลในระบบ(?:ฐานข้อมูล)?(?:พบว่า)?[,\s]*|ตามข้อมูล(?:ในระบบฐานข้อมูล)?[,\s]*)/i, '')
     // Strip echoed prompt headers if leaked
     .replace(/\[EXECUTIVE COMMUNICATION PROTOCOL.*?$/is, '')
     .replace(/\[FEW-SHOT.*?$/is, '')
@@ -66,8 +66,8 @@ function cleanOutputText(text) {
     .replace(/\[คำสั่ง.*?$/is, '')
     .replace(/\[คำแนะนำ.*?$/is, '')
     .replace(/\[ข้อมูลสไลด์.*?$/is, '')
-    // Strip trailing pleasantries or dismissive phrases if emitted
-    .replace(/\n+(?:หากคุณมีข้อสงสัย|หากมีข้อสงสัย|สามารถสอบถามเพิ่มเติม|มีอะไรให้ผมช่วยอีกไหม|หวังว่าข้อมูลนี้|หากมีข้อมูลเพิ่มเติม|หากมีคำถามเพิ่มเติม|ต้องการข้อมูล|มีเพียงแค่นี้เท่านั้น(?:ค่ะ|ครับ)|มีเพียงแค่นี้(?:ค่ะ|ครับ)|มีแค่นี้(?:ค่ะ|ครับ)).*$/is, '');
+    // Strip dismissive phrases if emitted
+    .replace(/\n+(?:มีเพียงแค่นี้เท่านั้น(?:ค่ะ|ครับ)|มีเพียงแค่นี้(?:ค่ะ|ครับ)|มีแค่นี้(?:ค่ะ|ครับ)).*$/is, '');
 
   // Intercept & translate any Chinese fragments to Thai
   for (const [pat, rep] of CHINESE_TO_THAI_MAP) {
@@ -93,6 +93,51 @@ function cleanOutputText(text) {
     .trim();
 
   return cleaned;
+}
+
+function isGreetingOrChitchat(userMsg) {
+  if (!userMsg) return false;
+  const m = userMsg.trim().toLowerCase();
+
+  // Exclude if technical keywords or question numbers are present
+  if (/\b(spe|tm)-[0-9]{2}/i.test(m) || /(coil|wire|tray|damper|fcof|aca|hookup|burr|scratch|dent|เครื่อง|ตู้|วาร์ป|กล้อง|\b\d+\.|\bข้อ\s*\d+)/i.test(m)) {
+    return false;
+  }
+
+  // Meta identity / capability questions
+  if (/(คุณคือใคร|นายคือใคร|ทำอะไรได้บ้าง|ช่วยอะไรได้บ้าง|แนะนำตัว|ทำอะไรได้|ช่วยอะไรได้|มีความสามารถอะไร|ใครสร้างคุณ|รู้จักโรงงานไหม)/i.test(m)) {
+    return true;
+  }
+
+  // General greetings & pleasantries
+  if (/^(?:สวัสดี|หวัดดี|ดีครับ|ดีค่ะ|hi|hello|hey|yo|morning|good morning|good afternoon|good evening|สบายดีไหม|เป็นไงบ้าง|ทำอะไรอยู่)/i.test(m)) {
+    return true;
+  }
+
+  if (['hi', 'hello', 'hey', 'yo', 'หวัดดี', 'สวัสดี', 'ดีครับ', 'ดีค่ะ'].includes(m)) {
+    return true;
+  }
+
+  return false;
+}
+
+function isThankYou(userMsg) {
+  if (!userMsg) return false;
+  const m = userMsg.trim().toLowerCase();
+  return /^(?:ขอบคุณ(?:ครับ|ค่ะ|มาก)?|ขอบใจ(?:ครับ|ค่ะ|จ้า)?|thx|thanks|thank you)\s*[!~.]*$/i.test(m);
+}
+
+function getNaturalGreetingReply(userMsg) {
+  const m = userMsg.trim().toLowerCase();
+  if (/คุณคือใคร|นายคือใคร|ทำอะไรได้บ้าง|ช่วยอะไรได้บ้าง|แนะนำตัว|ทำอะไรได้|ช่วยอะไรได้|มีความสามารถอะไร/i.test(m)) {
+    return `สวัสดีครับ! ผม **BELTON AI** วิศวกรผู้ช่วยประจำโรงงาน Belton Technology (นวนคร) ครับ 👋\n\nผมพร้อมช่วยสนับสนุนงานในสายการผลิตและงานวิศวกรรมในด้านต่างๆ ดังนี้ครับ:\n\n1. 📋 **ตรวจสอบมาตรฐานของเสีย & สเปกชิ้นงาน Seagate**\n   - ค้นหาเกณฑ์ Acceptance / Reject ของชิ้นงาน เช่น Coil, ACA, FCOF, Tray, Hookup, Raw Material\n   - อ้างอิงเอกสารสเปกทางการ เช่น SPE-01-08-01, SPE-01-06-01 พร้อมระบุเลขหน้าอย่างแม่นยำ\n\n2. 📝 **ตรวจข้อสอบ & Fact-Checking (Master Exam 180 ข้อ)**\n   - ตรวจสอบความถูกต้องของโจทย์ข้อสอบและเฉลยความจริงตามคู่มือสเปก\n\n3. ⚙️ **ตรวจสอบสถานะเครื่องจักร SCADA Telemetry & สั่งการ 3D**\n   - ดูสถานะเครื่องจักรรายตู้ (เช่น "ขอข้อมูลเครื่อง 20")\n   - ค้นหาเครื่องที่มีปัญหาเตือน Alarm / Warning / Hold\n   - สั่งวาร์ปกล้อง 3D ไปส่องเครื่องจักรแบบ Real-time\n\nวันนี้มีเรื่องไหนอยากให้ผมช่วยตรวจสอบ หรืออยากดูข้อมูลอะไร ถามเข้ามาได้เลยครับ!`;
+  }
+
+  if (isThankYou(userMsg)) {
+    return `ยินดีเป็นอย่างยิ่งครับ! หากมีข้อสงสัยเรื่องสเปกงาน ตรวจข้อสอบ หรือต้องการดูสถานะเครื่องจักรเพิ่มเติม สอบถามผมได้ตลอดเวลาเลยนะครับ 😊`;
+  }
+
+  return `สวัสดีครับ! ผม **BELTON AI** วิศวกรผู้ช่วยประจำโรงงาน Belton Technology นวนคร ครับ 👋\n\nวันนี้มีข้อมูลสเปกงาน Seagate, ตรวจสอบข้อสอบ หรืออยากให้เช็กสถานะเครื่องจักรตัวไหน บอกผมได้เลยนะครับ พร้อมช่วยเหลือเต็มที่ครับ!`;
 }
 
 function extractContextKeywords(history) {
@@ -124,6 +169,16 @@ function isFollowUpQuery(userMsg) {
 }
 
 async function runOrchestrator(userMessage, conversationHistory = []) {
+  // 0. Fast-path: Greetings and casual pleasantries (Natural, instant & friendly)
+  if (isGreetingOrChitchat(userMessage) || isThankYou(userMessage)) {
+    console.log(`👋 [Orchestrator Greeting] Intercepted casual message: "${userMessage}"`);
+    return {
+      reply: getNaturalGreetingReply(userMessage),
+      toolsUsed: [],
+      action: null
+    };
+  }
+
   // 1. Check if query is an exam statement / verification question from Master Exam database
   let examGroundTruthSnippet = '';
   const matchedExam = searchExamQuestion(userMessage);
@@ -133,7 +188,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
 - รหัสข้อสอบ: ${matchedExam.doc_code} ข้อที่ ${matchedExam.question_number} หมวด ${matchedExam.product}
 - เฉลยทางการ: "${matchedExam.correct_answer}" (${matchedExam.correct_answer === 'ถูก' ? 'ข้อความในโจทย์ถูกต้องตามมาตรฐาน' : 'ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน'})
 - คำสั่งการตัดสิน: จงเปิดคำตอบด้วยคำตัดสินทางการทันที คือ "${matchedExam.correct_answer === 'ถูก' ? '✅ เฉลย: ถูก (ข้อความนี้ถูกต้องตามมาตรฐาน)' : '❌ เฉลย: ผิด (ข้อความนี้ไม่ถูกต้องตามมาตรฐาน)'}"
-- จากนั้นอธิบายเปรียบเทียบระหว่างสิ่งที่โจทย์ระบุ กับเกณฑ์จริงในสไลด์ให้เห็นความแตกต่างชัดเจน`;
+- จากนั้นอธิบายเปรียบเทียบระหว่างสิ่งที่โจทย์ระบุ กับเกณฑ์จริงในสไลด์ให้เห็นความแตกต่างชัดเจนอย่างสุภาพและชัดเจน`;
   }
 
   // 2. Dynamic Context Augmentation for Multi-turn follow-up queries
@@ -161,8 +216,12 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
     console.warn('⚠️ [Orchestrator] Slide knowledge retrieval error:', searchErr.message);
   }
 
-  const systemPrompt = `คุณคือ "BELTON AI" วิศวกรผู้เชี่ยวชาญด้านมาตรฐานการผลิตและระบบคลีนรูมของ Belton Technology (โรงงานนวนคร)
-หน้าที่ของคุณคือตอบคำถามผู้ใช้ให้ตรงประเด็น กระชับ ชัดเจน เนื้อล้วนๆ ไม่เยิ่นเย้อ 0% น้ำ
+  const systemPrompt = `คุณคือ "BELTON AI" วิศวกรผู้เชี่ยวชาญด้านมาตรฐานการผลิต, การควบคุมคุณภาพ (QA/QC) และระบบ SCADA ของ Belton Technology (โรงงานนวนคร)
+บุคลิกและน้ำเสียง:
+- ตอบอย่างสุภาพ เป็นมิตร เป็นธรรมชาติเหมือนวิศวกรผู้ช่วยมืออาชีพ มีคำลงท้าย "ครับ", "ผม"
+- อธิบายตรงประเด็น ชัดเจน น่าอ่าน ใช้การจัดหัวข้อย่อยและเน้นประเด็นสำคัญ (ตัวหนา) ให้อ่านง่าย สบายตา
+- ไม่ตอบแข็งทื่อเป็นหุ่นยนต์ และไม่พูดว่า "มีเพียงแค่นี้เท่านั้น"
+
 ข้อกำหนดสำคัญ:
 1. ภาษาไทย 100%: ต้องตอบเป็นภาษาไทยเท่านั้น ห้ามใช้ภาษาจีน (中文) หรืออักษรจีนปนมาเด็ดขาด
 2. คำศัพท์เทคนิค:
@@ -174,17 +233,16 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
 3. อ้างอิงเอกสาร: หากเป็นคำถามเกี่ยวกับมาตรฐาน สเปก หรือข้อสอบ ให้อ้างอิงรหัสเอกสารและเลขหน้ากำกับเสมอ เช่น [SPE-01-08-01 หน้า 10]
 4. กฎสากลสำหรับเกณฑ์การตัดสิน (Universal Decision Logic):
    - ห้ามตอบแค่ "ไม่เป็นไปตามข้อกำหนดข้างต้น" หรือ "มีเพียงแค่นี้" โดยเด็ดขาดในทุกหัวข้อและทุกสเปก
-   - เมื่อผู้ใช้ถามถึงเกณฑ์ Reject: ต้องนำเงื่อนไขในช่อง Acceptance criteria มาแจกแจงเป็นตัวเลขและอาการจริงเสมอ (เช่น หาก Accept คือ >= 80% เกณฑ์ Reject คือต้องระบุว่า < 80% หรือหากระบุ NOT ALLOW ให้ตอบว่าไม่อนุญาตเด็ดขาด)
-   - ให้สรุปให้ครบ: (1) นิยามลักษณะของเสีย (2) เกณฑ์ Acceptance (3) เกณฑ์ Reject
-5. การตอบคำถามต่อเนื่อง (Follow-up Questions): หากผู้ใช้ถามต่อ เช่น "มีอะไรบ้างละ", "ตัวเลขเท่าไหร่", "ทำไม", "ขยายความหน่อย" ให้ตอบอธิบายขยายความจากข้อกำหนดของหัวข้อที่สนทนาอยู่ ห้ามตอบตัดบท ห้ามพูดว่า "มีเพียงแค่นี้เท่านั้น"
+   - เมื่อกล่าวถึงเกณฑ์ Reject: ต้องนำเงื่อนไขในช่อง Acceptance criteria มาแจกแจงเป็นตัวเลขและอาการจริงเสมอ (เช่น หาก Accept คือ >= 80% เกณฑ์ Reject คือต้องระบุว่า < 80% หรือหากระบุ NOT ALLOW ให้ตอบว่าไม่อนุญาตเด็ดขาด)
+   - สรุปให้ครบถ้วน: (1) นิยามลักษณะของเสีย (2) เกณฑ์ Acceptance (3) เกณฑ์ Reject
+5. การตอบคำถามต่อเนื่อง (Follow-up Questions): หากผู้ใช้ถามต่อ เช่น "มีอะไรบ้างละ", "ตัวเลขเท่าไหร่", "ทำไม", "ขยายความหน่อย" ให้ตอบอธิบายขยายความจากข้อกำหนดของหัวข้อที่สนทนาอยู่ ห้ามตอบตัดบท
 6. โหมดตรวจข้อสอบ (Exam Verification & Fact-Checking Mode):
    - หากผู้ใช้ป้อนข้อความที่เป็นข้อสอบ หรือประโยคที่มีการกล่าวอ้างเกณฑ์สเปก (เช่น "กรณีนี้ยอมรับได้ (Accept)" หรือ "ถือเป็นงานเสีย (Reject)"):
    - ให้ทำหน้าที่เป็น "กรรมการตรวจข้อสอบ" เทียบกับ [ข้อมูลสไลด์และเกณฑ์มาตรฐาน] คำต่อคำ
    - ห้ามเชื่อตัวเลขหรือเงื่อนไขที่โจทย์อ้างเด็ดขาด ให้ยึดข้อมูลในสไลด์และ [ผลการตรวจสอบคลังข้อสอบทางการ] เป็นเกณฑ์จริงเท่านั้น
-   - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "❌ เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้ง
-   - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "✅ เฉลย: ถูก"
-7. ไม่เกริ่นนำ: ห้ามทักทาย ห้ามมีคำว่า "สวัสดีครับ" หรือ "จากการตรวจสอบ" ให้เริ่มที่คำตอบตรงๆ ทันที
-8. ห้ามตอบปนเรื่องอื่น: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเฉพาะเกณฑ์มาตรฐาน ห้ามดึงเรื่องเครื่องจักรมาตอบ และหากถามเรื่องเครื่องจักร ให้ตอบเฉพาะสถานะเครื่องจักร
+   - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "❌ เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้งและอธิบายเกณฑ์จริง
+   - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "✅ เฉลย: ถูก" พร้อมสรุปเหตุผลยืนยัน
+7. แยกแยะขอบเขต: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเกณฑ์มาตรฐาน ไม่ดึงเรื่องสถานะเครื่องจักรมาปน และหากถามเรื่องเครื่องจักร ให้ตอบสถานะหรือเรียก Tool ที่เกี่ยวข้อง
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
@@ -320,6 +378,12 @@ ${dynamicSlideExcerpts}`;
 
     if (fnName === 'teleport_3d_camera' && toolResult.action === 'teleport') {
       triggeredAction = toolResult;
+      const targetStr = toolResult.targetNum < 10 ? '0' + toolResult.targetNum : toolResult.targetNum;
+      return {
+        reply: `กำลังนำมุมมองกล้อง 3D ซูมไปยังเครื่อง **ACA-DISP-${targetStr}** แบบ Real-time เรียบร้อยครับ! 🎥✨`,
+        toolsUsed: toolsUsed,
+        action: triggeredAction
+      };
     }
 
     messages.push({

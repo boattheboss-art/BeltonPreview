@@ -105,9 +105,14 @@ function searchSlideKnowledge(query, limit = 3) {
     }
   }
 
-  // Extract alphanumeric tokens
+  // Extract alphanumeric tokens (excluding common English stopwords/greetings)
+  const COMMON_STOPWORDS = new Set([
+    'hi', 'hello', 'hey', 'yo', 'ok', 'is', 'it', 'in', 'on', 'at', 'to', 'for', 'of',
+    'and', 'or', 'an', 'as', 'by', 'if', 'so', 'no', 'do', 'go', 'up', 'my', 'me', 'we',
+    'you', 'he', 'she', 'they', 'what', 'how', 'why', 'can', 'the', 'this', 'that'
+  ]);
   const engWords = lowerQ.match(/[a-z0-9%_-]{2,}/g) || [];
-  engWords.forEach(w => tokens.add(w));
+  engWords.filter(w => !COMMON_STOPWORDS.has(w)).forEach(w => tokens.add(w));
 
   // If no known keywords matched, extract 2-4 char ngrams from Thai text
   if (tokens.size === 0) {
