@@ -1,0 +1,19 @@
+{
+  "status": "VERIFIED_DATASET",
+  "database": "belton_scada.db",
+  "total_records": 54050,
+  "last_sync_iso": "2026-09-10 09:38:01",
+  "last_sync_timestamp": 1789007881139,
+  "sync_interval_seconds": 0,
+  "data_mode": "STABLE_SCADA_HISTORY",
+  "active_machines": 47,
+  "warning_machines": 2,
+  "broken_machines": 1,
+  "cleanroom_ambient": {
+    "temperature_c": 21.86,
+    "humidity_pct": 43.76
+  },
+  "recent_alerts": [
+    "All 49 operational cells running within nominal Cpk limits."
+  ]
+}

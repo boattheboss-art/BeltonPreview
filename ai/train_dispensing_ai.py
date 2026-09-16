@@ -17,8 +17,14 @@ This script:
 """
 
 import os
+import sys
 import json
 import math
+import sqlite3
+
+# Support UTF-8 encoding across all Windows consoles
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 import numpy as np
 import torch
 import torch.nn as nn
@@ -29,14 +35,65 @@ from torch.utils.data import TensorDataset, DataLoader
 np.random.seed(42)
 torch.manual_seed(42)
 
-# Ensure models directory exists
+# Ensure models and data directories exist
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+DB_PATH = os.path.join(DATA_DIR, "belton_scada.db")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 
 # ==============================================================================
-# 1. SYNTHETIC PHYSICAL PROCESS GENERATOR (BELTON SPECIFICATIONS)
+# 1. SQLITE SCADA DATABASE INGESTION & FALLBACK SIMULATOR
 # ==============================================================================
+def load_data_from_scada_db(limit=25000):
+    """
+    Ingests live and historical production data directly from Belton SCADA SQLite database.
+    Performs standard SQL JOIN between telemetry_logs and quality_inspections.
+    """
+    if not os.path.exists(DB_PATH):
+        print(f"[!] SQLite DB not found at {DB_PATH}. Falling back to physics generator...")
+        return generate_belton_dispensing_dataset(6000)
+
+    print(f"[*] Ingesting production dataset from SQLite Database: {DB_PATH}")
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    query = """
+    SELECT 
+        t.pot_life_min,
+        t.preheat_temp_c,
+        t.cleanroom_temp_c,
+        t.cleanroom_humidity_pct,
+        t.needle_wear_index,
+        CASE WHEN t.cycle_time_sec > 0 THEN (60.0 / t.cycle_time_sec) ELSE 15.0 END AS cpm,
+        t.pneumatic_pressure_kpa,
+        q.defect_code
+    FROM telemetry_logs t
+    JOIN quality_inspections q ON t.log_id = q.log_id
+    WHERE t.pneumatic_pressure_kpa > 50.0 -- Exclude maintenance hold records (pressure 0)
+    ORDER BY t.log_id DESC
+    LIMIT ?;
+    """
+
+    cursor.execute(query, (limit,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    if not rows:
+        print("[!] No records returned from query. Falling back to physics generator...")
+        return generate_belton_dispensing_dataset(6000)
+
+    data = np.array(rows, dtype=np.float32)
+    X = data[:, 0:6]
+    y_reg = data[:, 6]
+    y_cls = data[:, 7].astype(np.int64)
+
+    print(f"[OK] Successfully loaded {len(rows)} real records from SQLite database!")
+    print(f"    - Normal (0): {np.sum(y_cls == 0)} ({np.mean(y_cls == 0)*100:.1f}%)")
+    print(f"    - Underfill (1): {np.sum(y_cls == 1)} ({np.mean(y_cls == 1)*100:.1f}%)")
+    print(f"    - Overflow (2): {np.sum(y_cls == 2)} ({np.mean(y_cls == 2)*100:.1f}%)")
+
+    return X, y_reg, y_cls
 def generate_belton_dispensing_dataset(n_samples=5000):
     """
     Generates synthetic dataset modeled after Belton ACA cleanroom dispensing specs.
@@ -159,8 +216,8 @@ def train_model():
     print("  BELTON TECHNOLOGY - ACA LINE AI EPOXY DISPENSING TRAINING  ")
     print("=" * 70)
     
-    # 1. Prepare data
-    X, y_reg, y_cls = generate_belton_dispensing_dataset(6000)
+    # 1. Prepare data (Ingested from SQLite SCADA Database)
+    X, y_reg, y_cls = load_data_from_scada_db(limit=25000)
     
     # Train / Val Split (80 / 20)
     n_train = int(len(X) * 0.8)
@@ -256,14 +313,13 @@ def train_model():
         val_mae_kpa = val_reg_mae / len(val_dataset)
         val_acc = (correct_cls / total_cls) * 100.0
         
-        if epoch % 10 == 0 or epoch == 1:
-            print(f"Epoch [{epoch:2d}/{EPOCHS}] | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | "
-                  f"Pressure MAE: {val_mae_kpa:.2f} kPa | Defect Acc: {val_acc:.1f}%")
+        # Print every single epoch so user can clearly see Loss decreasing in real-time
+        print(f"Epoch [{epoch:02d}/{EPOCHS}] -> Train Error (Loss): {train_loss:.5f} | Val Loss: {val_loss:.4f} | Pressure MAE: +/-{val_mae_kpa:.2f} kPa")
                   
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             pt_path = os.path.join(MODELS_DIR, "dispensing_ai_model.pt")
-            torch.save({
+            checkpoint_data = {
                 'model_state_dict': model.state_dict(),
                 'x_mean': x_mean.tolist(),
                 'x_std': x_std.tolist(),
@@ -271,7 +327,9 @@ def train_model():
                 'y_reg_std': y_reg_std,
                 'val_mae_kpa': float(val_mae_kpa),
                 'val_acc': float(val_acc)
-            }, pt_path)
+            }
+            with open(pt_path, "wb") as f:
+                torch.save(checkpoint_data, f)
 
     print(f"\n[OK] PyTorch model successfully saved to: {pt_path}")
 

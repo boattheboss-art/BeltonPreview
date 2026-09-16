@@ -1,0 +1,1282 @@
+=== PAGE 1 ===
+© 2026, Belton Technology Group. All rights reserved. 
+1
+© 2026, Belton Technology Group. All rights reserved. 
+ESD & CONTAMINATION CONTROL ENGINEER
+Issue Date : Apr Issue Date : Apr Issue Date : Apr Issue Date : Apr10 10 10 10, , , , 2026 2026 2026 2026 
+ESD, CONTAMINATION CONTROL & ESD, CONTAMINATION CONTROL & ESD, CONTAMINATION CONTROL & ESD, CONTAMINATION CONTROL & 
+CLEANROOM PROTOCOL TRAINING CLEANROOM PROTOCOL TRAINING CLEANROOM PROTOCOL TRAINING CLEANROOM PROTOCOL TRAINING 2026 2026 2026 2026-- --27 27 27 27 
+
+=== PAGE 2 ===
+© 2026, Belton Technology Group. All rights reserved. 
+2
+
+
+=== PAGE 3 ===
+© 2026, Belton Technology Group. All rights reserved. 
+3
+เป ้ าหมายของหลักสูตรการอบรม (Course Objectives) เป ้ าหมายของหลักสูตรการอบรม (Course Objectives) 
+เพือ ให้พนักงานมีความรู ้  ความเข้าใจเกียวกับข้อปฏิบัติของห้องคลีนรูม 
+และการควบคุมสิงสกปรกซึงอาจตกลงบนชิ %นงาน
+เพือลดความเสียหายของชิ %นงานทีเกิดจากสิงสกปรก เส้น ใย และฝุ ่ น
+ละออง ซึงอาจมาจากตัวพนักงานเอง 
+เพือ ให้พนักงานนําความรู ้ ทีได้ ไปใช ้ ในการปฏิบัติงาน ได้อย่างถูกต้อง และ 
+เหมาะสม 
+
+
+=== PAGE 4 ===
+© 2026, Belton Technology Group. All rights reserved. 
+4
+ Contam ที(พบบนต ั วงานจะทําให้คุณภาพ 
+และความน่าเชื(อถือของงานลดลง yield ก็
+ลดลง ทําให้เราต้องเสียค่าใช้จ่ายในการ 
+ผลิตเพิ(มขึAน แต่ที(ร้ายที(สุดคือทําให้ลูกค้า 
+ไม่เชื(อมั(นความสามารถในการผลิตของ 
+บริษัทและเลิกสั(งซืAอสินค้าในที(สุด 
+Why do we need to cleanroom training?ทําไม? เรา
+ต้องจัดเทรนเรื(องคลีนรูม
+Why do we need to cleanroom training?ทําไม? เรา
+ต้องจัดเทรนเรื(องคลีนรูม
+
+
+=== PAGE 5 ===
+© 2026, Belton Technology Group. All rights reserved. 
+5
+ESD and Contamination Awareness 2026 
+พนักงานเบลตันทุกคนทีเข ้ าไปในพืนที EPA และคลีนรูม จะต ้ องผ่านการฝึกอบรม ESD control  และ 
+Cleanroom Discipline หลังจากฝึกอบรมเสร็จจะต ้ องทําแบบทดสอบออนไลน์เพือวัดความรู้  ความเข ้ าใจ ซึง 
+คะแนนจะถูกบันทึกและถูกเก็บไว ้ โดยแผนก (Human resource หรือ HR) ให ้ ผ่านเกณฑ์ 80% ขึนไป จึง 
+สามารถเข ้ าไปในพืนทีทํางานทัง คลีนรูม และ EPA ได ้
+“ไม่อนุญาตให ้ บุคคลภายนอก ซึงไม่ใช่พนักงานเบลตัน เข ้ าออก Cleanroom โดยลําพัง 
+พนักงานเบลตันทีเป็นผู้ พาเข ้ า จะต ้ องรับผิดชอบความประพฤติทังหมดของผู้ ทีนําเข ้ าไป”
+“ไม่อนุญาตให ้ บุคคลภายนอก ซึงไม่ใช่พนักงานเบลตัน เข ้ าออก Cleanroom โดยลําพัง 
+พนักงานเบลตันทีเป็นผู้ พาเข ้ า จะต ้ องรับผิดชอบความประพฤติทังหมดของผู้ ทีนําเข ้ าไป”
+พนักงานปัจจุบัน จะต ้ องได ้ รับการฝึกอบรมตามโปรแกรม ESD & Cleanroom Discipline  Training  และผ่านการทดสอบใน 
+ทุกๆปี
+พนักงานใหม่ จะต ้ องได ้ รับการฝึกอบรมตามโปรแกรม ESD & Cleanroom Discipline Training และผ่านการทดสอบ โดย 
+ใช ้แบบทดสอบเดียวกันกับพนักงานปัจจุบัน 
+คนขายของ , ผู้รับเหมา หรือบุคคลอื(นที(ไม่ใช ่พนักงานเบลต ั นฯ ทีจะต ้ องเข ้ ามาใน Cleanroom  หรือ EPA ของเบลตัน  
+พนักงานเบลตันผู้ทีได ้ ผ่านการอบรมเรียบร ้ อยแล ้ วทีเป็ นผู้ พาเข ้ า จะต ้ องให ้ บุคคลภายนอกอ่านเนือหา ESD & Cleanroom 
+Discipline และทําแบบทดสอบโดยใช ้รหัส QR Code ต ้ องสอบเพือให ้ ได ้ คะแนนเต็ม หากไม่ผ่าน จะต ้ องสอบใหม่จนกว่าจะ 
+ได ้ คะแนนเต็ม 
+
+=== PAGE 6 ===
+© 2026, Belton Technology Group. All rights reserved. 
+6
+Clean Room Clean Room Clean Room Clean Room คือพืนที ทีมีการควบคุมปริมาณอนุภาคฝุ ่ น , สิงปนเปือน และสภาพแวดล ้ อมต่างๆ เช่น อุณหภูมิ, ความชืน , 
+ความกดอากาศ (air pressure), ทิศทางการไหลของอากาศ (air flow), แสงสว่าง และค่า ESD เป็ นต ้ น รวมทังกิจกรรม 
+ต่าง ๆ ภายในห ้ อง ซึงเป็นปัจจัยทีสําคัญมากต่อการควบคุมคุณภาพของความสะอาด 
+FEDERAL 209E ISO 14644-1 
+Cleanroom Class Cleanroom Class Cleanroom Class Cleanroom Class คือ มาตรฐานการแบ่ง 
+ระดับความสะอาดของห ้ องสะอาดโดยการนับ 
+ปริมาณฝุ ่ นทีมีขนาดตังแต่ 0.5 ไมครอน และ 
+ขนาดใหญ่กว่าขึนไปเทียบกับพืนที 1 ลูกบาศก์
+ฟุต หรือ 1 ลูกบาศก์เมตร 
+ทําความรู้จัก Cleanroomทําความรู้จัก Cleanroom
+
+=== PAGE 7 ===
+© 2026, Belton Technology Group. All rights reserved. 
+7
+(ISO (ISO (ISO (ISO 14644 14644 14644 14644-- --1 1 1 1 : : : : 1999 1999 1999 1999)) )) (Federal Standard (Federal Standard (Federal Standard (Federal Standard 209 209 209 209)) )) Process Process Process Process 
+ISO 5 Class 100 Hook up, APFA 
+ISO 6 Class 1,000 JCS Washing 
+ISO 7 Class 10,000 Hook up  (Assembly), FCA 
+ISO 8 Class 100,000 FCOF, SMT, Coil, ACA, Carriage 
+ISO 5 = Class 100 ISO 7 = Class 10,000 ISO 6 = Class 1000 ISO 8 = Class 100,000 
+BITN : Cleanroom Class BITN : Cleanroom Class 
+
+=== PAGE 8 ===
+© 2026, Belton Technology Group. All rights reserved. 
+8
+1. ระบบระบายอากาศ 
+ HVAC (High Ventilation Air Condition) & AHU (Air Handling Unit) 
+ Filter 
+ FFU (Fan Filter Unit) 
+ Exhaust 
+2. โครงสร้างของห้อง 
+ Ceiling & Lighting 
+ Wall 
+ Floor 
+3. อุปกรณ์ต่างๆ 
+ Sticky mat 
+ Air shower 
+ Pass box 
+โครงสร้างหลักของ Cleanroomโครงสร้างหลักของ Cleanroom
+
+
+=== PAGE 9 ===
+© 2026, Belton Technology Group. All rights reserved. 
+9
+❶Temperature / Temperature / Temperature / Temperature / 
+❷Humidity Humidity Humidity Humidity ❸Air Flow Meter Air Flow Meter Air Flow Meter Air Flow Meter ❹Pressure Gauge Pressure Gauge Pressure Gauge Pressure Gauge ❺Air Particles Counter Air Particles Counter Air Particles Counter Air Particles Counter 
+❶อุณหภูมิ 20-24 oC
+❷ความชืนสัมพัทธ์ ควบคุมที 40 - 70%. 
+❸อัตราการไหลของอากาศ  ควบคุมที 0.41-0.61 m/s 
+❹ความดันอากาศ (Pressure Gauge) ควบคุมที 0.05”wg 
+❺การควบคุมปริมาณฝุ ่ นละออง (Air Particles Counter) 
+และอนุภาคอืน ๆ 
+การทดสอบห้อง Cleanroomการทดสอบห้อง Cleanroom
+
+
+=== PAGE 10 ===
+© 2026, Belton Technology Group. All rights reserved. 
+10 
+Not to Bring Any Dust Not to Bring Any Dust Not to Bring Any Dust Not to Bring Any Dust 
+ไม่นําพาฝุ ่ นเข้ามา 
+Not to Generate Any Dust Not to Generate Any Dust Not to Generate Any Dust Not to Generate Any Dust 
+ไม่ก่อให้เกิดฝุ ่ นหรือสิ(งที(เกิดฝุ ่ น 
+ได้ง่าย 
+Not to Accumulate Any Dust Not to Accumulate Any Dust Not to Accumulate Any Dust Not to Accumulate Any Dust 
+ไม่ทําให้เกิดการสะสมของฝุ ่ น 
+To Remove Any Dust quickly To Remove Any Dust quickly To Remove Any Dust quickly To Remove Any Dust quickly 
+รีบกําจ ั ดฝุ ่ นทั นทีในบริเวณที(เกิด 
+หัวใจ 4 ข้อหลักของการควบคุมฝุ ่ นในห้องคลีนรูม
+Four Principles of Cleanroom 
+หัวใจ 4 ข้อหลักของการควบคุมฝุ ่ นในห้องคลีนรูม
+Four Principles of Cleanroom 
+ทําความสะอาดใบหน้า 
+ตนเองก่อนเข ้ าห ้ อง 
+คลีนรูม 
+สวมชุดคลีนรูมให ้
+ถูกต ้ องก่อนเข ้ าห ้ อง 
+คลีนรูม 
+ทําความสะอาดพืนที
+ทํางานตามเวลาที
+กําหนด 
+ไม่ซ่อมแซม/หรือต่อเติม 
+อุปกรณ์ใดๆ ระหว่างการ 
+ผลิต 
+
+
+=== PAGE 11 ===
+© 2026, Belton Technology Group. All rights reserved. 
+11 
+Cleanroom Discipline & Protocol 
+ระเบียบวินัยมาตรฐานของคลีนร ูม
+
+
+=== PAGE 12 ===
+© 2026, Belton Technology Group. All rights reserved. 
+12 
+Discipline on mandatory practice in the clean room
+ระเบียบวินัยว่าด้วยเรื(องการปฏิบัติงานในห้องคลีนรูม
+Discipline on mandatory practice in the clean room
+ระเบียบวินัยว่าด้วยเรื(องการปฏิบัติงานในห้องคลีนรูม
+Critical 
+2 points 
+Critical 
+2 points 
+Major 
+16 points 
+Major 
+16 points 
+Minor 
+33 points 
+Minor 
+33 points 
+WI-CQA-00-00-19 Cleanroom Discipline work instruction 
+❶ ห้ามแต่งหน้าด้วยเครืองสําอางทุกชนิด รวมถึงห้ามทาแป้ง, whitening ครีม, ครีมกันแดด, สีเขียนคิ"ว หรือทาปาก 
+❷ ห้ามรับประทานอาหาร-เครืองดืมทุกชนิด เคี"ยวหมากฝรัง หรืออมลูกอม 
+
+=== PAGE 13 ===
+© 2026, Belton Technology Group. All rights reserved. 
+13 
+ Penalty provisions 
+Level 1 st  2 nd  3 rd  4 th  
+Critical Suspend 3 days Terminated   
+Major  Warning letter  Suspend 3 days  Terminated   
+Minor  Verbal  Warning latter  Suspend 3 days  Terminated  
+ 
+ Penalty provisions 
+Level 1 st  2 nd  3 rd  4 th  
+Critical Suspend 3 days Terminated   
+Major  Warning letter  Suspend 3 days  Terminated   
+Minor  Verbal  Warning latter  Suspend 3 days  Terminated  
+ 
+Penalty ( บทลงโทษ ) !!!! 
+When auditor found the person who not 
+follow the discipline, penalty is as 
+following. 
+Auditor เจอผู้ที	กระทําผิดกฎระเบียบ โดยตรง 
+บทลง โทษจะเป ็ นเช่นข้างล่าง 
+Time ( คร ั"งที	) Level of warning ( ระดับการเตือน )  
+1 Warning letter ( เตือนเป ็ นลายลักษณ์อักษร ) 
+2 Termination ( ให้ออกจากงาน ) 
+ 
+Punishment will record for 1 year 
+Penalty ( บทลงโทษ) !!!! 
+
+=== PAGE 14 ===
+© 2026, Belton Technology Group. All rights reserved. 
+14 
+พนักงานหรือบุคคลใดที จะเข้า 
+ห้องเปลี ยนชุด และห้องคลีนรูม 
+จะต้องไม่มีการใช ้เครื องสําอาง 
+whitening ครีม , ครีมกันแดด และ 
+โลชัน โดยเด็ดขาด  
+เครืองสําอางนี%หมายรวมถึง แป ้ ง 
+ฝุ ่ น, แป ้ งเค้กทาหน้า , ครีมรองพื %น, 
+อายแชโดว ์, เครืองสําอางสําหรับทา 
+ตา /แก้ม , ลิปสติก ลิปมัน นํ %ายาอุทัย 
+ทิพย์ หรือสิ งใดก็ตามที ก่อให้เกิด 
+Contam ในห้องคลีนรูม  
+Cleanroom TALC Control 
+Contamination Contr ol Contamination Contr ol Contamination Contr ol Contamination Contr ol 
+
+=== PAGE 15 ===
+© 2026, Belton Technology Group. All rights reserved. 
+15 
+APFA Cleanliness Improvement 
+Contamination Control: Face washing room ( ห้องล้างหน้า )
+Personnel must be washing their face     before entrance to change room. 
+พนักงานตองลางหนา พนักงานตองลางหนา พนักงานตองลางหนา พนักงานตองลางหนา และเช็ดดวยผาเช็ดหนา กอนเขาหองเปลี่ยนชุด และเช็ดดวยผาเช็ดหนา กอนเขาหองเปลี่ยนชุด และเช็ดดวยผาเช็ดหนา กอนเขาหองเปลี่ยนชุด และเช็ดดวยผาเช็ดหนา กอนเขาหองเปลี่ยนชุด 
+ขั้นตอนการลางหนา ขั้นตอนการลางหนา ขั้นตอนการลางหนา ขั้นตอนการลางหนา (Face washing instruction) 
+Contamination Contr ol Contamination Contr ol Contamination Contr ol Contamination Contr ol 
+
+=== PAGE 16 ===
+© 2026, Belton Technology Group. All rights reserved. 
+16 
+APFA Cleanliness Improvement 
+Contamination Control: Face washing room ( ห้องล้างหน้า )
+Personnel must be washing their bare hand before entrance to change room. 
+พนักงานตองลางมือใหเรียบรอย  กอนเขาหองเปลี่ยนชุดพนักงานตองลางมือใหเรียบรอย  กอนเขาหองเปลี่ยนชุดพนักงานตองลางมือใหเรียบรอย  กอนเขาหองเปลี่ยนชุดพนักงานตองลางมือใหเรียบรอย  กอนเขาหองเปลี่ยนชุด
+ขั้นตอนการลางมือ ขั้นตอนการลางมือ ขั้นตอนการลางมือ ขั้นตอนการลางมือ (Hand washing instruction) 
+Contamination Contr ol Contamination Contr ol Contamination Contr ol Contamination Contr ol 
+
+=== PAGE 17 ===
+© 2026, Belton Technology Group. All rights reserved. 
+17 
+APFA Cleanliness Improvement 
+Contamination Control: Face washing room ( ห้องล้างหน้า )
+Personnel must be washing spectacles before entrance to change room. 
+พนักงานตองลางแวนตา พนักงานตองลางแวนตา พนักงานตองลางแวนตา พนักงานตองลางแวนตา กอนเขาหองเปลี่ยนชุด กอนเขาหองเปลี่ยนชุด กอนเขาหองเปลี่ยนชุด กอนเขาหองเปลี่ยนชุด 
+ขั้นตอนการลางแวนตา ขั้นตอนการลางแวนตา ขั้นตอนการลางแวนตา ขั้นตอนการลางแวนตา (Spectacles washing instruction) 
+Contamination Contr ol Contamination Contr ol Contamination Contr ol Contamination Contr ol 
+
+=== PAGE 18 ===
+© 2026, Belton Technology Group. All rights reserved. 
+18 
+       ตรวจสอบตัวเอง 100% เมือเร ิมกะและหลังเวลาพัก หรือทุกครังทีเข้าคลีนรูม (โดยเช็ดจ นกว ่าจะไม ่มีคราบขาวบนผ้าดํา)
+       CCE Auditor จะออด ิด 100% ทุกพืนที (2 ครัง/สัปดาห์ สุ ่มตัวอย ่าง 50 คน/วัน)
+1) ก่อนจะเข้า Cleanroom หยิบผ้าดําเช็ด 
+คราบแป้ง/เครื )องสําอางด้วยตัวเองก่อน 
+3) ตรวจสอบผ้าดํา ผ่าน  หรือ ไม่ผ่าน 
+2) ทําความสะอาดใบหน้า ลําคอ และแขน 
+ตามที )แสดงในภาพ (เพิ )มขนตา , คิ/ว และปาก)
+ผ่าน 
+ไม่พบแป้ง 
+ไม่ผ่าน 
+พบแป้ง 
+ตรวจสอบคิ /วและปากด้วยผ้าขาว 
+Cosmetic Chec k : Cosmetic Chec k : Cosmetic Chec k : Cosmetic Chec k : การทดสอบแป ้ งบนหน้าด้วยตัวเอง 
+
+=== PAGE 19 ===
+© 2026, Belton Technology Group. All rights reserved. 
+19 Contamination Contr ol Contamination Contr ol Contamination Contr ol Contamination Contr ol 
+Class Class Class Class 100 100 100 100 เริ )มใช้เครื )องตรวจสอบทัลค์อัตโนมัติ  โดยใช้  ระบบ  AI AI AI AI ตรวจจับคราบขาวบนผ้าดํา 
+ขันตอนการทดสอบ 
+• ทําความสะอาดหน้าผาก แก้ม ลําคอ และแขน ด้วยผ้าดํา ด้วยตัวเอง 
+• วางผ้าดําทีเช็ดหน้าตัวเอง บนแท่นของเครือง และใช้บัตรพนักงงานสแกนเพือผ่านประตูเข้าไปแต่งตัว 
+• ผ่าน =>ไม่พบคราบขาว/แป ้ ง : ประตูเป ิ ด 
+• ไม่ผ่าน => พบคราบขาว/แป ้ ง  =>ไฟแดงกระพริบ : ประตู ไม่เป ิ ด (กลับ ไปล้างหน้าใหม่ และเช็ดจนกว่าจะผ่าน)
+***ทุกขันตอนจะถูกบันทึก โดยกล้องวงจรป ิ ด โดยนับตามจํานวนของผู้ปฏิบัติงาน ทีแสกนบัตรเข้า-ออก ประตู และ CCE  จะตามเข้าระหว่างการ
+ผลิต เพือป ้ องกัน ไม่ให้ผู้ปฏิบัติงาน ไม่ซือสัตย ์ และไม่ปฏิบัติตามแนวทางปฏิบัติ*** 
+1. 
+หน้าผาก 
+2. เช็ด 
+แก้ม 
+3. เช็ด 
+คอ 
+4. เช็ด 
+แขนทั /งสองข้าง 
+ผ่าน => ไม่พบแป้ง : ประตูเป ิ ด 
+ไม่ผ่าน => พบแป้ง : ประตูไม ่เปิ ด 
+
+=== PAGE 20 ===
+© 2026, Belton Technology Group. All rights reserved. 
+20 
+APFA Cleanliness Improvement 
+เลือกใชผลิตภัณฑที่ไมทิ้งคราบขาว ไมมีสวนผสมของแปง สําหรับลางหนา กอนเขา เลือกใชผลิตภัณฑที่ไมทิ้งคราบขาว ไมมีสวนผสมของแปง สําหรับลางหนา กอนเขา เลือกใชผลิตภัณฑที่ไมทิ้งคราบขาว ไมมีสวนผสมของแปง สําหรับลางหนา กอนเขา เลือกใชผลิตภัณฑที่ไมทิ้งคราบขาว ไมมีสวนผสมของแปง สําหรับลางหนา กอนเขา 
+หองคลีนรูม หองคลีนรูม หองคลีนรูม หองคลีนรูม 
+ ใช้โฟมล้างหน้า แทนนํ /าเปล่า เนื )องจาก เครื )องสําอาง/โลชั )น/ครีมทาหน้า บางชนิด ไม่สามารถล้างออกได้ด้วยนํ /าเปล่า 
+ ไม่ควรใช้กระดาษทิชช ูเช็ดหน้า เนื )องจากเนื /อกระดาษมีผง หรือเส้นใยกระดาษ ซึ )งสามารถก่อให้เกิดคราบขาวบนผ้าดํา ได้
+เช่นกัน 
+ ตัวอย่างโฟม หรือสบ ู่ที)ขายตามท้องตลาด ที )ไม่มีส่วนผสมของแป้ง ล้างหน้าได้สะอาด และผ่านการทดสอบ จากห้องแลป 
+ได้แก่ สม ูทอีโฟม, เบนเนท, คลีนแอนด์เคลียร ์, กานิเย่, พอนด์ส, ก ิฟฟารีน, น ูโทรจีน่า, วาสลีน, ออเรนทอล พริ 6นเซส 
+(ดังร ูป )
+Contamina tion Contr ol: F ace washing r oom ( Contamina tion Contr ol: F ace washing r oom ( Contamina tion Contr ol: F ace washing r oom ( Contamina tion Contr ol: F ace washing r oom ( ห้องล้างหน้า)
+
+=== PAGE 21 ===
+© 2026, Belton Technology Group. All rights reserved. 
+21 
+1) Sharpie ปากกาคลีนรูม 
+2) Laminate sheet แผ ่นเคลือบสําหรับเขียน 
+3) Laptop คอมพ ิวเตอร์โน๊ตบุ้ค และ มือถือ 
+4) PE bag and objects inside ถุง ESD และส ิ ?งของ 
+5) Tool boxes/ bags กล ่องหรือถุงเครื ?องมือ 
+6) Etc. อื ?นๆ 
+ทําความสะอาดอุปกรณ์ด้วยผ้า Wiper คลีนด้วย IPAภายใน Changing room 
+โ ทรศัพท์มือถือต้องไม่มีซอง กรอบพลาสติก ซองซิลิโ คน หรือ พวงกุญแจห้อยอยู่
+การทําความสะอาดอุปกรณ์ก่อนนําเข้าห้องคลีนรูม 
+
+
+=== PAGE 22 ===
+© 2026, Belton Technology Group. All rights reserved. 
+22 
+APFA Cleanliness Improvement 
+ยกแขนขึน 90° = 5 วินาที
+1 2 3 4
+Air Shower มีหลักการทํางานอยูที่ การใชแรงลมปะทะ ใหฝุนหลุดออก แตหากตรงไหนไมโดนลม ฝุนก็จะไม
+หลุด ดังนั้นขณะเปา Air Shower เราจึงควรหมุนตัวไปดวย เพื่อใหโดนลมทั่วทั้งตัว (ดังรูป)
+หมุนตัวไปทางขวา = 5 วินาที หมุนตัวไปด้านหลัง = 5 วินาที หมุนตัวไปทางซ้าย = 5 วินาที
+Contamina tion Contr ol:  Air Shower ( Contamina tion Contr ol:  Air Shower ( Contamina tion Contr ol:  Air Shower ( Contamina tion Contr ol:  Air Shower ( ห้องอาบลม)
+
+=== PAGE 23 ===
+© 2026, Belton Technology Group. All rights reserved. 
+23 
+Contamination Control: Personal 
+Shoe Room (ห้องรองเท้า )
+Contamination Control: Personal 
+Shoe Room (ห้องรองเท้า )
+
+=== PAGE 24 ===
+© 2026, Belton Technology Group. All rights reserved. 
+24 
+APFA Cleanliness Improvement 
+Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( ห้องรองเท้า)
+Do not paint nails and long nails. หามทาเล็บและไวเล็บยาว หามทาเล็บและไวเล็บยาว หามทาเล็บและไวเล็บยาว หามทาเล็บและไวเล็บยาว 
+
+=== PAGE 25 ===
+© 2026, Belton Technology Group. All rights reserved. 
+25 
+APFA Cleanliness Improvement 
+    
+Personnel who enter to cleanroom must wear a sock and not allow to wear clothing that generate 
+fiber particle such as ripped jeans, wool sweater including damaged cloth. 
+(( ((พนักงานต  องสวมถุงเท  า และแตงกายใหเรียบรอยกอนเขา หองคลีนรูม พนักงานต  องสวมถุงเท  า และแตงกายใหเรียบรอยกอนเขา หองคลีนรูม พนักงานต  องสวมถุงเท  า และแตงกายใหเรียบรอยกอนเขา หองคลีนรูม พนักงานต  องสวมถุงเท  า และแตงกายใหเรียบรอยกอนเขา หองคลีนรูม และไมอนุญาตใหสวมใสเสื้อผาที่และไมอนุญาตใหสวมใสเสื้อผาที่และไมอนุญาตใหสวมใสเสื้อผาที่และไมอนุญาตใหสวมใสเสื้อผาที่
+อาจจะกอใหเกิดเสนใย เชน กางเกงยีนสขาด อาจจะกอใหเกิดเสนใย เชน กางเกงยีนสขาด อาจจะกอใหเกิดเสนใย เชน กางเกงยีนสขาด อาจจะกอใหเกิดเสนใย เชน กางเกงยีนสขาด, , , , เสื้อแขนกุด สายเดี่ยว เสื้อไหมพรม หรือเสื้อผาที่มีรอยขาด เสื้อแขนกุด สายเดี่ยว เสื้อไหมพรม หรือเสื้อผาที่มีรอยขาด เสื้อแขนกุด สายเดี่ยว เสื้อไหมพรม หรือเสื้อผาที่มีรอยขาด เสื้อแขนกุด สายเดี่ยว เสื้อไหมพรม หรือเสื้อผาที่มีรอยขาด)) ))
+Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( ห้องรองเท้า)
+
+
+=== PAGE 26 ===
+© 2026, Belton Technology Group. All rights reserved. 
+26 
+APFA Cleanliness Improvement 
+    
+Personnel who enter to cleanroom must not wear shoes in the yellow zone area; they 
+must carry or lift items across the area only. 
+(( ((พนักงานจะตองไมสวมรองเทา ในพื้นที่สีเหลือง ใหถือหรือยกขา มเทานั้น พนักงานจะตองไมสวมรองเทา ในพื้นที่สีเหลือง ใหถือหรือยกขาม เทานั้น พนักงานจะตองไมสวมรองเทา ในพื้นที่สีเหลือง ใหถือหรือยกขาม เทานั้น พนักงานจะตองไมสวมรองเทา ในพื้นที่สีเหลือง ใหถือหรือยกขาม เทานั้น)) ))
+Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( Contamina tion Contr ol: P er sonal Shoe R oom ( ห้องรองเท้า)
+
+
+=== PAGE 27 ===
+© 2026, Belton Technology Group. All rights reserved. 
+27 
+Contamination Control: Gowning 
+Area (ห้องแต่งชุด )
+Contamination Control: Gowning 
+Area (ห้องแต่งชุด )
+
+=== PAGE 28 ===
+© 2026, Belton Technology Group. All rights reserved. 
+28 
+APFA Cleanliness Improvement 
+Can not wear made up come in the line , Do not used ointment and smelling salt in 
+cleanroom. หามแตงหนา หามฉีดน้ําหอม หามใชยาดม หามแตงหนา หามฉีดน้ําหอม หามใชยาดม หามแตงหนา หามฉีดน้ําหอม หามใชยาดม หามแตงหนา หามฉีดน้ําหอม หามใชยาดม ,ยาหมอง และสารระเหยทุกชนิด ยาหมอง และสารระเหยทุกชนิด ยาหมอง และสารระเหยทุกชนิด ยาหมอง และสารระเหยทุกชนิด 
+Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( ห้องแต่งชุด)
+
+=== PAGE 29 ===
+© 2026, Belton Technology Group. All rights reserved. 
+29 
+APFA Cleanliness Improvement 
+Can not bring food or drinking water from outside come in changing room. 
+หามนําอาหาร หรือน้ําดื่มเขามาในหอง หามนําอาหาร หรือน้ําดื่มเขามาในหอง หามนําอาหาร หรือน้ําดื่มเขามาในหอง หามนําอาหาร หรือน้ําดื่มเขามาในหอง Changing  room
+Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( ห้องแต่งชุด)
+
+=== PAGE 30 ===
+© 2026, Belton Technology Group. All rights reserved. 
+30 
+APFA Cleanliness Improvement Personal belongings like pen, paper, Stapler , Cutter , Scissor , Plastic Ruler  are not allow 
+into cleanroom. หามนําของใชสวนตัวเขา หามนําของใชสวนตัวเขา หามนําของใชสวนตัวเขา หามนําของใชสวนตัวเขา Clean  room เชน ปากกา เชน ปากกา เชน ปากกา เชน ปากกา,, ,,กระดาษ กระดาษ กระดาษ กระดาษ,, ,,ที่เย็บกระดาษ ที่เย็บกระดาษ ที่เย็บกระดาษ ที่เย็บกระดาษ , ใบมีด ใบมีด ใบมีด ใบมีด ,    
+คลิปหนีบ คลิปหนีบ คลิปหนีบ คลิปหนีบ , กระดาษทราย กระดาษทราย กระดาษทราย กระดาษทราย 
+Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( ห้องแต่งชุด)
+
+=== PAGE 31 ===
+© 2026, Belton Technology Group. All rights reserved. 
+31 
+APFA Cleanliness Improvement 
+Can not use comb at changing room area. Employees with long hair must tie it neatly. 
+หามหวีผมในหอง หามหวีผมในหอง หามหวีผมในหอง หามหวีผมในหอง Changing  room  พนักงานที่ผมยาวจะตองเก็บผมใหเรียบรอย พนักงานที่ผมยาวจะตองเก็บผมใหเรียบรอย พนักงานที่ผมยาวจะตองเก็บผมใหเรียบรอย พนักงานที่ผมยาวจะตองเก็บผมใหเรียบรอย 
+Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( ห้องแต่งชุด)
+
+=== PAGE 32 ===
+© 2026, Belton Technology Group. All rights reserved. 
+32 
+Jumpsuit touch on floor during dressing (Jumpsuit สัมผัสพื /นขณะสวมใส่ )
+Need to gather sleeves together with body during dressing ( ตองถือ ตองถือ ตองถือ ตองถือ Jumpsuit เหนือพื้น ขณะใส เหนือพื้น ขณะใส เหนือพื้น ขณะใส เหนือพื้น ขณะใส 
+Jumpsuit หามใหสวนหมวก และแขนลากพื้น หามใหสวนหมวก และแขนลากพื้น หามใหสวนหมวก และแขนลากพื้น หามใหสวนหมวก และแขนลากพื้น )
+Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( ห้องแต่งชุด)
+
+=== PAGE 33 ===
+© 2026, Belton Technology Group. All rights reserved. 
+33 ขั"นตอนการสวมชุด-- --ถอดชุด Jump suit Jump suit Jump suit Jump suit (( ((ชุดหมี)) ))ขั"นตอนการสวมชุด-- --ถอดชุด Jump suit Jump suit Jump suit Jump suit (( ((ชุดหมี)) ))
+Hairnet Hairnet Hairnet Hairnet 
+(สวมหมวก)
+Jumpsuit Jumpsuit Jumpsuit Jumpsuit 
+(สวมชุดหมี)
+Facemask Facemask Facemask Facemask 
+(สวมหน้ากาก)
+Booties Booties Booties Booties 
+(สวมรองเท้า)
+Gloves Gloves Gloves Gloves 
+(สวมถุงมือ)
+Hairnet Hairnet Hairnet Hairnet 
+(ถอดหมวก)
+Jumpsuit Jumpsuit Jumpsuit Jumpsuit 
+(ถอดชุดหมี)
+Facemask Facemask Facemask Facemask 
+(ถอดหน้ากาก)
+Gloves Gloves Gloves Gloves 
+(ถอดถุงมือ)
+Booties Booties Booties Booties 
+(ถอดรองเท้า)
+Growing Sequence Growing Sequence Growing Sequence Growing Sequence –– ––ขั/นตอนการใส่ชุด Growing Sequence Growing Sequence Growing Sequence Growing Sequence -- --ขั/นตอนการถอดชุด 
+
+
+=== PAGE 34 ===
+© 2026, Belton Technology Group. All rights reserved. 
+34 
+APFA Cleanliness Improvement The glove wearing must be correct. Glove must be fix to inner sleeves. 
+พนักงานตองสวมถุงมือใหถูกวิธี  โดยดึงถุงมือทับแขนเสื้อดานใน และแขนเสื้อดานนอกทับคลุมอีกชั้นหนึ่ง พนักงานตองสวมถุงมือใหถูกวิธี  โดยดึงถุงมือทับแขนเสื้อดานใน และแขนเสื้อดานนอกทับคลุมอีกชั้นหนึ่ง พนักงานตองสวมถุงมือใหถูกวิธี  โดยดึงถุงมือทับแขนเสื้อดานใน และแขนเสื้อดานนอกทับคลุมอีกชั้นหนึ่ง พนักงานตองสวมถุงมือใหถูกวิธี  โดยดึงถุงมือทับแขนเสื้อดานใน และแขนเสื้อดานนอกทับคลุมอีกชั้นหนึ่ง 
+Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( ห้องแต่งชุด)
+
+=== PAGE 35 ===
+© 2026, Belton Technology Group. All rights reserved. 
+35 
+❶ ถูฝ ่ ามือทัง 2 ข ้ าง 
+Wash the palm both side 
+❷ ล ้ างหลังมือและซอกนิวด ้ านซ้าย 
+Wash back hand and between finger 
+left hand side 
+❸ ล ้ างหลังมือและซอกนิวด ้ านขวา Wash 
+back hand and between finger right 
+hand side 
+❹ ถูฝ ่ ามือทัง 2 ข ้ างอีกครัง 
+Wash the palm both side again 
+❺ เป ่ ามือทัง 2 ข ้ างให ้ แห ้ งทีเครืองเป ่ ามือ โดย 
+ขยับมือขึนลงตามความลึกของเครืองเป ่ า 
+Dryer hand by air blower 
+Gloves Gloves Gloves Gloves  Cleaning with  DI wa terCleaning with  DI wa terCleaning with  DI wa terCleaning with  DI wa ter
+““““การทําความสะอาดถุงมือด้วยนํ"า””””
+
+=== PAGE 36 ===
+© 2026, Belton Technology Group. All rights reserved. 
+36 
+ด้านหนึ )งของผ้าสามารถใช้เช็ดถุงมือได้ข้างเดียวเท่านั /น 
+หลังจากพนักงานเช็ดถุงมือเรียบร้อยแล้ว จะต้องทิ /งลงถังขยะที )จัดไว้ใส่ wiper wiper wiper wiper  เท่านั /น 
+พนักงานทุกคนต้องทําความสะอาดถุงมือทุกครังทีมีการเข้าห้ องคลีนรูม โดยหย ิบ wiper ชุบ IPA จากตู้สแตนเลสภาย 
+ในห้องเปลียนชุด และพับครึงดังรูปด้านขวาบน 
+2
+1
+3
+Gloves Gloves Gloves Gloves  Cleaning with Cleaning with Cleaning with Cleaning with 100100100100% IP A @ Class % IP A @ Class % IP A @ Class % IP A @ Class 100100100100K K K K  
+““““การทําความสะอาดถุงมือด้วยนํ"ายา IP A ”IP A ”IP A ”IP A ”
+1) เริมเช็ดง่ามนิวตามลูกศรจนครบทังหมด 
+เช็ดลงบนฝ ่ ามือ โดยเช็ดไปในทางเดียวกันจากปลายนิว 
+มาถึงข้อมือ 
+เช็ดลงบนหลังมือ โดยเช็ดด้วยวิธีเดียวกับข้อที 2
+จากนันกลับด้านของผ้าทียังไม่ได้ใช้ แล้วเช็ดมืออีกข้างด้วยวิธี
+เดียวกับข้อ 1, 2 และ3
+1
+2
+3
+
+=== PAGE 37 ===
+© 2026, Belton Technology Group. All rights reserved. 
+37 ขัAนตอนการใช้ลูกกลิAงสําหรับทําความสะอาดชุดคลีนรูม 
+❶หยิบด ้ ามลูกกลิง 
+(sticky roller) จากทีแขวน 
+❷กลิงลูกกลิงจากด ้ านหน้าไป 
+ด ้ านหลังของ head cover 
+❸กลิงลูกกลิงจากปลายแขน 
+ด ้ านขวาถึงต ้ นแขนด ้ านขวา 
+❹กลิงลูกกลิงจากปลายแขนด ้ านซ้าย 
+ถึงต ้ นแขนด ้ านซ้าย 
+❺กลิงลูกกลิงจากอกด ้ านซ้ายลง 
+ไปถึงต ้ นขาด ้ านขวา 
+❻กลิงลูกกลิงจากอกด ้ านขวา 
+ลงไปถึงต ้ นขาด ้ านซ้าย 
+❼กลิงลูกกลิงด ้ านหลังฝังซ้ายไป 
+ถึงต ้ นขาฝังขวาแบบซิกแซก 
+❽กลิงลูกกลิงด ้ านหลังฝังขวาไป 
+ถึงต ้ นขาฝังซ้ายแบบซิกแซก 
+ ❾แขวนลูกกลิง (sticky 
+roller) ไว ้ ทีแขวน 
+❿กดปุ ่ มนับ (ครบ 10 ครัง ให ้ ลอกแผ่น 
+ออกและปรับเลขมาที 0 เพือนับใหม่)
+* ในกรณีที sticky roller หมดม ้ วน ให ้ ดึงแกนออก และใส่ม ้ วนใหม่เข ้ าไปแทนที ดังรูป 
+1 2
+
+=== PAGE 38 ===
+© 2026, Belton Technology Group. All rights reserved. 
+38 
+APFA Cleanliness Improvement 
+Buttons of both sleeves must be snapped. 
+พนักงานตองติดกระดุมทึ่แขนชุดทั้งสองขางใหเรียบรอย พนักงานตองติดกระดุมทึ่แขนชุดทั้งสองขางใหเรียบรอย พนักงานตองติดกระดุมทึ่แขนชุดทั้งสองขางใหเรียบรอย พนักงานตองติดกระดุมทึ่แขนชุดทั้งสองขางใหเรียบรอย 
+Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( Contamina tion Contr ol: Gowning Ar ea ( ห้องแต่งชุด)
+
+=== PAGE 39 ===
+© 2026, Belton Technology Group. All rights reserved. 
+39 
+1)    พับwiperที ชุบด้วย IPA 100% ด ังต ัวอย ่าง 
+2)    เริ มเช็ดสาย wrist strap โดยรูดสายจากข้อมือ   
+ลงไปจนสุดปลายสาย และพันเก็บที ข้อมือให้เรียบร้อย 
+3)   พลิกด้านของผ้าที ยังไม ่ได้ใช้ เช็ดด้านหน้าและหล ัง 
+ของบัตรพนักงาน โดยเช็ดไปในทางเดียวกันจากบนลงล ่าง 
+4) กล ับwiper อีกด้านที ยังไม ่ได้ใช้ แล้วพับเช ่นเดียว 
+กับข้อที 1
+1
+3 4
+2
+บัตรพนักงานจะต้องไม่มีเทป หรือ ESD สติ?กเกอร์ติดอย ู่ หากยังมีต้องรีบลอกออก และคลีนด้วย IPA 
+คลิปติดบัตรพนักงานต้องเป ็ นชนิดไม่มีซิลิโ คน และต้องได้รับจากทาง HR เท่านัDน 
+การทําความสะอาดสาย  wrist str a p wrist str a p wrist str a p wrist str a p  และบัตรพนักงาน
+1
+2
+3
+4
+
+=== PAGE 40 ===
+© 2026, Belton Technology Group. All rights reserved. 
+40 
+Contamination Control: Gowning 
+Area (ห้องแต่งชุด )
+Contamination Control: Gowning 
+Area (ห้องแต่งชุด )
+
+=== PAGE 41 ===
+© 2026, Belton Technology Group. All rights reserved. 
+41 
+APFA Cleanliness Improvement 
+Not allow to pull the face mask down to see nostril in cleanroom. 
+หามพนักงานดึง หามพนักงานดึง หามพนักงานดึง หามพนักงานดึง face mask ลดต่ํากวา ลดต่ํากวา ลดต่ํากวา ลดต่ํากวาระดับจมูกจนเห็นรูจมูก ระดับจมูกจนเห็นรูจมูก ระดับจมูกจนเห็นรูจมูก ระดับจมูกจนเห็นรูจมูก ภายในหองคลีนรูม ภายในหองคลีนรูม ภายในหองคลีนรูม ภายในหองคลีนรูม 
+Contamina tion Contr ol: Cleanr oom ( Contamina tion Contr ol: Cleanr oom ( Contamina tion Contr ol: Cleanr oom ( Contamina tion Contr ol: Cleanr oom ( ห้องคลีนรูม)
+
+=== PAGE 42 ===
+© 2026, Belton Technology Group. All rights reserved. 
+42 
+APFA Cleanliness Improvement 
+Not allow to Nitto heater tape, Al tape, 2side tape, Kapton, Tape cassette, PSA tape, Sponge, Green mat, Minami 
+and Sand paper there are source of NVS, Silicone, Talc, EV A and Si-O contamination. หามพนักงานใชผลิตภัณฑที่หามพนักงานใชผลิตภัณฑที่หามพนักงานใชผลิตภัณฑที่หามพนักงานใชผลิตภัณฑที่
+เปนแหลงกําเนิด เปนแหลงกําเนิด เปนแหลงกําเนิด เปนแหลงกําเนิด NVS, Silicone, Talc, EV A และ และ และ และ Si-O. 
+Tape Cassette 
+MKFF 
+Heater tape Al tape 
+Kapton หรือ Polyimide 
+เทปใส หรือเทปโฟม 2 หน้า 
+ฟองนํ /า 
+กระดาษทราย Green mat 
+Minami 
+Velcro tape 
+Contamina tion Contr ol: Cleanr oom ( Contamina tion Contr ol: Cleanr oom ( Contamina tion Contr ol: Cleanr oom ( Contamina tion Contr ol: Cleanr oom ( ห้องคลีนรูม)
+PSA tape 
+
+=== PAGE 43 ===
+© 2026, Belton Technology Group. All rights reserved. 
+43 
+Generic 
+Contamination Control 
+สิ)งปนเป ื/ อนทั )วไป
+
+
+=== PAGE 44 ===
+© 2026, Belton Technology Group. All rights reserved. 
+44 
+สิ(งปนเป ืAอน (Contamination) คืออะไร ??สิ(งปนเป ืAอน (Contamination) คืออะไร ??
+Si smear 
+สิ)งปนเป ื/ อน คือ สิ )งสกปรกต่างๆ  
+เส้นใย และฝุ ่ นละอองที)มีผลเสียต่อ 
+สมรรถนะ, คุณภาพ, อัตราผลผลิต 
+(yield) และความสะอาดของตัวงาน 
+ที)ส่งมอบให้ล ูกค้า 
+สารเคมี, สารหล่อลืน เช่น 
+โลชันทาผิว, ครีมแต่งหน้า, 
+เครืองสําอาง 
+สิงสกปรก , เส้นใย , ฝุ ่ นละออง  
+คราบต่างๆ , แป้งผัดหน้า , เส้น 
+ผม , รังแค 
+สารประกอบของเกลือในรูป 
+ละออง 
+ (Ion) 
+สารทีจะก่อให้เกิดการกัดกร่อน  
+(corrosion) 
+
+
+=== PAGE 45 ===
+© 2026, Belton Technology Group. All rights reserved. 
+45 
+ชนิดของ Contamination ที(เน้นๆ คือ NVS, Talc, Si-O, Mesa/Ghost ชนิดของ Contamination ที(เน้นๆ คือ NVS, Talc, Si-O, Mesa/Ghost 
+ทางกลศาสตร ์
+- ฝุ ่ นทีอยู่ระหว่างระหว่างดีสก์ และหัวอ่าน  ทําให้กีดขวางการเคลือนทีของหัวอ่านบนดีสก์
+- ฝุ ่ นทีนุ่มและยึดติดหัวอ่านทําให้เกิดการเสียดสี ระหว่างหัวอ่านและดีสก์ ขณะเคลือนที ทําให้เกิดความร้อน ,เกิด 
+ความเสียหายต่อหัวอ่าน และทําให้คุณสมบัติทางแม่เหล็กไฟฟ้าเปลียน 
+- ฝุ ่ นทีแข็งและยึดติดหัวอ่าน ทําให้เกิดการเสียดสี ระหว่างหัวอ่านและดีสก์ ขณะเคลือนทีทําให้เกิด Disk Scratch 
+ทางเคมี
+- อนุภาคทีเป็นสารประกอบทางเคมีสามารถทําลาย หรือกัดกร่อนหัวอ่าน หรือดีสก์
+
+=== PAGE 46 ===
+© 2026, Belton Technology Group. All rights reserved. 
+46 
+80%
+15%
+5%
+Tooling, 
+Equipment, 
+Facility 
+Environment 
+Human 
+Source of ContaminationSource of Contamination
+1) วัสดุทีใช ้ในสร ้ างคลีนรูม (facilities)                        2)    ตัวบุคลากร (human) 
+3)   อุปกรณ์ (tools)                                                4)    สารเคมีทีใช ้(fluids) 
+5)   ตัวชินงานเอง (product) ซึงจะนําไปสู่การปนเปือนของชินงาน 
+
+
+=== PAGE 47 ===
+© 2026, Belton Technology Group. All rights reserved. 
+47 
+ซิลิโคลน
+& ออกาโน ซิลิกอน
+Silicone & Organo Silicon (NVS)
+
+=== PAGE 48 ===
+© 2026, Belton Technology Group. All rights reserved. 
+48 
+Silicone in Process: 
+ Silicone ( ซิลิโคน) หรือจะเรียกว่า โพลีไซล็อกเซน(Polysiloxane) มีโครงสร ้ างเคมีพืนฐานประกอบด ้ วยธาตุซิลิคอน (Si 
+หรือ Silicon), ออกซิเจน (O หรือ Oxygen )  เป็นเป็นสารทีมีคุณสมบัติ เสมือนสารหล่อลืน และในสภาวะแก๊สสามารถ 
+แตกตัวได ้ เป็นอนุภาคขนาดเล็ก เมืออนุภาคอยู่ระหว่างหัวอ่านและแผ่นมีเดียจะทําให ้ เกิดความเสียหายแก่ HDD 
+NVS (Non-Volatile Siloxane) :
+• การระเหยของสารซิลิโคนภายใน HDD สาร 
+Organo-silicon ระเหย (outgas) ภายใน HDD 
+ระหว่างการทดสอบอุณหภูมิสูง 
+• การแพร่กระจายของซิลิโคนซิลิโคนทีระเหยจะ 
+แพร่กระจายเข ้ าสู่ชินส่วนเชิงกล รวมถึงผิวหน้าของ 
+แผ่นสือ (Media) 
+• การปนเปือนของหัวอ่านหัวอ่าน (Head) บินอยู่
+เหนือผิวแผ่นสือและเกิดปฏิกิริยากับสารซิลิโคน 
+ทําให ้ เกิดคราบซิลิโคน (Silicone smear) บน 
+หัวอ่าน 
+ แม้เพียงระดับนาโนกรัมของสาร Organo-silicon ก็
+สามารถทําให้เกิดความเสียหาย HDD ได้
+
+=== PAGE 49 ===
+© 2026, Belton Technology Group. All rights reserved. 
+49 
+PSA 
+เทป  เทปกาว 
+Labels, Tags  
+ลาเบล  แท็ก  PT 
+Rubbers 
+ยาง  ลูกยาง 
+Sealants, Epoxy 
+ซีแลน  กาวอีพ๊อกซี
+Pens, 
+Marker  ปากกา  
+มาร ์กเกอร ์
+Cosmetics  
+เครื )องสําอาง  สเปรย์  นํ/าหอม 
+
+
+=== PAGE 50 ===
+© 2026, Belton Technology Group. All rights reserved. 
+50 
+T
+ A
+ L
+ C
+ทัลคัม
+
+=== PAGE 51 ===
+© 2026, Belton Technology Group. All rights reserved. 
+51 
+ Talc (MgSiO) เป็นแร่ธรรมชาติประกอบด ้ วยซิลิคอน, แมกนีเซียม, ออกซิเจน ลักษณะโดย 
+ทัวไปเป็นผงสีขาว เป็นอนุภาคอ่อนนุ่มทีเปราะบาง ซ ึงเปราะมากและสามารถแตกตัวได ้ เป็น 
+อนุภาคขนาดเล็ก เมืออนุภาคอยู่ระหว่างหัวอ่านและแผ่นมีเดียจะทําให ้ เกิดความเสียหายแก่ 
+HDD 
+
+=== PAGE 52 ===
+© 2026, Belton Technology Group. All rights reserved. 
+52 
+Sources of Talc? แหล่งทีมาของ Talc มาจากแป้ง โลชัน เครืองสําอางทุกชนิด, ผงแป้งโรยตัว, ยางพารา, 
+สี, สบู่, นํามันหล่อลืน, กระดาษ, กระดาษคลีนรูม, ถุงมือ finger cots, ยางรัด, ยางรองนิว, กาว, ฉนวนกันความ 
+ร ้ อน , ตัวกรองสารเคมี, green mat ( แผ่นปูรองโต๊ะ) และ cross contam จากชุดคลีนรูม 
+กระดาษ 
+แป้งฝุ ่ น 
+ยาง ถุงมือ 
+เครืองสําอางค์
+
+=== PAGE 53 ===
+© 2026, Belton Technology Group. All rights reserved. 
+53 
+SiO
+ซิลิกอนออกไซด์
+
+=== PAGE 54 ===
+© 2026, Belton Technology Group. All rights reserved. 
+54 
+ ซิลิคอนไดออกไซด์ SiO2 เป็นสารประกอบธรรมชาติของซ ิลิคอนและออกซิเจน พบกัน 
+อย่างแพร่หลายในธรรมชาติ เช่น ควอตซ์ ส่วนใหญ่จะพบใน ทราย, กระดาษทราย, ซิลิกา 
+เจล Epoxy Resin และใน APET Tray 
+Sources of SiO? แหล่งทีมาของ เอส ไอ โอ มาจาก แก ้ ว , สก๊อตช์ไบรต์, กระดาษทราย , ทราย , ซิลิกาเจล 
+
+
+=== PAGE 55 ===
+© 2026, Belton Technology Group. All rights reserved. 
+55 
+Mesa/Ghost
+เมสสา หรือ โกส
+
+=== PAGE 56 ===
+© 2026, Belton Technology Group. All rights reserved. 
+56 
+ Mesa (WD) Ghost (Seagate) คือ defect ของ คอนแทมเนืองมาจากผลิตภัณฑ์ RHC ใน 
+สภาวะแก๊สสามารถแตกตัวได ้ เป็นอนุภาคขนาดเล็ก และเมือส่องด ้ วยกล ้ องกําลังขยายสูง 
+จะเห็นรูปร่างของ contam คล ้ าย ผี ซึงจะผลเสียต่อหัวอ่านและแผ่นมีเดีย 
+Sources of Ghost? แหล่งทีมาของ Ghost มาจากผลิตภัณฑ์ทีเกิด RHC หรือเกิด cross contam จากการ 
+ปนเปือนจากวัสดุหนึงไปอีกวัสดุหนึง ได ้ แก่
+ink ribbon, นํามัน, สารป้องกันการเกิดสนิม, กรีนแมท พลาสติกทีใช ้ทํา fixture, แป้ง ลิป โลชัน เจล 
+เครืองสําอางต่างๆ และ tray งาน 
+
+=== PAGE 57 ===
+© 2026, Belton Technology Group. All rights reserved. 
+57 
+Outgas
+เอาท์แก๊ส
+
+=== PAGE 58 ===
+© 2026, Belton Technology Group. All rights reserved. 
+58 
+ Outgassing ปรากฏการณ์ทีวัสดุปล่อยก๊าซทีดูดซับไว ้ ภายในออกมาสู่บรรยากาศภายนอก ก๊าซทีถูกปล่อย 
+ออกมานีเรียกว่า gases of outgassing ซึงถ ้ ามี outgassing มากเกินไปจะส่งผลกับผลิตภัณฑ์ทีส่งมอบ 
+ให ้ กับลูกค ้ า 
+ Sources of Outgassing? มาจากผลิตภัณฑ์ เช่น สีทาเล็บ, นําหอม, นํามันหอมระเหยต่างๆ , สาร 
+ป้องกันการเกิดสนิม, กรีนแมท,พลาสติกทีใช ้ทํา fixture, IPA, Hexane, ยาดม ยาหม่อง เป็นต ้ น 
+
+
+=== PAGE 59 ===
+© 2026, Belton Technology Group. All rights reserved. 
+59 
+Contamination Control 
+(การควบคุมสิ )งปนเป ื/ อน )
+
+
+=== PAGE 60 ===
+© 2026, Belton Technology Group. All rights reserved. 
+60 
+!!! Note: Operators must clean up operation area and fixture at the end of shift and before break as described 
+above using wipers and 100%IPA provided.  
+• พืนทีปฏิบัติงาน , เครืองมือ และอุปกรณ์ หน้างาน อย่างน้อย 2 ครัง /กะ (ก่อนพักเบรคและก่อนเลิกงาน) 
+• ทําความสะอาดถุงมือด ้ วย wiper ชุบ 100% IPA ทุก ๆ 2  ชัวโมง 
+(เพิมเติม !!! ทําความสะอาดถุงมือด ้ วย sticky roller  ทุกๆ 1 ชัวโมง)
+Contamination Contr ol Contamination Contr ol Contamination Contr ol Contamination Contr ol 
+Do : ควรทํา
+ทําความสะอาดบริเวณหน้างาน ดังนี /:
+1.ทําความสะอาดจากบนลงล่าง 
+2.ทําความสะอาดจากซ้ายไปขวา 
+3.ทําความสะอาดจากด้านในออกไปด้านนอก 
+ปกติใช ปกติใช ปกติใช ปกติใช wiper wiper wiper wiper ถาตามซอก มุม ที่ ถาตามซอก มุม ที่ ถาตามซอก มุม ที่ ถาตามซอก มุม ที่ wiper wiper wiper wiper 
+เขาไมถึงใหใช  เขาไมถึงใหใช  เขาไมถึงใหใช  เขาไมถึงใหใช  foam swab foam swab foam swab foam swab แทน แทน แทน แทน 
+❷ ถุงมือ 
+(ทุกๆ 2 ชัวโมง)
+❶ พื"นทีปฏิบัติงาน , เครืองมือ และอุปกรณ์ 
+(ก่อนพักเบรคและก่อนเลิกงาน)
+❸ ถุงมือ with sticky roller 
+(ทุกๆ 1 ชัวโมง)
+
+
+=== PAGE 61 ===
+© 2026, Belton Technology Group. All rights reserved. 
+61 
+W E S T E R N  D IG IT AL  C O N F ID E N T IAL 43 
+Do : ควรทํา
+All materials/Jigs/ Fixture to 
+be cleaned by solvent before 
+use 
+All materials/Jigs/ Fixture 
+Qualification Workflow 
+Paper 
+review 
+TDS, 
+MSDS 
+Material evaluation 
+- Cleanliness test 
+- Material properties 
+Manufacturing 
+Functional assessment 
+All materials/Jigs/ Fixture 
+buy off 
+before use 
+วัสดุทั /งหมด/จิ 6ก/ฟิ กซ์เจอร ์ 
+ต้องผ่านการ ควอลิไฟท ์
+วัสดุทั /งหมด/จิ 6ก/ฟิ กซ์เจอร ์ 
+ต้องทําความสะอาดด้วยสารเคมีก่อนนําไปใช้
+วัสดุทั /งหมด/จิ 6ก/ฟิ กซ์เจอร ์ 
+ต้องมีการตรวจสอบความสะอาดก่อน 
+นําไปใช้
+
+=== PAGE 62 ===
+© 2026, Belton Technology Group. All rights reserved. 
+62 
+W E S T E R N  D IG IT AL  C O N F ID E N T IAL 44 
+Do : ควรทํา
+Education campaign and 
+training awareness 
+Routine monitoring for 
+consumable 
+Proper cleaning / Purging oven 
+อุปกรณ์ วัสดุสิ /นเปลือง ต้องมีการเทส 
+สมํ)าเสมอ 
+โอเว่น ต ู้อบ ต้องคลีน และ purge 
+สมํ)าเสมอ 
+จัดให้มีการเทรนนิ )ง ให้ความร ู้กับพนักงาน 
+สมํ)าเสมอ 
+
+=== PAGE 63 ===
+© 2026, Belton Technology Group. All rights reserved. 
+63 
+45 
+Do : ควรทํา
+- Tools box with regular Cleaning 
+FTIR test with Silicone free 
+for handle rubber 
+All paper sealed with  PE bag 
+อุปกรณ์ช่าง อะไหล่ ด้ามจับ ต้องเทส FTIR เพื )อหา 
+silicone ก่อนนํามาใช้
+กระดาษ copy กระดาษคลีนร ูม ต้องเคลือบ หรือห่อหุ้มด้วย 
+ถุงพลาสติก ที )ผ่านการทดสอบว่าไม่มี silicone 
+
+=== PAGE 64 ===
+© 2026, Belton Technology Group. All rights reserved. 
+64 
+Labels, Tags 
+PSA 
+Banned Heater Tape 
+- Tienta tape 
+- Chukoh tape 
+- Nitto 973UL-S
+Banned Splicing tape 
+used to connect in 
+PSA Roll 
+(3M-1280)
+Don’t use: ห้ามทํา
+Source of Organo-Silicon : แหล่งที )มาของ NVS
+ห้ามใช้ ลาเบล แท็ก เทป เทปกาว กาว ที )มี ซิลิโคน 
+ยกเลิกใช้เทปกันความร้อน 
+เทปกาวสองหน้า ตามยีห้อ (ดังร ูป)
+
+=== PAGE 65 ===
+© 2026, Belton Technology Group. All rights reserved. 
+65 
+Source of Organo-Silicon
+Anti rust - Mold Protector Mold release agent 
+Don’t use: ห้ามทํา
+สเปย์กันสนิม , นํ/ายา นํ /ามันหล่อลื )น ห้ามใช้ถ้าไม่มีผลเทสว่าผ่าน NVS 
+
+=== PAGE 66 ===
+© 2026, Belton Technology Group. All rights reserved. 
+66 
+Oil, Lubricant 
+ Paint 
+Source of Organo-Silicon แหล่งที )มาของ  NVS issue  
+(ซิลิโคนที )สามารถระเหยได้ )
+Don’t use: 
+สี นํ /ามัน ห้ามใช้ถ้าไม่มีผลเทสว่าผ่าน NVS 
+
+=== PAGE 67 ===
+© 2026, Belton Technology Group. All rights reserved. 
+67 
+Source of  Organo-Silicon 
+These items represent examples of a Face  cream, Hand cream, 
+Body oil and Hair oil . All  contain a form of silicone according to the labels  
+Chemical analysis will be used to identify and  quantitate Organo-Silicon  
+content. 
+รายการเหล่านี"เป็นตัวอย่างครีมทาหน้า  ครีมทามือ  นํ"ามันร่างกายและนํ"ามันผม  ทั"งหมดมีรูปแบบเป็น 
+ซิลิโคนตามฉลาก 
+.
+1
+2
+3
+4
+List Of Ingredients Marked For Organo-Silicon Conte nt 
+Ingredients of these four examples list silicone contents using the terms 
+ Dimethicone 
+ Cyclomethicone 
+ Cyclotetrasiloxane 
+ Cyclopentasiloxane.
+1 2
+3 4
+Don’t use : ห้ามใช้ผลิตภัณฑ์ที )มีส่วนผสมของซิลิโคน 
+
+=== PAGE 68 ===
+© 2026, Belton Technology Group. All rights reserved. 
+68 
+Don’t use without testing: ห้ามใช้โดยไม่ผ่านการทดสอบ 
+Heat resistant Glove 
+ถุงมือกันความร้อน 
+Plastics/Mold Release 
+ด้ามกรรไกร 
+Gasket 
+ขอบยางโอเว่น 
+Rubber Material 
+Gasket , Anti slip, Wire , Tube, Hose 
+ยางตรง pass box, oven ปะเก็น, กันลื )น, ลวด, ท่อ, สายยาง , กรรไกร 
+ห้ามใช้โดยไม่ผ่านการทดสอบ 
+
+=== PAGE 69 ===
+© 2026, Belton Technology Group. All rights reserved. 
+69 
+Don’t use without testing : ห้ามใช้โดยไม่ผ่านการทดสอบ 
+Laminator Machine 
+Rubber / Roller 
+เครื )องเคลือบที )มียางเป ็ นตัวฟี ดกระดาษ ห้ามใช้โดยไม่ผ่านการทดสอบ   
+
+=== PAGE 70 ===
+© 2026, Belton Technology Group. All rights reserved. 
+70 
+Electro Static Discharged Control Electro Static Discharged Control Electro Static Discharged Control Electro Static Discharged Control 
+(( ((การควบคุมไฟฟ ้ าสถิต)) ))
+BY ESD & CONTAMINATION CONTROL ENGINEER 
+
+
+=== PAGE 71 ===
+© 2026, Belton Technology Group. All rights reserved. 
+71 
+
+
+=== PAGE 72 ===
+© 2026, Belton Technology Group. All rights reserved. 
+72 
+ESD = Electro Static Discharged
+Electro Static = ประจุทางไฟฟ้าทีอยู่บนพืนผิวของวัตถุ
+Discharge     =  การถ่ายเทประจุ
+ประจุไฟฟ ้ าสถิต หรือ ESD 
+คือการถ่ายโอนประจุไฟฟ้าสถิตทีเกิดขึนเองอย่างรวดเร็วและเกิดขึนเองจากสนามไฟฟ้าสถิตทีมีค่าสูง โดยปกติ
+ประจุจะไหลผ่านระหว่างวัตถุนําไฟฟ้าสองตัวทีมีศักย์ไฟฟ้าสถิตทีต่างกันขณะทีวัตถุนําไฟฟ้าสองตัวเข ้ าใกล้ กัน 
+ตัวอย่างเช่น หลายคนเคยประสบกับไฟฟ้าสถิตและ  "ไฟฟ้าช็อต " หรือการคายประจุไฟฟ้าสถิตเมือสัมผัสลูกบิด 
+ประตูโลหะ  หลังจากเดินบนพืนพรม 
+• ไฟฟ้า  3 ชนิด 
+AC กระแสสลับ ไฟบ้าน 
+DC  กระแสตรง Battery 
+ESD  ไฟฟ้าสถิต ฟ้าผ่า 
+ความรู้เบืAองต้นเกี(ยวกับไฟฟ ้ าสถิต ความรู้เบืAองต้นเกี(ยวกับไฟฟ ้ าสถิต 
+
+
+=== PAGE 73 ===
+© 2026, Belton Technology Group. All rights reserved. 
+73 
+ไฟฟ้าสถิต (ESD : Electro Static Discharge) มีความส ําคัญมากต่อกระบวนการผลิตในอุตสาหกรรม 
+อิเล็กทรอนิกส ์ ยิงชินงานอิเล็กทรอนิกส ์มีความเล็กลงมากเท่าใดก็จะยิงมีความไวต่อไฟฟ้าสถิต ที อาจจะถูก 
+ถ่ายเทจากคนในสายการผลิต เครืองมือหรืออุปกร์อืนๆ ไปยัง ชินงานอิเล็กทรอนิกส ์ได ้ ทังสิน อาจจะมีผลทําให ้
+ค่าทางไฟฟ้าเปลียนแปลงไป มีผลทําให ้ชินงานเสียหายหรือคุณภาพชินงานลดลง 
+ตัวอย่างความเสียหายจากไฟฟ้าสถิต (ESD) 
+ตัวอย่างความเสียหายจากไฟฟ้าสถิต (ESD) 
+ Product Reliability 
+ความน่าเชือถือของผลิตภัณฑ์
+ Production Yield 
+อัตราผลิตได ้
+ Cost 
+ต ้ นทุน 
+ทําไมเราจึงต้องจัดการกับไฟฟ ้ าสถิต (ESD) ทําไมเราจึงต้องจัดการกับไฟฟ ้ าสถิต (ESD) 
+ปัญหาไฟฟ้าสถิตในห ้ องสะอาด (clean room) ทําให ้ พืนผิวทีมีประจุดึงดูดฝุ ่ นละอองไว ้  ยากต่อ 
+การทําความสะอาดหรือเอาออก 
+
+=== PAGE 74 ===
+© 2026, Belton Technology Group. All rights reserved. 
+74 
+Human Body Model (HBM) 
+คือการถ่ายเทของไฟฟ้าสถิตจากร่างกาย 
+ไปยังชินงาน 
+1
+2 Charge Device Model (CDM) 
+การถ่ายเทของไฟฟ้าสถิตทีสะสมบน 
+อุปกรณ์หรือชินงานไปยังวัตถุอืน 
+3 Machine Model (MM) 
+การถ่ายเทของไฟฟ้าสถิตจากเครืองมือ 
+หรือเครืองจักรไปยังชินงาน 
+ไฟฟ ้ าสถิต (ESD) เกิดขึAนได้อย่างไร ไฟฟ ้ าสถิต (ESD) เกิดขึAนได้อย่างไร 
+
+=== PAGE 75 ===
+© 2026, Belton Technology Group. All rights reserved. 
+75 
+ ความรุนแรงของไฟฟ้าสถิต ขึนอยู่กับ 
+ ความรุนแรงของไฟฟ้าสถิต ขึนอยู่กับ 
+1. จํานวนประจุทีแตกต่างของวัตถุทังสองชนิด 
+2. ความรุนแรง และระยะเวลาทีส ัมผัส 
+3. ความช ืนสัมพัทธ์ (ยิงความชืนตํา โอกาสเกิด ESD ง่ายขึน 
+4. พืนผิวของวัตถุ (เรียบ ขรุขระ)
+ ESD Damage : Electrical Over Stress (EOS) (ความเค ้ นสูงทางไฟฟ้า)
+ ESD Damage : Electrical Over Stress (EOS) (ความเค ้ นสูงทางไฟฟ้า)
+เสียหายแบบแอบแฝง (Latent Failure) 
+• มองไม่เห็นด ้ วยตา 
+• ไม่เสียทันที
+• แต่อายุการใช ้งานสัน 
+• ค่าใช ้จ่ายในการซ่อมสูง โดยเฉพาะ product ทีเกียวข ้ องกับความปลอดภัย เช่นอากาศยาน เครืองมือแพทย์
+เสียหายทันที (Catastrophic failure) 
+• กรณีวงจรขาด หรือวงจรละลายแล ้ วเชือมกัน 
+อุปกรณ์บางประเภทอาจจะเสียหายจาก ESD แค่วิงอยู่บนเครืองจักรอัตโนมัติ หรือบางประเภทจะ 
+เสียหายจาก ESD ได ้ ง่ายในขณะจับฉวยเคลือนย ้ ายโดยใครคนใดคนหนึง 
+
+=== PAGE 76 ===
+© 2026, Belton Technology Group. All rights reserved. 
+76 
+ การจําแนกประเภทวัสดุ ESD 
+ การจําแนกประเภทวัสดุ ESD 
+ Shielding หรือ วัสดุกันไฟฟ้าสถิตและป้องกันความช ืนสําหรับชินส่วนอิเล็กทรอนิกส ์ เช่น Static Shielding Bag 
+เป็นต ้ น 
+ Dissipative (กระจายไฟฟ ้ าสถิต) การถ่ายเทประจุไปถึงพืนดินอย่างพอประมาณการป้องกันน้อยที สุด ช่วย ลด 
+ประจุทีถูกสร ้ างขึน เช่น Tray , Table mat เป็นต ้ น 
+ Conductive (ต ั วนําไฟฟ ้ า) การป้องกันทีดี ช่วยให ้ ประจุถ่ายเทได ้ อย่างรวดเร็วช่วยลดประจุทีถูกสร ้ างขึน เช่น  
+พวกโลหะอย่าง ทองแดง เงิน อะลูมิเนียม เป็นต ้ น 
+ Insulator (ฉนวน) เป็ นวัสดุทีไม่ยอม หรือขัดขวางให ้ประจุไฟฟ้าไหลผ่านได ้ยาก  มักเป็ นวัสดุจําพวกแก ้ว ไม ้  
+กระดาษ หรือพอลิเมอร์จําพวกยาง และพลาสติก เป็นต ้ น 
+     หมายเหตุ  : หลีกเลี(ยงการนําวั สดุที(เป ็ นฉนวนไฟฟ ้ ามาใช้ในพืAนที(ปฏิบัติงาน หรือ พืAนที( EPA 
+หากจําเป ็ นต้องใช้ ต้องห่างจากชิAนงานอย่างน้อย 30 เซนติเมตร และต้องมีวั สดุป ้ องกันเพื(อช่วยลดไฟฟ ้ าสถิต 
+เช่น Static Shielding Bag หรือ Aluminum foil 
+Surface Resistivity : ESD Association Standard 
+Shielding Conductive Dissipative Insulator 
+การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) 
+
+=== PAGE 77 ===
+© 2026, Belton Technology Group. All rights reserved. 
+77 
+ ESD Protected Area (EPA area) 
+พืนทีป้องกัน ESD (พืนที EPA) : พืนทีทีรับประกันการป้องกันการปล่อยประจุไฟฟ้าสถิตและแสดงสัญลักษณ์
+ดังนี
+ ESD Protected Area (EPA area) 
+พืนทีป้องกัน ESD (พืนที EPA) : พืนทีทีรับประกันการป้องกันการปล่อยประจุไฟฟ้าสถิตและแสดงสัญลักษณ์
+ดังนี
+ป ้ ายแสดงก่อนเข้าพืAนที( 
+EPA 
+ สัญลักษณ์ระบุพืAนที( EPA 
+สัญลักษณ์แสดงว่าเครืองมือหรือ 
+อุปกณ์ชินนีไวต่อ ESD 
+ลักษณ์แสดงว่าเครืองมือหรือ 
+อุปกณ์ชินนีป้องกันการเกิด ESD 
+การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) 
+
+=== PAGE 78 ===
+© 2026, Belton Technology Group. All rights reserved. 
+78 
+Wrist Strap : สายกราวด์ข ้ อมือป้องกันไฟฟ้าสถิต 
+เสียบสายอีกด ้ านหนึงเข ้ ากับกล่อง Wrist Strap เพือถ่าย  
+   โอนประจุจากคนลงไปทีพืน 
+Smock 
+picture 
+ บุคคลทีเข ้ ามาในพืนที EPA ต ้ องสวมอุปกรณ์ป้องกัน ESD : Smock, Jump suit , Wrist Strap และ ESD 
+shoes ตรวจสอบอุปกรณ์ทุกครังก่อนเข ้ าพืนที EPA 
+ บุคคลทีเข ้ ามาในพืนที EPA ต ้ องสวมอุปกรณ์ป้องกัน ESD : Smock, Jump suit , Wrist Strap และ ESD 
+shoes ตรวจสอบอุปกรณ์ทุกครังก่อนเข ้ าพืนที EPA 
+Smock & Jump suit : ชุดป้องกันไฟฟ้าสถิตทีเกิดจาก 
+เสือผ ้ าบนร่างกายของบุคคล 
+Smock 
+picture 
+ESD shoes : รองเท ้ าป้องกันไฟฟ้าสถิต 
+Smock 
+picture 
+การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) 
+
+=== PAGE 79 ===
+© 2026, Belton Technology Group. All rights reserved. 
+79 
+ วิธีวัดตรวจสอบ Wrist Strap และ ESD shoes ด ้ วย EPA GATE ทุกครังก่อนเข ้ าพืนที EPA 
+ วิธีวัดตรวจสอบ Wrist Strap และ ESD shoes ด ้ วย EPA GATE ทุกครังก่อนเข ้ าพืนที EPA 
+1. ยืนบนแผ่นสแตนเลส 2. เสียบ  Wrist Strap 3. สวม Wrist Strap 4. กดปุ ่ มทดสอบ 
+ผ่าน ไม่ผ่าน 
+การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) 
+
+=== PAGE 80 ===
+© 2026, Belton Technology Group. All rights reserved. 
+80 
+Shelving 
+ต่อกราวด์บน Table mat 
+Conductive material 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) การป ้ องกันความเสียหายจากไฟฟ ้ าสถิต (ESD) 
+
+=== PAGE 81 ===
+© 2026, Belton Technology Group. All rights reserved. 
+81 
+Work surface 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ต่อกราวด์บน Table mat 
+Conductive material 
+
+=== PAGE 82 ===
+© 2026, Belton Technology Group. All rights reserved. 
+82 
+Trolley 
+ต่อโซ่ให้สัมผ ั สก ับพืAนกราวด์
+ล้อของรถเข็น เป ็ นวัสดุป ้ องก ัน 
+ไฟฟ ้ าสถิต หรือ 
+Anti-static material  
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+
+=== PAGE 83 ===
+© 2026, Belton Technology Group. All rights reserved. 
+83 
+ESD Chair 
+Dissipative material 
+Conductive material 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+
+=== PAGE 84 ===
+© 2026, Belton Technology Group. All rights reserved. 
+84 
+Mouse and Scanner 
+Mouse 
+Mouse 
+ Scanner 
+Scanner 
+Keyboard 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+Voltage > 100 V 
+ส่งผลให้ชิAนงานเสียหาย 
+Voltage < 100 V 
+ประจุลดลง ค่าตามมาตรฐาน 
+มีวั สดุป ้ องกันเพื(อช่วยลดไฟฟ ้ าสถิต 
+
+=== PAGE 85 ===
+© 2026, Belton Technology Group. All rights reserved. 
+85 
+Machine 
+Machine Grounding 
+ESD Grounding 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+
+=== PAGE 86 ===
+© 2026, Belton Technology Group. All rights reserved. 
+86 
+Air ionizer 
+เช็คการเป ่ าของลม 
+เปิดความเร็วลมให้
+ถึงเส้นสีแดง 
+กําหนดองศา Air ionizer ให้
+เหมาะก ับตําแหน่งการทํางาน 
+และเพื(อกําหนดทิศทางของลมที(
+เป ่ าไปยังพืAนที(ที(มีการจับงานอยู่
+เส้นกําหนดพืAนที(การ 
+ติดต ัA ง Air ionizer 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+
+=== PAGE 87 ===
+© 2026, Belton Technology Group. All rights reserved. 
+87 
+Packaging 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+ การป้องกันความเสียหายจากไฟฟ้าสถิต (ESD) – ในกระบวนการผลิต 
+Shielding/Moisture Barrier bag 
+Antistatic bag 
+PCB Magazine Metal Base 
+Antistatic Tube 
+
+
+=== PAGE 88 ===
+© 2026, Belton Technology Group. All rights reserved. 
+88 
+No. Description ESD Level 
+Requirement 
+Condition 
+1 HBM (การถ่ายเทของไฟฟ้า 
+สถิตจากร่างกายไปยังชินงาน)
+<100 volts ≥100 volts Reject 
+2 CDM (การถ่ายเทของไฟฟ้า 
+สถิตทีสะสมบนอุปกรณ์หรือ 
+ชินงานไปยังวัตถุอืน)
+<200 volts ≥200 volts 
+Reject 
+3 MM (การถ่ายเทของไฟฟ้า 
+สถิตจากเครืองมือหรือ 
+เครืองจักรไปยังชินงาน)
+<35 volts ≥35 volts 
+Reject 
+4 Insulator (ฉนวน) ไม่นําไฟฟ้า >125 volts Distance >1 inch, or Ionization 
+>2000 volts Distance >12 inch, or Ionization 
+Conclusion (กล่าวโดยสรุป)Conclusion (กล่าวโดยสรุป)
+Symbol 1: ESD Susceptibility Symbol 
+เพือระบุว่า component นันเปราะบางต่อไฟฟ้า 
+สถิต (ESDS component) 
+Symbol 2: ESD Protective Symbol 
+เพือระบุกิจกรรม หรือกระบวนการใด ๆ ทีต ้ องการ 
+ให ้ พนักงานรู้  ว่าต ้ องปฏิบัติตามระบบการป้องกัน 
+ไฟฟ้าสถิต 
+ESD Warning Label 
+
+
+=== PAGE 89 ===
+© 2026, Belton Technology Group. All rights reserved. 
+89 Do & Don’t 
+สิ(งที(ควรทํา 
+สิ(งที(ควรทํา 
+ สิ(งที(ห้ามทํา 
+สิ(งที(ห้ามทํา 
+ 
+บุคลากรสวม Wrist strap ที(ข้อมือ 
+และแนบกับผิวหนังขณะตรวจสอบ 
+บุคลากรสวม Wrist strap ที(ข้อมือ 
+ไม่แนบ กับผิวหนังขณะตรวจสอบ 
+
+=== PAGE 90 ===
+© 2026, Belton Technology Group. All rights reserved. 
+90 
+ 
+Do & Don’t 
+สิ(งที(ควรทํา 
+สิ(งที(ควรทํา 
+ สิ(งที(ห้ามทํา 
+สิ(งที(ห้ามทํา 
+สวม Wrist strap ที(ข้อมือ และเสียบ 
+สายอีกด้านหนึ(งเข้ากับกล่อง Wrist 
+Strap  ขณะปฏิบัติงาน 
+สวม Wrist strap ที(ข้อมือ และ ไม่
+เสียบ สายอีกด้านหนึ(งเข้ากับกล่อง 
+Wrist Strap  ขณะปฏิบัติงาน 
+
+=== PAGE 91 ===
+© 2026, Belton Technology Group. All rights reserved. 
+91 
+ 
+Do & Don’t 
+สิ(งที(ควรทํา 
+สิ(งที(ควรทํา 
+ สิ(งที(ห้ามทํา 
+สิ(งที(ห้ามทํา 
+โซ่สัมผัสกับพืAนกราวด์
+ โซ่ไม่สัมผัส กับพืAนกราวด์
+
+=== PAGE 92 ===
+© 2026, Belton Technology Group. All rights reserved. 
+92 Do & Don’t 
+สิ(งที(ควรทํา 
+สิ(งที(ควรทํา 
+ สิ(งที(ห้ามทํา 
+สิ(งที(ห้ามทํา 
+เปิดความเร็วลมถึงเส้นสีแดง และ 
+กําหนดองศา Air ionizer ให้เหมาะ 
+กับตําแหน่งการทํางาน  
+เปิดความเร็วลมถึง เกินเส้นสีแดง 
+และกําหนดองศา Air ionizer ไม่
+เหมาะ กับตําแหน่งการทํางาน 
+ 
+
+=== PAGE 93 ===
+© 2026, Belton Technology Group. All rights reserved. 
+93 
+THANK YOU
+© 2026, Belton Technology Group. All rights reserved. 

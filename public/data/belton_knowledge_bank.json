@@ -1,0 +1,424 @@
+{
+  "title": "Belton Cleanroom AI Copilot Knowledge Bank",
+  "version": "5.0.0-standalone-qwen",
+  "model_target": "Qwen2.5-1.5B-Instruct-q4f16_1-MLC",
+  "compiled_at": "2026-09-11T03:14:27Z",
+  "total_domains": 18,
+  "domains": [
+    {
+      "id": 1,
+      "name": "Coil Winding Process (14 Steps)",
+      "summary": "Full 14-step manufacturing specification for voice coil actuator coils.",
+      "steps": [
+        "1. Winding & Unwire: พันลวดทองแดงเตรียมแนว Lead wire ควบคุมแรงตึงลวดไม่ให้ฉนวนถลอก (Insulation scratch) หรือคอยล์บวม",
+        "2. Out gassing: อบไล่แก๊สที่อุณหภูมิ 180 ± 5 °C เพื่อขจัดความชื้นและสารระเหยตกค้าง ป้องกันฟองอากาศ (Voids)",
+        "3. Dip coating: ชุบเคลือบผิวคอยล์ด้วยกาว EPO-TEC-353ND ควบคุมความหนาและป้องกันฟองอากาศ",
+        "4. Baking: อบเตาให้กาวเซ็ตตัวสมบูรณ์ทางเคมี (Complete polymerization) แข็งแรงทนทานต่อแรงบิด",
+        "5. Auto 3 in 1 & UV cure: จัดแนวสายไฟ, ตัดสาย, ทากาว UV tracking และฉายแสง UV Cure รวดเร็ว",
+        "6. Auto Lead wire stripping: ลอกฉนวนลวดทองแดงด้วยความร้อน/ใบมีด ระวังไม่ให้ลวดคอดกิ่ว (Necking)",
+        "7. Coil cleaning: ล้างทำความสะอาดสารตกค้างในถัง Ultrasonic cleaning tank",
+        "8. Coil thickness inspection: ตรวจวัดความหนาคอยล์ด้วยเกจวัดความละเอียดไมโครเมตรเทียบสเปก",
+        "9. Tube cutting: ตัดท่อหุ้มสายไฟให้ได้พิกัดความยาวแม่นยำ ป้องกันสายเปลือยช็อตลงกราวด์",
+        "10. Tube insert & wire tracking: สวมท่อหุ้มสายไฟและจัดแนวสายพิน ไม่ให้หักงอหรือตึงเกินไป",
+        "11. Baking 2: อบความร้อนซ้ำให้กาวท่อหุ้มแห้งสนิทและรัดสายไฟแน่นหนา",
+        "12. Coil resistance: ตรวจวัดค่าความต้านทานไฟฟ้ากระแสตรง (DCR) เพื่อค้นหาข้อบกพร่องรอบพันและลวดคอด",
+        "13. Visual inspection: ตรวจหาฝุ่นละออง รอยแตกของกาวฉนวน หรือรอยไหม้ด้วยกล้องขยายพิกัด",
+        "14. OQA & Packing: ตรวจเช็กมิติตามสุ่มแผน OQA และบรรจุลงในถุงป้องกันการคายประจุไฟฟ้าสถิต (Anti-static package)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ACA Process (Actuator Coil Assembly - 21 Steps)",
+      "summary": "Full 21-step manufacturing specification for Actuator Coil Assembly from Belton Slides 22 to 43.",
+      "steps": [
+        "1. Laser engraving: แกะสลักรหัสรุ่นสินค้า (CDA pressure 0.4-0.6 MPa, Laser height) ลวดลายคมชัดไม่ทำลายผิวสัมผัส",
+        "2. Pre-curing / plasma bobbin: ยิงแก๊สพลาสม่ากระตุ้นผิว เปิดพันธะเคมีเพิ่ม Surface energy ให้กาวอีพ็อกซี่เปียกชุ่มผิว",
+        "3. E-block cleaning: ล้างคราบน้ำมันและไอออน (Ultrasonic wash -> Spray rinse -> Multi-stage Ultrasonic rinse -> Final rinse; Drying: Slow pull -> Blow dry -> Oven dry 1&2 -> Vacuum dry)",
+        "4. Coil pre-heating: อุ่นชิ้นงานก่อนหยอดกาวป้องกันอุณหภูมิเปลี่ยนเฉียบพลัน (Thermal shock) กาวไหลเต็มหน้าสัมผัส",
+        "5. Coil & bobbin dispensing: หยอดกาวประกอบคอยล์และบ็อบบิน ควบคุม Pressure, Heater, Epoxy profile ป้องกันกาวเยิ้มล้น",
+        "6. E-block & Coil dispensing: หยอดกาวประกอบ E-block เข้ากับคอยล์ ควบคุมแรงดันลม Pressure (kPa) และอุณหภูมิฮีตเตอร์",
+        "7. Epoxy inspection / mending: ตรวจสอบแนวขอบกาว Epoxy fillet ไร้จุดฟองอากาศ (Voids) 100% ซับและแต่งกาวให้เรียบเนียน",
+        "8. 1st curing & unload: อบเตาสายพานรอบที่ 1 ควบคุมโปรไฟล์ความร้อนไม่ให้กาวเดือดเกิดโพรงอากาศภายใน",
+        "9. 2nd curing & unload: อบความร้อนรอบที่ 2 ให้กาวแห้งแกร่งสมบูรณ์ ป้องกันสารระเหยตกค้าง (Outgas) ในระบบสุญญากาศของฮาร์ดดิสก์",
+        "10. DI water cleaning: ล้างน้ำกลั่นบริสุทธิ์สูง ควบคุมอัตราไหล (Flow rate) และค่าความต้านทาน (Resistivity) ขจัดเกลือคลอไรด์ป้องกันสนิม",
+        "11. Hi-pot & open test: ทดสอบฉนวนทนแรงดันไฟฟ้าสูงพิเศษ ป้องกันไฟรั่วลงโครงสร้างแกนเหล็ก E-block",
+        "12. Combine DVT & Coil height inspection: ควบคุมตำแหน่งความสูงของขดลวด VCM ไม่ให้สัมผัสเสียดสีกับหน้าจานแม่เหล็ก",
+        "13. Coil height inspection: ตรวจวัดระดับความสูงคอยล์ซ้ำด้วยระบบกระบอกสูบ (Cylinder) และ Timer control",
+        "14. Damper install: ติดตั้งแผ่นลดแรงสั่นสะเทือน ป้องกันคลื่นสะท้อนรบกวนสัญญาณความเที่ยงตรงของหัวอ่าน",
+        "15. Tube length checking: ตรวจสอบพิกัดความยาวท่อหุ้มเดินสายไฟ ป้องกันสายเปลือยสัมผัสโครงสร้างช็อตลงกราวด์",
+        "16. Slit height checking: ตรวจวัดความกว้างร่องสลิต รักษาสมดุลพิกัดมอเตอร์เคลื่อนที่หัวอ่าน",
+        "17. Resonance checking: วัดและวิเคราะห์การตอบสนองความถี่ธรรมชาติ ป้องกันความถี่พ้อง (Resonance) ชนกับสปินเดิลมอเตอร์",
+        "18. Arm height & tweaking: ตรวจสอบและดัดระนาบก้านแขนจับ Actuator Arm ให้ขนานระนาบหน้าจานแม่เหล็กอย่างประณีต",
+        "19. Visual inspection: ตรวจพินิจด้วยกล้องขยายพิกัด ค้นหาฝุ่นละออง รอยแตกของกาวฉนวน หรือรอยไหม้ปนเปื้อน",
+        "20. OQA: สุ่มตรวจรับประกันคุณภาพตามแผน 0.65% AQL, C=0 (VMI, Coil HT, DVT, Smartscope, CMM, MARPOSS, Resonance, Push Force)",
+        "21. Packing: บรรจุชิ้นงานลงถาด Anti-static ESD Tray ป้องกันไฟฟ้าสถิตและความเสียหายระหว่างขนส่ง"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "FCOF Process (Flip Chip On Flex - 14 Steps)",
+      "summary": "Flip chip bonding and underfill process on flexible circuits from Belton Slides 44 to 58.",
+      "steps": [
+        "1. Flex Baking: อบไล่ความชื้นของแผ่นวงจรพิมพ์ FPC ควบคุม Temperature และ Duration Time",
+        "2. Solder Paste Printing: พิมพ์ครีมตะกั่ว ควบคุม Printing Pressure, Speed, Gap และ Cleaning Frequency ของ Stencil",
+        "3. SMT Placement (Chip components): วางชิ้นส่วน Passive Chip คุม Pick up/Placement Height และ Placement speed",
+        "4. SMT Placement (Connector placement): วางขั้วต่อ Connector บนแผ่น Flex คุมพิกัดความสูงและความเร็ว",
+        "5. Die Placement: คว่ำวางชิป Pre-amp IC จุ่ม Tacky flux ก่อนวางบน Flex คุม Flux thickness และ Placement force",
+        "6. Reflow Soldering: เตาอบหลอมประสานตะกั่ว ควบคุมโปรไฟล์ความร้อน Temperature และระดับ O2/N2",
+        "7. Under fill Dispensing: หยอดกาวอีพ็อกซี่ Underfill ไหลแทรกใต้ฐานชิปด้วยแรงดูดฝอย Capillary action ไร้ฟองอากาศ",
+        "8. AOI Inspection: ตรวจสอบรอยบัดกรีและทิศทางชิ้นส่วนอัตโนมัติ 100% เชื่อมระบบ WMS",
+        "9. Snap Cure: อบเร่งการเซ็ตตัวของกาว Underfill ในเตาอบ คุม Temperature และ Duration Time",
+        "10. Flex Cleaning: ล้างทำความสะอาดแผ่น Flex คุมอุณหภูมิ, ความเร็วสายพาน Belt speed, แรงดันล้าง และค่า pH/Resistivity ของน้ำ DI",
+        "11. X-Ray Inspection: สแกนเอกซเรย์ตรวจการเปียกของเนื้อตะกั่ว Solder wetting ใต้ Pre-amp bumps และเปอร์เซ็นต์ Micro-void",
+        "12. QMAX Test: ทดสอบคุณสมบัติการทำงานทางไฟฟ้า คุมรอบอายุเข็มวัด Probes life cycles และ PCBA working distance",
+        "13. FMVI / OQA: ตรวจพินิจความสะอาดขั้นสุดท้ายและการประกันคุณภาพตามข้อกำหนด WMS",
+        "14. Packing: บรรจุลงถาดป้องกันไฟฟ้าสถิต แนบเอกสาร Traveller Card"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "APFA Process (Arm Pivot Flex Assembly - 17 Steps)",
+      "summary": "17-step precision mechanical assembly of actuator arms and pivot bearings from Belton Slides 59 to 76.",
+      "steps": [
+        "1. Bending: ดัดขึ้นรูปแนวสายแพร FPC คุมรัศมีการดัดระวังไม่ให้ฟอยล์ทองแดงแตกร้าว",
+        "2. Soldering ground pin and VCM pad: บัดกรีจุดเชื่อมต่อขากราวด์และแผ่น VCM pad คุม Soldering temp และ Solder wire type",
+        "3. Flex bracket install: ประกอบโครงยึด Flex bracket เข้ากับแขนจับ คุมแรงบิดสกรูและป้องกัน ESD",
+        "4. Load in carrier: วางชิ้นงานลงตะแกรงพาหะเพื่อเตรียมนำเข้ากระบวนการล้าง",
+        "5. AQ Cleaning: ล้างทำความสะอาด คุมความถี่/กำลังไฟฟ้าอัลตราโซนิก, ระยะเวลาล้าง, อุณหภูมิและอัตราการไหล DI Flow rate",
+        "6. Unload from carrier: สวมถุงมือป้องกันการปนเปื้อน ย้ายชิ้นงานออกจากพาหะลงถาดแห้ง",
+        "7. DCM attachment: ติดตั้งแผ่นคุมน้ำหนัก Dynamic Control Mass ลดการสั่นสะเทือน คุมพิกัดกึ่งกลางและแรงกดไร้ฟองอากาศ",
+        "8. T-ring insertion: กดสวมแหวนยางประคองกันสั่น T-Ring คุมทิศทาง Orientation และตำแหน่งหยอด IPA",
+        "9. Pivot Install: อัดตลับลูกปืนแบริ่งเข้าแกนแขนจับ คุมแรงอัด Installation / Press force ไม่ให้รางลูกปืนช้ำ และคุม Pivot height",
+        "10. VMI: ตรวจเช็กมิติและสิ่งแปลกปลอมนำไฟฟ้าด้วยกล้องขยายสูง Visual Microscopic Inspection",
+        "11. Pivot height checking: วัดพิกัดความสูงของแกน Pivot ตาม spec limit",
+        "12. Arm height test: ตรวจวัดความสูงพิกัดระนาบก้านแขนจับ Actuator Arm ทุกระดับ ป้องกันก้านเบี้ยวขูดแผ่นจาน",
+        "13. Electrical test: ทดสอบไฟฟ้า: ตรวจวัดความต้านทาน Resistance, ตรวจขั้ว Polarity, ตรวจ Coil short to ground และตรวจ Preamp vendor ID",
+        "14. Tray label attachment: ติดฉลากบ่งชี้รหัสบาร์โค้ดลงบนถาดบรรจุและสแกนสอบทาน",
+        "15. OQA: สุ่มตรวจประกันคุณภาพชิ้นงานตามเกณฑ์มาตรฐาน OQA",
+        "16. Final scan: สแกนบาร์โค้ดบันทึกประวัติเข้าระบบ ERP System เพื่อการตรวจสอบย้อนกลับ Traceability",
+        "17. Packing: บรรจุและซีลถุงสุญญากาศ คุมระดับสุญญากาศ Vacuum level และเวลาการซีล Seal time"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "ACA Dispensing Line Architecture (50 Machines)",
+      "summary": "50 Asymtek Dynamic Jet Dispensers across 4 Cleanroom Bays (Bay A, B, C, D).",
+      "specs": {
+        "nozzle_spec": "32G Ultra-Micro Nozzle",
+        "dispense_mass_nominal_mg": 12.5,
+        "dispense_mass_tolerance_mg": 0.3,
+        "air_pressure_nominal_kpa": 212.4,
+        "air_pressure_spec_range_kpa": [
+          220.0,
+          250.0
+        ],
+        "substrate_preheat_nominal_c": 60.0,
+        "needle_wear_critical_limit": 0.75,
+        "active_batch": "LOT-EPX-2026-09B",
+        "epoxy_material": "Nagase ChemteX Low-Outgas Epoxy",
+        "pot_life_limit_minutes": 240
+      }
+    },
+    {
+      "id": 6,
+      "name": "Real-time Fleet Health Analytics",
+      "summary": "Current operational health across 50 production dispensers.",
+      "fleet_status": {
+        "total_machines": 50,
+        "active_normal_count": 47,
+        "active_normal_pct": 94.0,
+        "watchlist_count": 2,
+        "critical_count": 1,
+        "total_shots": 54050,
+        "overall_yield_pct": 99.26,
+        "good_parts": 53651,
+        "defects": 399
+      },
+      "watchlist_breakdown": {
+        "ACA-DISP-14": {
+          "num": 14,
+          "status": "เฝ้าระวัง (Watchlist)",
+          "symptom": "อุณหภูมิ Pre-heat เริ่มแกว่งที่ 68.2 °C (ปกติ 65.0 °C) อายุกาวสะสม 185 นาที ส่งผลให้ความหนืดแตะ 8,620 mPa·s",
+          "action": "ระบบ AI กำลังชดเชยแรงดันลมไดนามิก แนะนำ Operator เตรียมเบิกกาวหลอดใหม่ก่อนครบ Pot-Life 240 นาที"
+        },
+        "ACA-DISP-38": {
+          "num": 38,
+          "status": "เฝ้าระวัง (Watchlist)",
+          "symptom": "แรงดันลมจ่ายกาวสวิงตกเหลือ 208.5 kPa (สเปก 220-250 kPa) แนวฟิเลต์กาวบางลง เสี่ยงเกิด Micro-void",
+          "action": "แนะนำทีม Maintenance ตรวจเช็กท่อลม CDA และวาล์ว Regulator ด่วน"
+        },
+        "ACA-DISP-27": {
+          "num": 27,
+          "status": "วิกฤต (Critical Safety Stop / รอซ่อม)",
+          "symptom": "ค่าการสึกหรอหัวเข็มแตะ 0.96 (เกินลิมิต 0.75) เกิดการอุดตัน ปริมาณกาวขาด Underfill ต่ำกว่า 12.5 mg ต่อเนื่อง",
+          "action": "ระบบตัด Safety Interlock หยุดจ่ายงานอัตโนมัติ ต้องเปลี่ยนหัวเข็ม 32G Ultra-Micro Nozzle หลอดใหม่"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "Corrective Maintenance SOP (Needle 32G Replacement)",
+      "summary": "Standard operating procedure for resolving needle wear and underfill defects.",
+      "sop_steps": [
+        "1. กดปุ่ม Safety Lockout / Tagout (LOTO) ตัดวงจรไฟฟ้าและวาล์วจ่ายแรงดันลม",
+        "2. คลายเกลียวตัวล็อค ปลดหัวเข็ม 32G เก่าออกอย่างระมัดระวัง",
+        "3. ใช้น้ำยา Flush ชนิด Cleanroom-grade เช็ดทำความสะอาดปลายแกนวาล์ว Dispense Head",
+        "4. ติดตั้งหัวเข็ม 32G Ultra-Micro Nozzle ชิ้นใหม่ และขันล็อคตามค่า Torque สเปก",
+        "5. ทำการ Purge กาว 5 ช็อตเพื่อไล่ฟองอากาศ Micro-void ตกค้างในหัวฉีด",
+        "6. หยอดช็อตทดสอบชั่งน้ำหนักยืนยัน 12.50 ± 0.3 mg และกดรีเซ็ตค่า Needle Wear บนระบบ SCADA"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Cleanroom 100 Environment & Preventive Maintenance SOP",
+      "summary": "5 golden rules for daily preventive maintenance and ISO Class 5 / Class 100 environmental control.",
+      "sop_rules": [
+        "1. ตรวจสอบการสึกหรอหัวเข็ม (Nozzle Wear): หมั่นตรวจเช็คดัชนีการสึกหรอของหัวเข็ม 32G ไม่ให้เกินเกณฑ์ 0.750",
+        "2. ควบคุมอุณหภูมิ Pre-heat ชิ้นงาน: รักษาระดับความร้อนแท่นฮีตเตอร์ให้อยู่ที่ 60.0 °C (±2 °C) สม่ำเสมอ",
+        "3. ควบคุมอายุการใช้งานของกาว (Epoxy Pot-life): เปลี่ยนหลอดกาวใหม่ทุกๆ 240 นาที (4 ชั่วโมง)",
+        "4. เสถียรภาพแรงดันลม CDA: ตรวจสอบวาล์วปรับแรงดันลมให้อยู่ในช่วง 220.0 - 250.0 kPa ปราศจากความชื้น",
+        "5. สภาพแวดล้อม Cleanroom Class 100: ควบคุมอุณหภูมิห้อง 20-24 °C และความชื้น 40-55% RH อย่างเคร่งครัด"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "SCADA Material Batch Traceability",
+      "summary": "Full traceability database for active and expired adhesives.",
+      "batches": {
+        "active": {
+          "lot": "LOT-EPX-2026-09B",
+          "material": "Nagase ChemteX Low-Outgas Epoxy",
+          "viscosity_initial": "8,500.0 mPa·s",
+          "pot_life_limit": "240 นาที (4 ชั่วโมง)",
+          "status": "กำลังใช้งานบนสายการผลิต ACA ทั้ง 50 เครื่อง"
+        },
+        "archived": [
+          "LOT-EPX-2026-08A",
+          "LOT-EPX-2026-08B",
+          "LOT-EPX-2026-09A (เคลียร์ออกจากไลน์แล้ว 100%)"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "name": "3D Factory World Spatial Coordinates (Machines 1-50)",
+      "summary": "Spatial layout for camera navigation and teleportation across 4 Cleanroom Bays.",
+      "coordinate_formula": "Machine num (1-50) maps to Bay A (1-12), Bay B (13-25), Bay C (26-38), Bay D (39-50). Teleport coordinate is (X, Z+1.8) facing Rotation PI.",
+      "key_coordinates": {
+        "1": {
+          "bay": "Bay A",
+          "x": -15.5,
+          "z": 8.0
+        },
+        "14": {
+          "bay": "Bay B",
+          "x": -4.2,
+          "z": 12.5
+        },
+        "27": {
+          "bay": "Bay C",
+          "x": 4.0,
+          "z": 19.3
+        },
+        "38": {
+          "bay": "Bay C",
+          "x": 8.5,
+          "z": 24.1
+        },
+        "50": {
+          "bay": "Bay D",
+          "x": 16.0,
+          "z": 30.2
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "Autonomous 3D Camera Action Protocol",
+      "summary": "Structured tool tag format that instructs the Three.js camera to move.",
+      "action_syntax": "[ACTION:TELEPORT:X]",
+      "example": "เมื่อผู้ใช้บอก 'พาไปดูเครื่อง 27 หน่อย' หรือ 'วาร์ปไป' ให้ตอบพร้อมแทรก [ACTION:TELEPORT:27] ในคำตอบ"
+    },
+    {
+      "id": 12,
+      "name": "50-Turn Memory & Context Backtracking",
+      "summary": "Rules for conversational pronoun resolution and machine tracking.",
+      "backtrack_rules": [
+        "หากผู้ใช้ถามต่อด้วยสรรพนามหรือคำสั้นๆ เช่น 'สาเหตุล่ะ', 'แก้ไขยังไง', 'ทำไมพัง' ให้ยึดโยงกับเครื่องที่เพิ่งสนทนา",
+        "หากเริ่มบทสนทนาด้วยภาพรวมโรงงาน แล้วถามต่อว่า 'สาเหตุล่ะ' ให้ระบุไปที่เครื่อง ACA-DISP-27 ทันที",
+        "หากผู้ใช้ถามคำถามการบำรุงรักษาทั่วไป 'เราจะทำไง ให้เครื่องจักรทำงานปกติ' ให้อธิบาย Preventive Maintenance SOP 5 ข้อ"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Belton Cleanroom Engineering Persona & Tone",
+      "summary": "Tone, politeness, and structured markdown presentation.",
+      "tone_guidelines": [
+        "เป็นวิศวกร Cleanroom ผู้เชี่ยวชาญ สุภาพ ฉลาด รอบรู้ ตอบเป็นภาษาไทยสละสลวย",
+        "จัดรูปแบบข้อความด้วย Markdown หัวข้อ ตัวหนา และลิสต์รายการให้อ่านง่าย สบายตา",
+        "ไม่ปฏิเสธคำถามทางเทคนิคของโรงงาน Belton และคิดวิเคราะห์เชื่อมโยงหลักวิศวกรรม Cleanroom อย่างแม่นยำ"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Cleanroom Classification & Environmental Standards (Navanakorn)",
+      "summary": "Cleanroom classes (ISO 5-8) and environmental metrics from TM-00-00-05.",
+      "classes": {
+        "ISO 5 (Class 100)": "Hook up, APFA (อนุภาค >= 0.5 um ไม่เกิน 100 particles/ft³)",
+        "ISO 6 (Class 1,000)": "JCS Washing",
+        "ISO 7 (Class 10,000)": "Hook up (Assembly), FCA",
+        "ISO 8 (Class 100,000)": "FCOF, SMT, Coil Winding, ACA, Carriage"
+      },
+      "environmental_metrics": {
+        "temperature_c": "20 - 24 °C",
+        "relative_humidity_pct": "40 - 70% RH (จุดอ่อนไหวคุม 40 - 55% RH)",
+        "air_velocity_m_s": "0.41 - 0.61 m/s",
+        "differential_pressure_wg": "+0.05\" wg (positive pressure ป้องกันฝุ่นภายนอก)",
+        "air_particle_counter": "นับอนุภาคฝุ่น >= 0.5 um ต่อลูกบาศก์ฟุต"
+      },
+      "four_principles": [
+        "1. Not to Bring Any Dust: ไม่นำพาฝุ่นเข้ามาในห้อง",
+        "2. Not to Generate Any Dust: ไม่ก่อให้เกิดฝุ่นหรือสิ่งที่เกิดฝุ่นได้ง่าย",
+        "3. Not to Accumulate Any Dust: ไม่ทำให้เกิดการสะสมของฝุ่นตามซอกมุม",
+        "4. To Remove Any Dust Quickly: รีบกำจัดฝุ่นทันทีในบริเวณที่เกิด"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Cleanroom Gowning, Undressing & In-Out Yellow Zone Protocols",
+      "summary": "Standard operating procedures for gowning, undressing, shoe room, and air shower.",
+      "gowning_sequence": [
+        "1. Hairnet: สวมหมวกคลุมผมชั้นใน เก็บเส้นผมและรังแคให้มิดชิดใบหู",
+        "2. Face Mask: สวมหน้ากากอนามัยแนบสนิทปิดปากและจมูก ห้ามดึงลงใต้จมูก",
+        "3. Cleanroom Jumpsuit with Hood: สวมชุดหมีมีฮูด รวบแขนและขากางเกงไว้เหนือพื้น ห้ามลากพื้น รูดซิปปิดถึงคอ",
+        "4. Booties: สวมรองเท้าบูทคลีนรูมทับขากางเกง รัดสายล็อคให้กระชับ",
+        "5. ESD Gloves: สวมถุงมือคลุมทับปลายแขนเสื้อด้านใน และดึงแขนเสื้อด้านนอกทับอีกชั้น ห้ามเผยผิวข้อมือ"
+      ],
+      "undressing_sequence": [
+        "1. ถอดถุงมือ (Gloves) ทิ้งลงถังเฉพาะ",
+        "2. ถอดรองเท้าบูท (Booties)",
+        "3. ถอดชุดจั๊มสูท (Jumpsuit) พับเก็บในถุง Jump suit แยกช่อง",
+        "4. ถอดหน้ากาก (Face Mask)",
+        "5. ถอดหมวกคลุมผม (Hairnet)"
+      ],
+      "shoe_room_yellow_zone": [
+        "ถอดรองเท้าส่วนตัวก่อนก้าวข้ามเส้นเหลือง",
+        "ห้ามสวมรองเท้าใดๆ ภายในเขตเส้นเหลือง (เดินด้วยถุงเท้า)",
+        "เก็บรองเท้าส่วนตัวในตู้รองเท้าส่วนตัว ห้ามวางบนตู้หรือบนพื้น",
+        "รองเท้า Plant shoes สวมเฉพาะเข้าไลน์ Class 7, 8 ห้ามสวมออกนอกห้องเปลี่ยนชุด"
+      ],
+      "air_shower_sop": "หมุนตัว 360 องศา ยกแขน 90° (5 วินาที) -> หมุนขวา (5 วินาที) -> หมุนหลัง (5 วินาที) -> หมุนซ้าย (5 วินาที) รวม 15-20 วินาที ห้ามพิงผนัง ห้ามเปิดประตูก่อนเวลา"
+    },
+    {
+      "id": 16,
+      "name": "Cleanroom Contamination Control & Chemistry",
+      "summary": "Comprehensive chemistry of NVS, Talc, SiO2, Mesa/Ghost, Outgassing and banned materials.",
+      "contaminants": {
+        "NVS (Non-Volatile Siloxanes / Organo-Silicon)": {
+          "impact": "สารประกอบ Polysiloxane ระเหย outgas และควบแน่นเป็น Silicone smear บนหัวอ่านและแผ่นดิสก์ แม้ระดับนาโนกรัมก็ทำให้หัวอ่านพัง",
+          "sources": "ครีมทาหน้า, ครีมทามือ, โลชั่น, น้ำมันผม, ยางซิลิโคน, น้ำยากันสนิม, สารหล่อลื่น",
+          "banned_ingredients": [
+            "Dimethicone",
+            "Cyclomethicone",
+            "Cyclotetrasiloxane",
+            "Cyclopentasiloxane"
+          ],
+          "banned_tapes": [
+            "Nitto 973UL-S",
+            "Tienta tape",
+            "Chukoh tape",
+            "Splicing tape 3M-1280",
+            "PSA tape",
+            "เทปกาว 2 หน้า"
+          ]
+        },
+        "Talc (Magnesium Silicate - MgSiO)": {
+          "impact": "แร่ธรรมชาติผงสีขาว เปราะบาง แตกตัวเป็นอนุภาคละเอียด ขัดสีระหว่างหัวอ่านกับดิสก์ทำให้เกิดรอยขีดข่วน (Disk scratch)",
+          "sources": "แป้งผัดหน้า, แป้งเด็ก, ครีม whitening, ยางพารา, แป้งโรยถุงมือยาง, กระดาษธรรมดา, Green mat"
+        },
+        "SiO2 (Silicon Dioxide / Quartz)": {
+          "impact": "ผลึกแข็งแรง ขัดสีรุนแรง เกิดรอยขีดข่วนถาวรบนหน้าจานแม่เหล็ก",
+          "sources": "ทราย, กระจก, สก๊อตช์ไบรต์, กระดาษทราย, ซิลิกาเจล, ถาด APET Tray unapproved"
+        },
+        "Mesa (WD) / Ghost (Seagate)": {
+          "impact": "Defect ของอนุภาคคอนแทมจากการสลายตัวของไฮโดรคาร์บอน/ยาง (RHC) ภายใต้ความร้อน/พลาสม่า เกิดเป็นคราบเงาผีใต้กล้องจุลทรรศน์",
+          "sources": "หมึก Ribbon, กรีนแมท, พลาสติกทำ fixture, คราบน้ำมัน, ถาด Tray สกปรก"
+        },
+        "Outgassing": {
+          "impact": "แก๊สระเหยจากวัสดุสะสมในระบบสุญญากาศของฮาร์ดดิสก์",
+          "sources": "สีทาเล็บ, น้ำหอม, ยาดม, ยาหม่อง, สารระเหย, Solvent (Hexane, unapproved IPA)"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "name": "Cleanroom Discipline & Violation Penalties (WI-CQA-00-00-19)",
+      "summary": "51 rules across Critical (2), Major (16), and Minor (33) violation categories and disciplinary penalties.",
+      "penalties": {
+        "Critical": "ครั้งที่ 1 พักงาน 3 วัน (Suspend 3 days) -> ครั้งที่ 2 เลิกจ้างทันที (Terminated)",
+        "Major": "ครั้งที่ 1 หนังสือเตือน (Warning letter) -> ครั้งที่ 2 พักงาน 3 วัน -> ครั้งที่ 3 เลิกจ้าง",
+        "Minor": "ครั้งที่ 1 ตักเตือนด้วยวาจา (Verbal) -> ครั้งที่ 2 หนังสือเตือน -> ครั้งที่ 3 พักงาน 3 วัน -> ครั้งที่ 4 เลิกจ้าง",
+        "Auditor_direct_catch": "ครั้งที่ 1 ออกหนังสือเตือนทันที, ครั้งที่ 2 เลิกจ้างทันที (บันทึกมีผล 1 ปี)"
+      },
+      "critical_rules": [
+        "C1: ห้ามแต่งหน้าด้วยเครื่องสำอางทุกชนิด (แป้ง, whitening ครีม, ครีมกันแดด, ดินสอเขียนคิ้ว, ลิปสติก) ก่อนเข้าหรือขณะอยู่ในห้องเปลี่ยนชุดและคลีนรูม",
+        "C2: ห้ามรับประทานอาหาร เครื่องดื่มทุกชนิด เคี้ยวหมากฝรั่ง อมลูกอม หรือเก็บเศษอาหาร/ถุงขนมในชุดและในห้องคลีนรูมเด็ดขาด"
+      ],
+      "major_rules_highlights": [
+        "MA1: ผู้สัมผัสชิ้นงานที่มี Preamp ประกอบแล้ว ต้องสวมและเสียบสาย Wrist Strap ทุกครั้ง",
+        "MA2: ห้ามนำของใช้ส่วนตัวเข้าห้องรองเท้า ห้องเปลี่ยนชุด หรือคลีนรูม",
+        "MA3: ต้องมีสติกเกอร์ Cleanroom Certificate ประจำปีบนบัตรและไม่หมดอายุ (คนนอกต้องสอบ 100%)",
+        "MA4: ต้องสวมชุดคลีนรูมให้ครบตามระเบียบ และห้ามสวมชุดคลีนรูมออกนอกห้องเปลี่ยนชุด",
+        "MA5: ห้ามใช้ชุด/booties ที่ชำรุด หรือเขียนวาดรูปบนชุด",
+        "MA6: ห้ามถอด Booties, ห้ามรูดซิปชุด, ห้ามหดแขนเข้าไปในชุดเพื่อล้วงของ",
+        "MA7: ห้ามดึงหน้ากากอนามัยลงมาจนเห็นรูจมูกเด็ดขาด",
+        "MA8: พนักงานห้อง Class 5, 6, 7 ต้องเช็ดบัตรพนักงานและสาย Wrist strap ด้วย IPA ก่อนเช็ดถุงมือ",
+        "MA9: สวมถุงมือมิดชิดไม่ให้เห็นผิวหนังข้อมือ ห้ามถอดถุงมือในคลีนรูม ห้ามกลับด้านใช้ซ้ำ",
+        "MA10: หยิบชิ้นงานครั้งละ 1 ชิ้น และห้ามวางมากกว่า 1 ชิ้นใน 1 ช่อง tray",
+        "MA11: ห้ามทำชิ้นงานตกพื้น หากตกต้องส่งล้างใหม่และผ่าน VMI 100% พร้อมเปลี่ยนถุงมือทันที",
+        "MA12: ห้ามเขียน/วาดรูปบนโต๊ะ เฟอร์นิเจอร์ หรือรถเข็น (เขียนได้เฉพาะแผ่น Laminate)",
+        "MA13: ห้ามเขียน วาดรูป หรือติดเทป 3M, DCM, 2D label ในถาด tray งาน",
+        "MA14: ห้ามเปิดประตู Pass Box พร้อมกัน 2 ด้านเด็ดขาด",
+        "MA15: ห้ามใช้สารเคมี สเปรย์ กาวซ่อมบำรุง หรือบัดกรี ยกเว้นได้รับอนุมัติจาก Contamination Control",
+        "MA16: ห้ามใช้โทรศัพท์มือถือ หรือหูฟัง ยกเว้นหัวหน้างาน โดยมือถือต้องไม่มีเคสพลาสติก ซิลิโคน หรือพวงกุญแจ"
+      ],
+      "minor_rules_highlights": [
+        "MI21: ห้ามวางสิ่งที่ก่อให้เกิดไฟฟ้าสถิตใกล้ชิ้นงาน Preamp ในระยะ 12 นิ้ว (30 ซม.)",
+        "MI22: ห้ามวางโลหะสัมผัสโลหะโดยตรง (Metal to Metal - M2M)",
+        "MI25: ห้ามวาง Tray หรืองานบนชั้นล่างสุดที่สูงจากพื้นไม่เกิน 12 นิ้ว",
+        "MI26: หยิบงานตามหลัก 'หยิบใกล้ วางไกล' (Pick near, Place far)",
+        "MI16: ห้ามวางของบังตะแกรงดูดอากาศกลับ (Air return) หรือปรับบานเกล็ด Air grills",
+        "MI30: ห้ามใช้ยาดม ยาหม่อง น้ำหอมฉุนเกินระยะ 1 เมตร",
+        "MI31: ห้ามใช้กระดาษธรรมดาใน Class 5, 6, 7 (อนุญาตเฉพาะ Cleanroom paper)",
+        "MI27: ทำความสะอาดโต๊ะทำงานและอุปกรณ์ด้วย IPA 100% อย่างน้อย 2 ครั้งต่อกะ"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Electrostatic Discharge (ESD) & EPA Standards",
+      "summary": "ESD damage mechanisms, HBM/CDM/MM model thresholds, and EPA equipment grounding specifications.",
+      "damage_types": {
+        "Latent Failure": "ความเสียหายแอบแฝง มองไม่เห็นด้วยตา วงจรเสื่อม อุปกรณ์อายุการใช้งานสั้น ค่าซ่อมสูงมาก",
+        "Catastrophic Failure": "ความเสียหายทันที วงจรไหม้ ละลาย หรือขาดจากกัน"
+      },
+      "esd_models_and_limits": {
+        "HBM (Human Body Model)": "การถ่ายเทประจุจากร่างกายสู่ชิ้นงาน: สเปก < 100 V (หาก >= 100 V Reject ทันที)",
+        "CDM (Charged Device Model)": "การถ่ายเทประจุที่สะสมบนตัวงานเอง: สเปก < 200 V (หาก >= 200 V Reject ทันที)",
+        "MM (Machine Model)": "การถ่ายเทประจุจากเครื่องจักรสู่งาน: สเปก < 35 V (หาก >= 35 V Reject ทันที)",
+        "Insulator Limits": "ศักย์ > 125 V ต้องอยู่ห่างงาน > 1 นิ้ว; หาก > 2,000 V ต้องอยู่ห่าง > 12 นิ้ว (30 ซม.) หรือเป่าสลายด้วย Ionizer"
+      },
+      "material_types": {
+        "Shielding": "ป้องกันสนามไฟฟ้าสถิต เช่น Static Shielding Bag, Moisture Barrier Bag",
+        "Conductive": "นำไฟฟ้า ถ่ายเทประจุลงดินรวดเร็ว เช่น สายกราวด์ กล่องโลหะ",
+        "Dissipative": "กระจายประจุ ถ่ายเทประจุอย่างนุ่มนวล เช่น ESD Table Mat, ESD Tray, ESD Chair",
+        "Insulator": "ฉนวนไฟฟ้า ไม่ยอมให้ประจุไหลผ่าน ห้ามนำเข้า EPA เว้นแต่มีระยะห่างปลอดภัย"
+      },
+      "epa_equipment_standards": {
+        "EPA_GATE": "พนักงานยืนบนแผ่นสแตนเลส สวมและเสียบสาย Wrist Strap ทดสอบทั้งสายรัดข้อมือและรองเท้า ESD ก่อนเข้า (ค่าต้านทาน 750 kΩ - 35 MΩ)",
+        "Trolley": "ล้อต้องเป็น Anti-static และมีโซ่กราวด์ (Ground drag chain) ลากสัมผัสพื้น ESD ตลอดเวลา",
+        "Air_Ionizer": "ปรับความเร็วลมให้ถึงขีดเส้นสีแดง ปรับองศาเป่าคลุมพื้นที่ทำงาน และตรวจเช็คสมดุล Ion Balance",
+        "Work_Surface": "ปู ESD Table Mat และต่อสายกราวด์ลงดินอย่างสมบูรณ์"
+      }
+    }
+  ]
+}
