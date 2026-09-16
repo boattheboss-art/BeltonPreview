@@ -65,9 +65,22 @@ body.gemini-theme {
 .brand-link {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   color: inherit;
+}
+
+.gemini-brand-logo-img {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 0.25s ease;
+}
+
+.brand-link:hover .gemini-brand-logo-img {
+  transform: scale(1.05);
 }
 
 .gemini-sparkle-icon {
@@ -505,3 +518,4 @@ body.gemini-theme {
     display: none;
   }
 }
+

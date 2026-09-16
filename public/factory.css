@@ -2361,6 +2361,19 @@ input:checked + .toggle-slider:before {
   text-decoration: none;
 }
 
+.belton-brand-img {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12));
+  transition: transform 0.2s ease;
+}
+
+.apple-brand-group:hover .belton-brand-img {
+  transform: scale(1.04);
+}
+
 .apple-logo-icon {
   width: 20px;
   height: 20px;
