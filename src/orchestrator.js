@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:14b';
+const NUM_GPU = process.env.NUM_GPU ? parseInt(process.env.NUM_GPU, 10) : (MODEL_NAME.includes('14b') ? 30 : undefined);
+const NUM_CTX = process.env.NUM_CTX ? parseInt(process.env.NUM_CTX, 10) : (MODEL_NAME.includes('14b') ? 2048 : 8192);
 
 async function fetchWithRetry(url, options, maxRetries = 2, delayMs = 600) {
   let lastError;
@@ -286,7 +288,8 @@ ${dynamicSlideExcerpts}`;
       messages: messages,
       tools: toolsToProvide,
       options: {
-        num_ctx: MODEL_NAME.includes('14b') ? 3072 : 8192,
+        num_ctx: NUM_CTX,
+        num_gpu: NUM_GPU,
         num_predict: 128,
         temperature: isCasualMessage ? 0.35 : 0.08,
         top_p: 0.9,
@@ -461,8 +464,9 @@ ${dynamicSlideExcerpts}`;
       model: MODEL_NAME,
       messages: messages,
       options: {
-        num_ctx: MODEL_NAME.includes('14b') ? 3072 : 8192,
-        num_predict: 400,
+        num_ctx: NUM_CTX,
+        num_gpu: NUM_GPU,
+        num_predict: 350,
         temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,
