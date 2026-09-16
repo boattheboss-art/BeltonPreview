@@ -124,6 +124,8 @@ function searchSlideKnowledge(query, limit = 3) {
   const DEFECT_SPECIFIC_TERMS = [
     'broken wire', 'expose wire', 'loose coil', 'poor tinning', 'dent wire', 'kink',
     'wet tray', 'solder ball', 'void epoxy', 'stiffener', 'burr', 'oxidation',
+    'misalignment damper', 'damper', 'bent arm', 'bent', 'scratch', 'dent', 'lifted',
+    'contamination', 'particle', 'peeling', 'double damper', 'missing damper',
     'ลวดหัก', 'ลวดเปลือย', 'ถาดเปียก', 'เม็ดบัดกรี', 'รอยบุบ', 'รอยขีดข่วน'
   ];
 
@@ -141,7 +143,12 @@ function searchSlideKnowledge(query, limit = 3) {
     // Specific defect phrase bonus
     for (const dt of DEFECT_SPECIFIC_TERMS) {
       if (lowerQ.includes(dt)) {
-        if (sTitle.includes(dt)) score += 350;
+        if (sTitle.includes(dt)) {
+          score += 350;
+        } else if (sContent.split('\n').some(l => /^\s*\d+\.\d+/i.test(l) && l.toLowerCase().includes(dt))) {
+          // Defect section header inside slide content (e.g. 6.1.9 Misalignment Damper)
+          score += 350;
+        }
         if (sContent.includes(dt)) score += 80;
       }
     }
@@ -214,13 +221,91 @@ function getSlidePage(docCode, pageNumber) {
 /**
  * Reload slide knowledge base from disk
  */
+let inMemoryExamQuestions = null;
+
+function loadAllExamQuestions(forceReload = false) {
+  if (inMemoryExamQuestions && !forceReload) return inMemoryExamQuestions;
+  const examPath = path.resolve(__dirname, '../../data/seagate_exam_questions.json');
+  if (fs.existsSync(examPath)) {
+    try {
+      inMemoryExamQuestions = JSON.parse(fs.readFileSync(examPath, 'utf8'));
+      return inMemoryExamQuestions;
+    } catch (e) {
+      console.warn('⚠️ [Exam DB] Failed to load exam questions:', e.message);
+    }
+  }
+  return [];
+}
+
+/**
+ * Match user query against the 180 official Seagate Master Exam questions
+ */
+function searchExamQuestion(query) {
+  if (!query || typeof query !== 'string') return null;
+  const exams = loadAllExamQuestions();
+  if (exams.length === 0) return null;
+
+  const lowerQ = query.toLowerCase();
+  
+  // Check if query looks like an exam question or statement verification
+  const isExamLike = /^\s*\d+\.|\bหมายถึง\b|\bเกณฑ์สเปคกำหนดว่า\b|\bยอมรับได้\s*\(Accept\)|\bถือเป็นงานเสีย\s*\(Reject\)|\bถูกหรือผิด\b|\bตรวจข้อสอบ\b/i.test(query);
+  if (!isExamLike) return null;
+
+  const numMatch = query.match(/^\s*(\d+)\./);
+  const qNum = numMatch ? parseInt(numMatch[1], 10) : null;
+
+  let bestMatch = null;
+  let highestScore = 0;
+
+  for (const eq of exams) {
+    let score = 0;
+    const eqLower = eq.full_question.toLowerCase();
+
+    // Check defect name / title similarity
+    const defectMatch = eq.question_text.match(/^([^หมายถึง]+)หมายถึง/);
+    if (defectMatch) {
+      const defectName = defectMatch[1].trim().toLowerCase();
+      if (lowerQ.includes(defectName)) {
+        score += 150;
+      }
+    }
+
+    if (qNum && eq.question_number === qNum) {
+      score += 80;
+    }
+
+    // Keyword overlap
+    const words = eq.question_text.split(/[\s,()]+/).filter(w => w.length >= 3);
+    for (const w of words) {
+      if (lowerQ.includes(w.toLowerCase())) score += 5;
+    }
+
+    if (score > highestScore) {
+      highestScore = score;
+      bestMatch = eq;
+    }
+  }
+
+  if (bestMatch && highestScore >= 120) {
+    return {
+      ...bestMatch,
+      confidence_score: highestScore
+    };
+  }
+
+  return null;
+}
+
 function reloadSlideKnowledge() {
   inMemorySlides = null;
+  inMemoryExamQuestions = null;
   return loadAllSlides(true);
 }
 
 module.exports = {
   searchSlideKnowledge,
   getSlidePage,
-  reloadSlideKnowledge
+  reloadSlideKnowledge,
+  searchExamQuestion,
+  loadAllExamQuestions
 };

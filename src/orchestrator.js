@@ -1,7 +1,6 @@
 const { toolsDefinition } = require('./tools/schemas.js');
 const { executeTool } = require('./tools/handlers.js');
-const { BELTON_KNOWLEDGE } = require('./knowledge/belton_knowledge.js');
-const { searchSlideKnowledge } = require('./knowledge/slide_knowledge_db.js');
+const { searchSlideKnowledge, searchExamQuestion } = require('./knowledge/slide_knowledge_db.js');
 require('dotenv').config();
 
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
@@ -125,9 +124,23 @@ function isFollowUpQuery(userMsg) {
 }
 
 async function runOrchestrator(userMessage, conversationHistory = []) {
-  // 1. Dynamic Context Augmentation for Multi-turn follow-up queries
+  // 1. Check if query is an exam statement / verification question from Master Exam database
+  let examGroundTruthSnippet = '';
+  const matchedExam = searchExamQuestion(userMessage);
+  if (matchedExam) {
+    console.log(`📑 [Orchestrator Exam Match] Found Master Exam Q#${matchedExam.question_number} [${matchedExam.doc_code}]: Answer="${matchedExam.correct_answer}"`);
+    examGroundTruthSnippet = `\n\n[ผลการตรวจสอบคลังข้อสอบทางการ (Master Exam Ground Truth)]:
+- รหัสข้อสอบ: ${matchedExam.doc_code} ข้อที่ ${matchedExam.question_number} หมวด ${matchedExam.product}
+- เฉลยทางการ: "${matchedExam.correct_answer}" (${matchedExam.correct_answer === 'ถูก' ? 'ข้อความในโจทย์ถูกต้องตามมาตรฐาน' : 'ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน'})
+- คำสั่งการตัดสิน: จงเปิดคำตอบด้วยคำตัดสินทางการทันที คือ "${matchedExam.correct_answer === 'ถูก' ? '✅ เฉลย: ถูก (ข้อความนี้ถูกต้องตามมาตรฐาน)' : '❌ เฉลย: ผิด (ข้อความนี้ไม่ถูกต้องตามมาตรฐาน)'}"
+- จากนั้นอธิบายเปรียบเทียบระหว่างสิ่งที่โจทย์ระบุ กับเกณฑ์จริงในสไลด์ให้เห็นความแตกต่างชัดเจน`;
+  }
+
+  // 2. Dynamic Context Augmentation for Multi-turn follow-up queries
   let effectiveSearchQuery = userMessage;
-  if (conversationHistory && conversationHistory.length > 0 && isFollowUpQuery(userMessage)) {
+  if (matchedExam) {
+    effectiveSearchQuery = `${matchedExam.doc_code} ${matchedExam.question_text.slice(0, 60)}`;
+  } else if (conversationHistory && conversationHistory.length > 0 && isFollowUpQuery(userMessage)) {
     const contextKeywords = extractContextKeywords(conversationHistory);
     if (contextKeywords) {
       effectiveSearchQuery = `${contextKeywords} ${userMessage}`;
@@ -135,7 +148,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
     }
   }
 
-  // 2. Dynamic Slide Retrieval (RAG) from local SQLite FTS5 database (669 pages: Belton + Seagate)
+  // 3. Dynamic Slide Retrieval (RAG) from local SQLite FTS5 database (669 pages: Belton + Seagate)
   let dynamicSlideExcerpts = '';
   try {
     const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
@@ -164,8 +177,15 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
    - เมื่อผู้ใช้ถามถึงเกณฑ์ Reject: ต้องนำเงื่อนไขในช่อง Acceptance criteria มาแจกแจงเป็นตัวเลขและอาการจริงเสมอ (เช่น หาก Accept คือ >= 80% เกณฑ์ Reject คือต้องระบุว่า < 80% หรือหากระบุ NOT ALLOW ให้ตอบว่าไม่อนุญาตเด็ดขาด)
    - ให้สรุปให้ครบ: (1) นิยามลักษณะของเสีย (2) เกณฑ์ Acceptance (3) เกณฑ์ Reject
 5. การตอบคำถามต่อเนื่อง (Follow-up Questions): หากผู้ใช้ถามต่อ เช่น "มีอะไรบ้างละ", "ตัวเลขเท่าไหร่", "ทำไม", "ขยายความหน่อย" ให้ตอบอธิบายขยายความจากข้อกำหนดของหัวข้อที่สนทนาอยู่ ห้ามตอบตัดบท ห้ามพูดว่า "มีเพียงแค่นี้เท่านั้น"
-6. ไม่เกริ่นนำ: ห้ามทักทาย ห้ามมีคำว่า "สวัสดีครับ" หรือ "จากการตรวจสอบ" ให้เริ่มที่คำตอบตรงๆ ทันที
-7. ห้ามตอบปนเรื่องอื่น: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเฉพาะเกณฑ์มาตรฐาน ห้ามดึงเรื่องเครื่องจักรมาตอบ และหากถามเรื่องเครื่องจักร ให้ตอบเฉพาะสถานะเครื่องจักร
+6. โหมดตรวจข้อสอบ (Exam Verification & Fact-Checking Mode):
+   - หากผู้ใช้ป้อนข้อความที่เป็นข้อสอบ หรือประโยคที่มีการกล่าวอ้างเกณฑ์สเปก (เช่น "กรณีนี้ยอมรับได้ (Accept)" หรือ "ถือเป็นงานเสีย (Reject)"):
+   - ให้ทำหน้าที่เป็น "กรรมการตรวจข้อสอบ" เทียบกับ [ข้อมูลสไลด์และเกณฑ์มาตรฐาน] คำต่อคำ
+   - ห้ามเชื่อตัวเลขหรือเงื่อนไขที่โจทย์อ้างเด็ดขาด ให้ยึดข้อมูลในสไลด์และ [ผลการตรวจสอบคลังข้อสอบทางการ] เป็นเกณฑ์จริงเท่านั้น
+   - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "❌ เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้ง
+   - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "✅ เฉลย: ถูก"
+7. ไม่เกริ่นนำ: ห้ามทักทาย ห้ามมีคำว่า "สวัสดีครับ" หรือ "จากการตรวจสอบ" ให้เริ่มที่คำตอบตรงๆ ทันที
+8. ห้ามตอบปนเรื่องอื่น: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเฉพาะเกณฑ์มาตรฐาน ห้ามดึงเรื่องเครื่องจักรมาตอบ และหากถามเรื่องเครื่องจักร ให้ตอบเฉพาะสถานะเครื่องจักร
+${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
   const messages = [
@@ -270,8 +290,17 @@ ${dynamicSlideExcerpts}`;
         };
       }
     } else {
+      let finalReply = cleanOutputText(assistantMsg.content);
+      if (matchedExam) {
+        const officialPrefix = matchedExam.correct_answer === 'ถูก'
+          ? `✅ **เฉลย: ถูก** (ข้อความในโจทย์ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`
+          : `❌ **เฉลย: ผิด** (ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`;
+
+        finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
+        finalReply = officialPrefix + finalReply;
+      }
       return {
-        reply: cleanOutputText(assistantMsg.content),
+        reply: finalReply,
         toolsUsed: [],
         action: null
       };
@@ -324,8 +353,17 @@ ${dynamicSlideExcerpts}`;
   }
 
   const finalJson = await finalRes.json();
+  let finalReply = cleanOutputText(finalJson.message.content);
+  if (matchedExam) {
+    const officialPrefix = matchedExam.correct_answer === 'ถูก'
+      ? `✅ **เฉลย: ถูก** (ข้อความในโจทย์ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`
+      : `❌ **เฉลย: ผิด** (ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`;
+
+    finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
+    finalReply = officialPrefix + finalReply;
+  }
   return {
-    reply: cleanOutputText(finalJson.message.content),
+    reply: finalReply,
     toolsUsed: toolsUsed,
     action: triggeredAction
   };
