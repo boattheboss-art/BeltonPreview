@@ -849,7 +849,7 @@
     function updateStatusBadge() {
       const statusBadge = chatWindow.querySelector('#copilotStatusBadge') || chatWindow.querySelector('.copilot-status');
       if (statusBadge) {
-        statusBadge.innerHTML = `⚡ Qwen 2.5:3b (Ollama SCADA Agent 🟢)`;
+        statusBadge.innerHTML = `Qwen 2.5:14b (Ollama SCADA Agent)`;
         statusBadge.style.color = '#10b981';
       }
     }

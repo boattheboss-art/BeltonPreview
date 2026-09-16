@@ -352,7 +352,7 @@
           <span class="thought-section-label">ระบบประมวลผล Local AI</span>
           <div class="thought-tags-list">
             <span class="thought-gpu-tag">
-              NVIDIA GeForce RTX 3050 (Local GPU) · Qwen 2.5:3b
+              ${data.thoughtMetadata && data.thoughtMetadata.model ? data.thoughtMetadata.model : 'NVIDIA GeForce RTX 3050 (Local GPU) · Qwen 2.5:14b'}
             </span>
           </div>
         `;

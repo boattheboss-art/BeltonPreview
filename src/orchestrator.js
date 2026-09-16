@@ -4,7 +4,7 @@ const { searchSlideKnowledge, searchExamQuestion } = require('./knowledge/slide_
 require('dotenv').config();
 
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
-const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:3b';
+const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:14b';
 
 async function fetchWithRetry(url, options, maxRetries = 2, delayMs = 600) {
   let lastError;
@@ -286,7 +286,8 @@ ${dynamicSlideExcerpts}`;
       messages: messages,
       tools: toolsToProvide,
       options: {
-        num_ctx: 8192,
+        num_ctx: MODEL_NAME.includes('14b') ? 3072 : 8192,
+        num_predict: 128,
         temperature: isCasualMessage ? 0.35 : 0.08,
         top_p: 0.9,
         repeat_penalty: 1.15,
@@ -410,7 +411,7 @@ ${dynamicSlideExcerpts}`;
       action,
       thoughtMetadata: {
         durationMs,
-        model: 'Qwen 2.5:3b (Local NVIDIA RTX 3050 GPU)',
+        model: `${MODEL_NAME.includes('14b') ? 'Qwen 2.5:14b' : MODEL_NAME} (Local NVIDIA RTX 3050 GPU)`,
         sources,
         examMatch: matchedExam ? {
           docCode: matchedExam.doc_code,
@@ -460,7 +461,8 @@ ${dynamicSlideExcerpts}`;
       model: MODEL_NAME,
       messages: messages,
       options: {
-        num_ctx: 8192,
+        num_ctx: MODEL_NAME.includes('14b') ? 3072 : 8192,
+        num_predict: 400,
         temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,

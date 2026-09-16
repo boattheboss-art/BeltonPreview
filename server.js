@@ -54,7 +54,7 @@ app.post('/api/copilot/chat', async (req, res) => {
         console.error('❌ /api/copilot/chat Error:', err.message);
         if (err.message.includes('ECONNREFUSED') || err.message.includes('fetch failed')) {
             return res.json({
-                reply: '⚠️ ระบบวิศวกร AI Copilot ยังไม่สามารถเชื่อมต่อกับ Ollama Local Service ได้ในขณะนี้\n\n**คำแนะนำสำหรับผู้ดูแลระบบ / IT:**\n1. ตรวจสอบว่าได้เปิดใช้งาน Ollama แล้วหรือยัง โดยเปิด Terminal แล้วสั่ง: `ollama serve`\n2. ตรวจสอบว่าได้ดาวน์โหลดโมเดลแล้วหรือไม่: `ollama pull qwen2.5:3b`\n3. หากต้องการตรวจสอบขั้นตอนขึ้นระบบอย่างละเอียด สามารถเปิดดูได้ที่ไฟล์ `DEPLOYMENT_GUIDE.md` ครับ',
+                reply: '⚠️ ระบบวิศวกร AI Copilot ยังไม่สามารถเชื่อมต่อกับ Ollama Local Service ได้ในขณะนี้\n\n**คำแนะนำสำหรับผู้ดูแลระบบ / IT:**\n1. ตรวจสอบว่าได้เปิดใช้งาน Ollama แล้วหรือยัง โดยเปิด Terminal แล้วสั่ง: `ollama serve`\n2. ตรวจสอบว่าได้ดาวน์โหลดโมเดลแล้วหรือไม่: `ollama pull qwen2.5:14b`\n3. หากต้องการตรวจสอบขั้นตอนขึ้นระบบอย่างละเอียด สามารถเปิดดูได้ที่ไฟล์ `DEPLOYMENT_GUIDE.md` ครับ',
                 toolsUsed: [],
                 action: null
             });

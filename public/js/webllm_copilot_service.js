@@ -1,5 +1,5 @@
 // =========================================================================
-// BELTON CLEANROOM AGENTIC COPILOT SERVICE (Ollama Qwen 2.5:3b + SCADA DB)
+// BELTON CLEANROOM AGENTIC COPILOT SERVICE (Ollama Qwen 2.5:14b + SCADA DB)
 // 100% Standalone GPU-Accelerated Orchestrator with Function Calling
 // =========================================================================
 (function (window) {
@@ -8,7 +8,7 @@
   let isReady = true;
   let isInitializing = false;
   let initError = null;
-  const selectedModel = 'Qwen 2.5:3b (Ollama SCADA Agent)';
+  const selectedModel = 'Qwen 2.5:14b (Ollama SCADA Agent)';
 
   async function checkWebGPUSupport() {
     return true;
