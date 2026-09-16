@@ -6,6 +6,23 @@ require('dotenv').config();
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:3b';
 
+async function fetchWithRetry(url, options, maxRetries = 2, delayMs = 600) {
+  let lastError;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      return res;
+    } catch (err) {
+      lastError = err;
+      console.warn(`⚠️ [Orchestrator Fetch] Attempt ${attempt}/${maxRetries} failed: ${err.message}. ${attempt < maxRetries ? `Retrying in ${delayMs}ms...` : ''}`);
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+    }
+  }
+  throw lastError;
+}
+
 const CHINESE_TO_THAI_MAP = [
   [/\b指的是\b|指的是/g, 'หมายถึง '],
   [/是指/g, 'คือ '],
@@ -144,12 +161,21 @@ function extractContextKeywords(history) {
 }
 
 function isFollowUpQuery(userMsg) {
-  const m = userMsg.trim().toLowerCase();
+  if (!userMsg) return false;
+  // Normalize double-e (เ + เ -> แ)
+  const m = userMsg.trim().replace(/\u0e40\u0e40/g, 'แ').toLowerCase();
+
+  // If user explicitly mentions cleanroom, dress code, or specific engineering topics, it is a new search, NOT a multi-turn carry-over!
+  const hasSpecificDomainTopic = /(ชุด|คลีนรูม|cleanroom|สวม|ใส่|ถอด|gowning|degowning|booties|hairnet|jumpsuit|mask|spe-|tm-|coil|ขดลวด|คอยล์|wire|ลวด|tray|ถาด|damper|burr|scratch|dent|solder|บัดกรี|epoxy|fcof|aca|apfa|esd|epa|เครื่อง|ตู้|วาร์ป|กล้อง)/i.test(m);
+  if (hasSpecificDomainTopic) {
+    if (/^(แล้วสเปกล่ะ|แล้วเกณฑ์ล่ะ|แล้วยังไง|แล้วไง|มีอะไรอีก|ขยายความหน่อย|ขอรายละเอียดเพิ่ม)$/i.test(m)) {
+      return true;
+    }
+    return false;
+  }
+
   if (m.length <= 25) return true;
   if (/^(มีอะไรบ้าง|มีอะไรบ้างละ|มีอะไรอีก|แล้วยังไง|แล้วไง|เท่าไหร่|ทำไม|ขยายความ|ขอรายละเอียด|ยังไงต่อ|แล้วต้องทำไง|แล้วสเปก|แล้วเกณฑ์|กี่|ทำไมล่ะ)/i.test(m)) {
-    return true;
-  }
-  if (!/\b(SPE|TM)-[0-9]{2}/i.test(m) && !/(broken wire|wire|tray|damper|burr|scratch|coil|cleanroom|esd|aca|fcof|เครื่อง)/i.test(m)) {
     return true;
   }
   return false;
@@ -190,7 +216,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
       if (retrievedSlides && retrievedSlides.length > 0) {
         dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
           retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
-          `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}]`;
+          `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด`;
       }
     } catch (searchErr) {
       console.warn('⚠️ [Orchestrator] Slide knowledge retrieval error:', searchErr.message);
@@ -224,6 +250,11 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
    - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "❌ เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้งและอธิบายเกณฑ์จริง
    - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "✅ เฉลย: ถูก" พร้อมสรุปเหตุผลยืนยัน
 6. แยกแยะขอบเขต: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเกณฑ์มาตรฐาน ไม่ดึงเรื่องสถานะเครื่องจักรมาปน และหากถามเรื่องเครื่องจักร ให้ตอบสถานะหรือเรียก Tool ที่เกี่ยวข้อง
+7. การตอบคำถามเรื่องลำดับขั้นตอนและคู่มือฝึกอบรม (Step-by-Step Training Procedures):
+   - หากผู้ใช้ถามเรื่องขั้นตอนการสวมชุดคลีนรูม (Gowning) หรือการถอดชุดคลีนรูม (Degowning) ว่ามีกี่ขั้นตอน หรือต้องใส่อันไหนก่อน-หลัง:
+   - คุณต้องทำหน้าที่เป็น AI ผู้ฝึกสอนพนักงาน (Training AI) โดยแจกแจงขั้นตอนเรียงตามลำดับหมายเลข 1 ถึง 10 ให้ครบถ้วนชัดเจนตามข้อมูลสไลด์ [TM-00-00-05_3]
+   - ห้ามตอบตัดบทหรือสรุปรวบรัดว่า "มีขั้นตอนอื่นๆ เช่น..." โดยเด็ดขาด พนักงานต้องทราบลำดับ 1 ถึง 10 ที่ถูกต้องครบทุกข้อ
+   - ระบุอุปกรณ์ที่ต้องสวมหรือถอดก่อน-หลังให้ชัดเจน พร้อมข้อควรระวังสำคัญ (เช่น ระวังไม่ให้ชุดสัมผัสพื้น, สวม Plant shoes เป็นลำดับแรก, สวม Hair net ก่อน Jumpsuit)
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
@@ -238,7 +269,7 @@ ${dynamicSlideExcerpts}`;
 
   console.log(`🤖 [Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
 
-  const firstRes = await fetch(`${OLLAMA_URL}/api/chat`, {
+  const firstRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -375,7 +406,7 @@ ${dynamicSlideExcerpts}`;
 
   console.log(`🔄 [Orchestrator] ${toolsUsed.length} tool(s) executed. Synthesizing final answer with Qwen 2.5...`);
 
-  const finalRes = await fetch(`${OLLAMA_URL}/api/chat`, {
+  const finalRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

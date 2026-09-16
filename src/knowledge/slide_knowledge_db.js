@@ -47,8 +47,10 @@ const DOMAIN_KEYWORDS = [
   'stiffener', 'bent', 'บิดงอ', 'scratch', 'รอยขีดข่วน', 'dent', 'รอยบุบ', 'burr', 'เสี้ยน', 'particle', 'ฝุ่น', 'สิ่งแปลกปลอม',
   'oxidation', 'สนิม', 'rust', 'grease', 'คราบน้ำมัน', 'oil', 'accept', 'reject', 'ยอมรับ', 'ปฏิเสธ', 'เกณฑ์สเปค', 'defect', 'ของเสีย',
   // Gowning & Cleanroom Entry / Exit
-  'แต่งตัว', 'ถอดชุด', 'ชุดคลีนรูม', 'หมวก', 'hairnet', 'หน้ากาก', 'mask', 'face mask',
-  'จั๊มสูท', 'jumpsuit', 'smock', 'รองเท้า', 'booties', 'ถุงมือ', 'gloves',
+  'แต่งตัว', 'ใส่ชุด', 'สวมชุด', 'ถอดชุด', 'ชุดคลีนรูม', 'หมวก', 'hairnet', 'หน้ากาก', 'mask', 'face mask',
+  'จั๊มสูท', 'jumpsuit', 'smock', 'รองเท้า', 'booties', 'plant shoes', 'ถุงมือ', 'gloves',
+  'ใส่อันไหนก่อน', 'ใส่อะไรก่อน', 'ลำดับการสวม', 'ลำดับการใส่', 'ถอดอันไหนก่อน', 'ลำดับการถอด',
+  'ขั้นตอนการสวม', 'ขั้นตอนการถอด', 'gowning sequence', 'degowning sequence', 'กี่ขั้นตอน',
   'แอร์ชาวเวอร์', 'air shower', 'ผ้าดำ', 'คราบขาว', 'ล้างหน้า', 'เช็ดหน้า', 'พับ wiper', 'ipa',
   // Contamination
   'ซิลิโคน', 'silicone', 'polysiloxane', 'nvs', 'talc', 'ทัลค์', 'แป้ง', 'sio2', 'ควอตซ์',
@@ -71,8 +73,10 @@ const HIGH_PRIORITY_TERMS = [
   'raw material', 'hookup', 'stiffener', 'accept', 'reject', 'defect', 'รอยบุบ', 'ลวดหัก', 'ลวดเปลือย',
   'fcof', 'aca', 'apfa', 'coil', 'silicone', 'ซิลิโคน', 'nvs', 'talc', 'ทัลค์', 'แป้ง',
   'wrist strap', 'ionizer', 'hbm', 'cdm', 'mm', 'major', 'minor', 'critical', '80%',
-  'gowning', 'air shower', 'penalty', 'เกณฑ์', 'สอบ', 'คะแนน', 'บทลงโทษ', 'ผ้าดำ',
-  'ชุดคลีนรูม', 'แต่งตัว', 'ถอดชุด', 'face mask', 'hairnet', 'booties', 'epa gate'
+  'gowning', 'degowning', 'air shower', 'penalty', 'เกณฑ์', 'สอบ', 'คะแนน', 'บทลงโทษ', 'ผ้าดำ',
+  'ชุดคลีนรูม', 'แต่งตัว', 'ใส่ชุด', 'สวมชุด', 'ถอดชุด', 'face mask', 'hairnet', 'booties', 'epa gate',
+  'ใส่อันไหนก่อน', 'ใส่อะไรก่อน', 'ลำดับการสวม', 'ลำดับการใส่', 'ถอดอันไหนก่อน', 'ลำดับการถอด',
+  'ขั้นตอนการสวม', 'ขั้นตอนการถอด', 'gowning sequence', 'degowning sequence'
 ];
 
 /**
@@ -155,6 +159,43 @@ function searchSlideKnowledge(query, limit = 3) {
           score += 350;
         }
         if (sContent.includes(dt)) score += 80;
+      }
+    }
+
+    // Cleanroom Gowning & Degowning sequence bonus
+    const isGowningOrderQuery = /(สวมชุด|ใส่ชุด|ใส่อันไหนก่อน|ใส่อะไรก่อน|ลำดับการสวม|ลำดับการใส่|ขั้นตอนการสวม|gowning sequence|แต่งตัว)/i.test(lowerQ);
+    const isDegowningOrderQuery = /(ถอดชุด|ถอดอันไหนก่อน|ถอดอะไรก่อน|ลำดับการถอด|ขั้นตอนการถอด|degowning)/i.test(lowerQ);
+
+    if (isGowningOrderQuery) {
+      if (sDocCode === 'tm-00-00-05_3') {
+        if (s.page_number === 1) {
+          score += 650; // Master 10-step sequence summary slide
+        } else if (s.page_number >= 2 && s.page_number <= 11) {
+          score += 420; // Individual gowning step slides
+        }
+      }
+      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 33) {
+        score += 480; // Overview 5-stage sequence slide
+      }
+      // Deprioritize sticky roller slide 37 if user is asking about wearing suit
+      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 37 && !/(ลูกกลิ้ง|roller|sticky)/i.test(lowerQ)) {
+        score -= 600;
+      }
+    }
+
+    if (isDegowningOrderQuery) {
+      if (sDocCode === 'tm-00-00-05_3') {
+        if (s.page_number === 12) {
+          score += 650; // Master 10-step degowning summary slide
+        } else if (s.page_number >= 13 && s.page_number <= 22) {
+          score += 420; // Individual degowning step slides
+        }
+      }
+      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 33) {
+        score += 480;
+      }
+      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 37 && !/(ลูกกลิ้ง|roller|sticky)/i.test(lowerQ)) {
+        score -= 600;
       }
     }
 

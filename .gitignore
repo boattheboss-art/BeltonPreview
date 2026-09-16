@@ -29,3 +29,4 @@ ai/__pycache__/
 # IDE / Editor configurations
 .vscode/
 .idea/
+scratch/

@@ -274,6 +274,19 @@ def main():
             cleaned = clean_text(raw_text)
             cleaned = enrich_rejection_criteria(cleaned)
             title = extract_title(cleaned, doc["doc_name"], page_num)
+
+            # Preserve enriched graphical slide content for TM-00-00-05_3 (cleanroom suit instructions)
+            if doc["doc_code"] == "TM-00-00-05_3" and os.path.exists(OUTPUT_JSON):
+                try:
+                    with open(OUTPUT_JSON, "r", encoding="utf-8") as jf:
+                        existing_db = json.load(jf)
+                        match_enriched = next((x for x in existing_db if x.get("doc_code") == "TM-00-00-05_3" and x.get("page_number") == page_num), None)
+                        if match_enriched and len(match_enriched.get("content", "")) > len(cleaned):
+                            cleaned = match_enriched["content"]
+                            title = match_enriched.get("title", title)
+                except Exception:
+                    pass
+
             char_count = len(cleaned)
 
             page_data = {
