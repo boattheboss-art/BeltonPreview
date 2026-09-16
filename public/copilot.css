@@ -347,6 +347,8 @@ body.gemini-theme {
   color: #e4e4e7;
   letter-spacing: 0.3px;
   font-size: 13.5px;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  display: inline-block;
 }
 
 .thinking-dots {
@@ -386,6 +388,171 @@ body.gemini-theme {
 @keyframes thinkingFadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Thought Process / Source Accordion (ChatGPT / DeepSeek Style) */
+.thought-box {
+  margin-bottom: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 13px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px);
+  max-width: 95%;
+}
+
+.thought-box:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.thought-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.thought-toggle:hover {
+  color: #f4f4f5;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.thought-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.thought-icon {
+  font-size: 13.5px;
+}
+
+.thought-title {
+  font-weight: 600;
+  color: #e4e4e7;
+  letter-spacing: 0.2px;
+}
+
+.thought-time {
+  color: #a78bfa;
+  font-weight: 600;
+  font-size: 11px;
+  background: rgba(167, 139, 250, 0.12);
+  padding: 1px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.thought-chevron {
+  font-size: 10px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #a1a1aa;
+}
+
+.thought-box.is-open .thought-chevron {
+  transform: rotate(180deg);
+}
+
+.thought-dropdown {
+  padding: 12px 14px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: thoughtExpand 0.2s ease-out;
+}
+
+@keyframes thoughtExpand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.thought-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.thought-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.thought-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.thought-source-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  color: #c7d2fe;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.thought-exam-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.thought-tool-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.thought-gpu-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #86efac;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
 }
 
 .bot-content {

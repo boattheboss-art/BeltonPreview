@@ -112,6 +112,158 @@
     }, 20);
   }
 
+  // Define Dynamic Thinking Stages based on user query intent
+  function getThinkingStages(query) {
+    const q = query.toLowerCase();
+
+    // Cleanroom / Gowning / Training procedures
+    if (/ชุด|คลีนรูม|สวม|ถอด|hairnet|jumpsuit|booties|glove|mask|หน้ากาก|หมวก|รองเท้าบูท|แต่งตัว/i.test(q)) {
+      return [
+        'กำลังอ่านคำถามและวิเคราะห์หัวข้อคลีนรูม...',
+        'กำลังสืบค้นสไลด์ TM-00-00-05 เรื่อง Cleanroom Discipline...',
+        'กำลังตรวจสอบลำดับ 5 อุปกรณ์ตามมาตรฐานสากล Belton...',
+        'กำลังประมวลผลคำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+      ];
+    }
+
+    // Machine / Telemetry / SCADA
+    if (/เครื่อง|เบอร์|ตู้|#\s*\d+|telemetry|dispenser|aca-disp|yield|พัง|เสีย|เตือน|warning|hold|ความดัน|อุณหภูมิ/i.test(q)) {
+      return [
+        'กำลังอ่านคำสั่งและระบุหมายเลขเครื่องจักร...',
+        'กำลังเชื่อมต่อฐานข้อมูล SCADA ตรวจสอบ Telemetry เครื่องจักร...',
+        'กำลังวิเคราะห์สถานะ Yield, Cycle Time และแรงดันพารามิเตอร์...',
+        'กำลังสังเคราะห์คำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+      ];
+    }
+
+    // Exam verification / Spec standard / Acceptance Criteria
+    if (/ข้อสอบ|เกณฑ์|สเปก|สเปค|seagate|spe-|reject|accept|ยอมรับ|ของเสีย|defect|damper|broken wire|tinning|หัก/i.test(q)) {
+      return [
+        'กำลังวิเคราะห์ประเด็นคำถามและข้อกำหนดทางวิศวกรรม...',
+        'กำลังตรวจสอบเปรียบเทียบกับคลังข้อสอบทางการ Master Exam...',
+        'กำลังสืบค้นคู่มือมาตรฐาน Seagate และสไลด์อบรม (669 หน้า)...',
+        'กำลังประมวลผลการตัดสินด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+      ];
+    }
+
+    // Camera / 3D Teleport
+    if (/วาร์ป|กล้อง|ซูม|ไปดู|ส่อง/i.test(q)) {
+      return [
+        'กำลังคำนวณพิกัดมุมมอง 3D ภายในโรงงานคลีนรูม...',
+        'กำลังส่งคำสั่งควบคุมมุมมองกล้อง Real-time...',
+        'กำลังประมวลผลมุมมองด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+      ];
+    }
+
+    // Default / General
+    return [
+      'กำลังอ่านและทำความเข้าใจคำถาม...',
+      'กำลังสืบค้นฐานข้อมูลสไลด์อบรมและเอกสารโรงงาน Belton...',
+      'กำลังตรวจสอบความถูกต้องตามมาตรฐานงานผลิต...',
+      'กำลังประมวลผลคำตอบด้วย Qwen 2.5 บนการ์ดจอ RTX 3050...'
+    ];
+  }
+
+  // Create Collapsible Thought Process & Source Citation Card (ChatGPT / DeepSeek style)
+  function createThoughtBox(metadata) {
+    if (!metadata) return null;
+    const box = document.createElement('div');
+    box.className = 'thought-box';
+
+    const durationSec = metadata.durationMs ? (metadata.durationMs / 1000).toFixed(1) : '1.0';
+    const hasSources = metadata.sources && metadata.sources.length > 0;
+    const hasExam = metadata.examMatch;
+    const hasTools = metadata.tools && metadata.tools.length > 0;
+
+    // Header / Toggle button
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'thought-toggle';
+    toggleBtn.innerHTML = `
+      <span class="thought-toggle-left">
+        <span class="thought-icon">💭</span>
+        <span class="thought-title">กระบวนการคิดและแหล่งข้อมูล</span>
+        <span class="thought-time">${durationSec} วินาที</span>
+      </span>
+      <span class="thought-chevron">▼</span>
+    `;
+
+    // Dropdown content
+    const dropdown = document.createElement('div');
+    dropdown.className = 'thought-dropdown';
+    dropdown.style.display = 'none';
+
+    let dropdownHTML = '';
+
+    // 1. Sources retrieved
+    if (hasSources) {
+      dropdownHTML += `
+        <div class="thought-section">
+          <span class="thought-section-label">📚 แหล่งข้อมูลสไลด์ที่สืบค้นพบ (${metadata.sources.length} หน้า)</span>
+          <div class="thought-tags-list">
+            ${metadata.sources.map(s => `
+              <span class="thought-source-tag" title="${s.docName || ''}">
+                📄 <b>[${s.docCode}]</b> หน้า ${s.pageNumber}: ${s.title ? s.title.replace(/</g, '&lt;').slice(0, 45) : 'ข้อกำหนด'}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. Exam Ground Truth Match
+    if (hasExam) {
+      const isCorrect = hasExam.correctAnswer === 'ถูก';
+      dropdownHTML += `
+        <div class="thought-section">
+          <span class="thought-section-label">📑 การตรวจสอบกับคลังข้อสอบทางการ Master Exam</span>
+          <div class="thought-tags-list">
+            <span class="thought-exam-tag">
+              ${isCorrect ? '✅' : '❌'} <b>[${hasExam.docCode}]</b> ข้อที่ ${hasExam.questionNumber} (${hasExam.product || 'Standard'}) ➔ เฉลยสเปก: <b>${hasExam.correctAnswer}</b>
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. Tools executed
+    if (hasTools) {
+      dropdownHTML += `
+        <div class="thought-section">
+          <span class="thought-section-label">⚙️ เครื่องมือที่ระบบเรียกใช้งาน</span>
+          <div class="thought-tags-list">
+            ${metadata.tools.map(t => `<span class="thought-tool-tag">⚡ ${t}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. Hardware / Model
+    dropdownHTML += `
+      <div class="thought-section">
+        <span class="thought-section-label">⚡ โมเดลและชิปประมวลผล</span>
+        <div class="thought-tags-list">
+          <span class="thought-gpu-tag">
+            🟢 NVIDIA GeForce RTX 3050 (Local GPU) • Qwen 2.5:3b
+          </span>
+        </div>
+      </div>
+    `;
+
+    dropdown.innerHTML = dropdownHTML;
+
+    // Toggle event
+    toggleBtn.addEventListener('click', () => {
+      const isOpen = box.classList.toggle('is-open');
+      dropdown.style.display = isOpen ? 'flex' : 'none';
+      scrollToBottom();
+    });
+
+    box.appendChild(toggleBtn);
+    box.appendChild(dropdown);
+    return box;
+  }
+
   // Send message to Backend
   async function sendMessage(text) {
     if (!text || !text.trim() || isThinking) return;
@@ -124,6 +276,27 @@
 
     // 2. Prepare bot bubble
     const { rowEl, thinkingPill, textEl, cursorEl, contentEl } = createBotMessageContainer();
+
+    // Setup Dynamic Live Thinking Status Ticker
+    const stages = getThinkingStages(cleanText);
+    let stageIdx = 0;
+    const labelEl = thinkingPill ? thinkingPill.querySelector('.thinking-label') : null;
+    if (labelEl && stages.length > 0) {
+      labelEl.textContent = stages[0];
+    }
+
+    const tickerInterval = setInterval(() => {
+      stageIdx++;
+      if (labelEl && stageIdx < stages.length) {
+        labelEl.style.opacity = '0';
+        labelEl.style.transform = 'translateY(2px)';
+        setTimeout(() => {
+          labelEl.textContent = stages[stageIdx];
+          labelEl.style.opacity = '1';
+          labelEl.style.transform = 'translateY(0)';
+        }, 150);
+      }
+    }, 1100);
 
     try {
       const response = await fetch('/api/copilot/chat', {
@@ -142,6 +315,9 @@
       const data = await response.json();
       let reply = data.reply || '';
 
+      // Clear dynamic thinking ticker
+      clearInterval(tickerInterval);
+
       // If action was triggered, append action badge if not in text
       if (data.action && data.action.type === 'teleport' && data.action.targetNum) {
         if (!reply.includes('[ACTION:TELEPORT:')) {
@@ -149,11 +325,20 @@
         }
       }
 
-      // Remove thinking indicator and reveal text stream
+      // Remove thinking indicator
       if (thinkingPill && thinkingPill.parentNode) {
         thinkingPill.parentNode.removeChild(thinkingPill);
       }
       if (rowEl) rowEl.classList.remove('is-thinking');
+
+      // Insert Collapsible Thought Box above text if metadata is present
+      if (data.thoughtMetadata && contentEl) {
+        const thoughtBox = createThoughtBox(data.thoughtMetadata);
+        if (thoughtBox) {
+          contentEl.insertBefore(thoughtBox, textEl);
+        }
+      }
+
       textEl.style.display = 'inline';
       cursorEl.style.display = 'inline-block';
 
@@ -178,6 +363,7 @@
       }, 25);
 
     } catch (err) {
+      clearInterval(tickerInterval);
       console.error('Copilot Error:', err);
       if (thinkingPill && thinkingPill.parentNode) {
         thinkingPill.parentNode.removeChild(thinkingPill);

@@ -182,7 +182,11 @@ function isFollowUpQuery(userMsg) {
 }
 
 async function runOrchestrator(userMessage, conversationHistory = []) {
+  const startTime = Date.now();
   const isCasualMessage = isGreetingOrChitchat(userMessage) || isThankYou(userMessage);
+  let retrievedSlidesList = [];
+  const toolsUsed = [];
+  let triggeredAction = null;
 
   // 1. Check if query is an exam statement / verification question from Master Exam database
   let examGroundTruthSnippet = '';
@@ -214,6 +218,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
     try {
       const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
       if (retrievedSlides && retrievedSlides.length > 0) {
+        retrievedSlidesList = retrievedSlides;
         dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
           retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
           `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด`;
@@ -357,11 +362,7 @@ ${dynamicSlideExcerpts}`;
           function: { name: fallbackTool, arguments: fallbackArgs }
         }];
       } else {
-        return {
-          reply: 'ขออภัยครับ กรุณาระบุรายละเอียดเพิ่มเติม เช่น ถามข้อมูลเครื่องจักร (เช่น ขอข้อมูลเครื่อง 20), ตรวจสอบเครื่องที่มีปัญหา หรือสั่งให้วาร์ปกล้องได้เลยครับ',
-          toolsUsed: [],
-          action: null
-        };
+        return buildResult('ขออภัยครับ กรุณาระบุรายละเอียดเพิ่มเติม เช่น ถามข้อมูลเครื่องจักร (เช่น ขอข้อมูลเครื่อง 20), ตรวจสอบเครื่องที่มีปัญหา หรือสั่งให้วาร์ปกล้องได้เลยครับ');
       }
     } else {
       let finalReply = cleanOutputText(assistantMsg.content);
@@ -373,17 +374,56 @@ ${dynamicSlideExcerpts}`;
         finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
         finalReply = officialPrefix + finalReply;
       }
-      return {
-        reply: finalReply,
-        toolsUsed: [],
-        action: null
-      };
+      return buildResult(finalReply);
     }
   }
 
+  function buildResult(reply, action = null) {
+    const durationMs = Date.now() - startTime;
+    const sources = (retrievedSlidesList || []).map(s => ({
+      docCode: s.doc_code,
+      docName: s.doc_name,
+      pageNumber: s.page_number,
+      title: s.title
+    }));
+
+    const toolsFormatted = toolsUsed.map(t => {
+      switch (t.name) {
+        case 'get_machine_telemetry':
+          return `ดึงค่า Telemetry เครื่องจักร ACA-DISP-${t.args && t.args.machine_num ? (t.args.machine_num < 10 ? '0' + t.args.machine_num : t.args.machine_num) : ''} จาก SCADA`;
+        case 'get_problematic_machines':
+          return 'สืบค้นเครื่องจักรที่แจ้งเตือน / มีปัญหาจาก SCADA';
+        case 'get_factory_overall_summary':
+          return 'ประมวลผลยอดผลิตและ Yield รวมของโรงงานจาก SCADA';
+        case 'teleport_3d_camera':
+          return `ควบคุมมุมมองกล้อง 3D Cleanroom ซูมไปที่เครื่อง #${t.args && t.args.machine_num ? t.args.machine_num : ''}`;
+        case 'search_training_slides':
+          return 'สืบค้นฐานข้อมูลสไลด์และเกณฑ์มาตรฐาน (FTS5 Search)';
+        default:
+          return t.name;
+      }
+    });
+
+    return {
+      reply,
+      toolsUsed,
+      action,
+      thoughtMetadata: {
+        durationMs,
+        model: 'Qwen 2.5:3b (Local NVIDIA RTX 3050 GPU)',
+        sources,
+        examMatch: matchedExam ? {
+          docCode: matchedExam.doc_code,
+          questionNumber: matchedExam.question_number,
+          product: matchedExam.product,
+          correctAnswer: matchedExam.correct_answer
+        } : null,
+        tools: toolsFormatted
+      }
+    };
+  }
+
   messages.push(assistantMsg);
-  const toolsUsed = [];
-  let triggeredAction = null;
 
   for (const call of assistantMsg.tool_calls) {
     const fnName = call.function.name;
@@ -391,15 +431,18 @@ ${dynamicSlideExcerpts}`;
     toolsUsed.push({ name: fnName, args: fnArgs });
 
     const toolResult = await executeTool(fnName, fnArgs);
+    if (fnName === 'search_training_slides' && toolResult && toolResult.slides) {
+      for (const s of toolResult.slides) {
+        if (!retrievedSlidesList.some(existing => existing.doc_code === s.doc_code && existing.page_number === s.page_number)) {
+          retrievedSlidesList.push(s);
+        }
+      }
+    }
 
     if (fnName === 'teleport_3d_camera' && toolResult.action === 'teleport') {
       triggeredAction = toolResult;
       const targetStr = toolResult.targetNum < 10 ? '0' + toolResult.targetNum : toolResult.targetNum;
-      return {
-        reply: `กำลังนำมุมมองกล้อง 3D ซูมไปยังเครื่อง **ACA-DISP-${targetStr}** แบบ Real-time เรียบร้อยครับ! 🎥✨`,
-        toolsUsed: toolsUsed,
-        action: triggeredAction
-      };
+      return buildResult(`กำลังนำมุมมองกล้อง 3D ซูมไปยังเครื่อง **ACA-DISP-${targetStr}** แบบ Real-time เรียบร้อยครับ! 🎥✨`, triggeredAction);
     }
 
     messages.push({
@@ -442,11 +485,7 @@ ${dynamicSlideExcerpts}`;
     finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
     finalReply = officialPrefix + finalReply;
   }
-  return {
-    reply: finalReply,
-    toolsUsed: toolsUsed,
-    action: triggeredAction
-  };
+  return buildResult(finalReply, triggeredAction);
 }
 
 module.exports = { runOrchestrator };
