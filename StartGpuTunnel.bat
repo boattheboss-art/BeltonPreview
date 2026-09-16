@@ -1,56 +1,64 @@
 @echo off
-chcp 65001 > nul
-cls
-title Belton AI Copilot - Secure GPU Cloud Tunnel
+setlocal
+chcp 65001 >nul
+
+title Belton AI Copilot - Secure GPU Tunnel (NVIDIA RTX)
 
 echo ====================================================================
-echo   🚀 BELTON AI COPILOT - SECURE GPU CLOUD TUNNEL (NVIDIA RTX)
+echo   BELTON AI COPILOT - SECURE GPU TUNNEL (NVIDIA RTX 3050)
 echo ====================================================================
 echo.
-echo [1/3] ตรวจสอบสถานะ Ollama Local AI Engine...
-curl -s http://127.0.0.1:11434/ > nul 2>&1
-if %errorlevel% neq 0 (
-    echo [คำเตือน] ยังไม่ได้เปิด Ollama AI บนเครื่องนี้!
-    echo กำลังพยายามเปิด Ollama ให้อัตโนมัติ...
+
+:: 1. Check Ollama
+echo [1/2] Checking Ollama Local AI Engine...
+curl.exe -s http://127.0.0.1:11434/ >nul 2>&1
+if errorlevel 1 (
+    echo [WARNING] Ollama is not running. Starting Ollama...
     start "" ollama serve
-    timeout /t 3 > nul
+    timeout /t 3 /nobreak >nul
 ) else (
-    echo [สำเร็จ] Ollama AI Engine พร้อมใช้งานบนการ์ดจอ RTX!
+    echo [OK] Ollama is running and ready on your local GPU!
 )
 
-echo.
-echo [2/3] ตรวจสอบโปรแกรมสร้างอุโมงค์ความปลอดภัย Cloudflare Tunnel...
-
-set CLOUDFLARED_BIN=cloudflared
-where cloudflared >nul 2>&1
-if %errorlevel% neq 0 (
-    if exist "C:\Program Files (x86)\cloudflared\cloudflared.exe" (
-        set "CLOUDFLARED_BIN=C:\Program Files (x86)\cloudflared\cloudflared.exe"
-    ) else if exist "C:\Program Files\cloudflared\cloudflared.exe" (
-        set "CLOUDFLARED_BIN=C:\Program Files\cloudflared\cloudflared.exe"
-    ) else (
-        echo [ผิดพลาด] ไม่พบ cloudflared.exe กรุณาติดตั้งผ่าน: winget install Cloudflare.cloudflared
-        pause
-        exit /b 1
+:: 2. Locate cloudflared binary
+set "BIN="
+if exist "C:\Program Files (x86)\cloudflared\cloudflared.exe" (
+    set "BIN=C:\Program Files (x86)\cloudflared\cloudflared.exe"
+)
+if not defined BIN (
+    if exist "C:\Program Files\cloudflared\cloudflared.exe" (
+        set "BIN=C:\Program Files\cloudflared\cloudflared.exe"
+    )
+)
+if not defined BIN (
+    where cloudflared >nul 2>&1
+    if not errorlevel 1 (
+        set "BIN=cloudflared"
     )
 )
 
+if not defined BIN (
+    echo [ERROR] cloudflared.exe not found!
+    echo Please install it via: winget install Cloudflare.cloudflared
+    pause
+    exit /b 1
+)
+
+echo [OK] Cloudflare Tunnel binary located.
 echo.
 echo ====================================================================
-echo   🌐 กำลังเชื่อมต่ออุโมงค์ HTTPS ไปยัง Render.com...
+echo   STARTING SECURE HTTPS TUNNEL TO RENDER.COM...
 echo.
-echo   📌 สิ่งที่คุณต้องทำ:
-echo   1. สังเกตบรรทัดที่แสดง URL https://xxxxxx.trycloudflare.com ด้านล่าง
-echo   2. คัดลอก URL นั้นไปวางใน Render Dashboard -> Environment:
-echo      ตั้งชื่อ: OLLAMA_BASE_URL
-echo      ค่าที่ใส่: https://xxxxxx.trycloudflare.com
+echo   Instructions:
+echo   1. Look for the line below that shows:
+echo      https://......trycloudflare.com
+echo   2. Copy that URL and paste into Render Dashboard:
+echo      Key:   OLLAMA_BASE_URL
+echo      Value: https://......trycloudflare.com
 echo.
-echo   🔒 อุโมงค์นี้เข้ารหัส SSL 100% ข้อมูลโรงงานไม่รั่วไหล
-echo   ⚡ ประมวลผล AI ด้วยการ์ดจอ NVIDIA ของเครื่องนี้โดยตรง!
+echo   3. Keep this window OPEN while you want Render to use your GPU.
 echo ====================================================================
 echo.
 
-"%CLOUDFLARED_BIN%" tunnel --url http://127.0.0.1:11434 --http-host-header localhost:11434
+"%BIN%" tunnel --url http://127.0.0.1:11434 --http-host-header localhost:11434
 pause
-
-
