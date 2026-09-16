@@ -50,5 +50,7 @@ echo   ⚡ ประมวลผล AI ด้วยการ์ดจอ NVIDIA 
 echo ====================================================================
 echo.
 
-"%CLOUDFLARED_BIN%" tunnel --url http://127.0.0.1:11434
+"%CLOUDFLARED_BIN%" tunnel --url http://127.0.0.1:11434 --http-host-header localhost:11434
 pause
+
+
