@@ -7,6 +7,48 @@ require('dotenv').config();
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:3b';
 
+const CHINESE_TO_THAI_MAP = [
+  [/\b指的是\b|指的是/g, 'หมายถึง '],
+  [/是指/g, 'คือ '],
+  [/不符合上述标准/g, 'ไม่เป็นไปตามเกณฑ์มาตรฐานข้างต้น'],
+  [/通常发生在/g, 'มักเกิดขึ้นที่ '],
+  [/大于或等于/g, 'มากกว่าหรือเท่ากับ '],
+  [/小于或等于/g, 'น้อยกว่าหรือเท่ากับ '],
+  [/大于/g, 'มากกว่า '],
+  [/小于/g, 'น้อยกว่า '],
+  [/电线断裂/g, 'การหักของเส้นไฟ'],
+  [/的现象|现象/g, ''],
+  [/的情况/g, ''],
+  [/通常会导致/g, 'มักส่งผลให้ '],
+  [/会导致/g, 'ส่งผลให้ '],
+  [/如果|若/g, 'หาก '],
+  [/断裂后/g, 'หลังจากหักแล้ว '],
+  [/剩余的/g, 'ที่เหลืออยู่ '],
+  [/低于正常值/g, 'ต่ำกว่าเกณฑ์ปกติ'],
+  [/正常长度/g, 'ความยาวปกติ'],
+  [/长度/g, 'ความยาว '],
+  [/仍然/g, 'ยังคง '],
+  [/可能由/g, 'อาจเกิดจาก '],
+  [/设备磨损/g, 'การสึกหรอของอุปกรณ์'],
+  [/压力异常/g, 'แรงดันลมผิดปกติ'],
+  [/产品报废/g, 'เกิดชิ้นงานเสีย (Reject)'],
+  [/需要对/g, 'ต้องดำเนินการกับ '],
+  [/进行维护检查/g, 'ตรวจสอบและซ่อมบำรุง'],
+  [/在正常范围内/g, 'อยู่ในเกณฑ์มาตรฐาน'],
+  [/并确保/g, 'และตรวจสอบยืนยัน '],
+  [/所有参数/g, 'ค่าพารามิเตอร์ทั้งหมด '],
+  [/影响生产效率和质量控制/g, 'กระทบต่อประสิทธิภาพการผลิต'],
+  [/在\s*([a-zA-Z0-9_\s-]+)\s*上/g, 'บริเวณ $1'],
+  [/上的/g, ' บน '],
+  [/上/g, ' บน '],
+  [/的/g, ' ของ '],
+  [/或/g, ' หรือ '],
+  [/和/g, ' และ '],
+  [/是/g, ' คือ '],
+  [/有/g, ' มี '],
+  [/无/g, ' ไม่มี ']
+];
+
 function cleanOutputText(text) {
   if (!text) return '';
   let cleaned = text
@@ -20,10 +62,37 @@ function cleanOutputText(text) {
     .replace(/\[EXECUTIVE COMMUNICATION PROTOCOL.*?$/is, '')
     .replace(/\[FEW-SHOT.*?$/is, '')
     .replace(/\[STRICT.*?$/is, '')
+    .replace(/\[ข้อกำหนด.*?$/is, '')
+    .replace(/\[แนวทาง.*?$/is, '')
+    .replace(/\[คำสั่ง.*?$/is, '')
+    .replace(/\[คำแนะนำ.*?$/is, '')
+    .replace(/\[ข้อมูลสไลด์.*?$/is, '')
     // Strip trailing pleasantries if emitted
-    .replace(/\n+(?:หากคุณมีข้อสงสัย|หากมีข้อสงสัย|สามารถสอบถามเพิ่มเติม|มีอะไรให้ผมช่วยอีกไหม|หวังว่าข้อมูลนี้).*$/is, '')
+    .replace(/\n+(?:หากคุณมีข้อสงสัย|หากมีข้อสงสัย|สามารถสอบถามเพิ่มเติม|มีอะไรให้ผมช่วยอีกไหม|หวังว่าข้อมูลนี้|หากมีข้อมูลเพิ่มเติม|หากมีคำถามเพิ่มเติม|ต้องการข้อมูล).*$/is, '');
+
+  // Intercept & translate any Chinese fragments to Thai
+  for (const [pat, rep] of CHINESE_TO_THAI_MAP) {
+    cleaned = cleaned.replace(pat, rep);
+  }
+
+  // Convert full-width Chinese punctuation and remove any leftover CJK glyphs
+  cleaned = cleaned
+    .replace(/，/g, ', ')
+    .replace(/、/g, ', ')
+    .replace(/。/g, '')
+    .replace(/：/g, ': ')
+    .replace(/；/g, '; ')
+    .replace(/（/g, ' (')
+    .replace(/）/g, ') ')
+    .replace(/【/g, ' [')
+    .replace(/】/g, '] ')
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/[\u2e80-\u2eff\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/g, '')
+    .replace(/[ ]{2,}/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+
   return cleaned;
 }
 
@@ -33,54 +102,32 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
   try {
     const retrievedSlides = searchSlideKnowledge(userMessage, 3);
     if (retrievedSlides && retrievedSlides.length > 0) {
-      dynamicSlideExcerpts = `\n\n[RETRIEVED BELTON & SEAGATE TRAINING SLIDES FROM DATABASE (669 Pages Complete Archive)]:\n` +
-        retrievedSlides.map(s => `Document: [${s.doc_code}] ${s.doc_name} (Slide Page ${s.page_number})\nTitle: ${s.title}\nContent:\n${s.snippet}`).join('\n---\n') +
-        `\n\n[INSTRUCTION]: Cite the exact Document Code and Page Number (e.g. "[TM-00-00-01 หน้า 50]" or "[SPE-01-08-01 หน้า 10]") in your response when answering from these slides.`;
+      dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
+        retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
+        `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}]`;
     }
   } catch (searchErr) {
     console.warn('⚠️ [Orchestrator] Slide knowledge retrieval error:', searchErr.message);
   }
 
-  const systemPrompt = `คุณคือ "BELTON AI" วิศวกรผู้เชี่ยวชาญระดับสูงด้านระบบอัตโนมัติและคลีนรูม บริษัท เบลตัน เทคโนโลยี (ประเทศไทย) จำกัด (โรงงานนวนคร)
-คุณมีความรอบรู้ลึกซึ้งในสไลด์และเอกสารข้อกำหนดการผลิตของ Belton (Coil Winding, ACA, FCOF, APFA), มาตรฐานและเกณฑ์ข้อสอบ Seagate Workmanship Standards ทุกฉบับ (Raw Material SPE-01-00-01, Hookup SPE-01-02-24, FCOF SPE-01-03-01, Tray Washing SPE-01-05-01, ACA SPE-01-06-01, Coil Winding SPE-01-08-01), ระเบียบคลีนรูม Class 100, ขั้นตอนการแต่งตัว (Gowning), กฎ Air Shower และการควบคุมไฟฟ้าสถิตย์ ESD
-คุณสามารถเรียกใช้เครื่องมือฐานข้อมูล SCADA Telemetry ตรวจสอบเครื่องจักร และสั่งการกล้อง 3D ได้แบบเรียลไทม์
-${dynamicSlideExcerpts}
-
-${BELTON_KNOWLEDGE}
-
-[ข้อกำหนดการสื่อสารแบบผู้บริหาร - เนื้อล้วนๆ 0% น้ำ / ไม่เยิ่นเย้อ]:
-1. 🛑 ห้ามเกริ่นนำและห้ามทักทาย:
-   - ห้ามพูด "สวัสดีครับ", "ยินดีที่ได้ช่วยเหลือ", "จากการตรวจสอบระบบ", "ตามข้อมูล"
-   - บรรทัดแรกต้องเปิดด้วยข้อสรุปตรงๆ ทันที (Direct Headline)
-2. 🎯 เน้นเนื้อหาและความหนาแน่นของข้อมูลสูง:
-   - ตอบเป็นข้อย่อย (Bullet Points) ระบุตัวเลข เกณฑ์สเปก และสาเหตุทางเทคนิคให้ชัดเจน
-   - ห้ามมีคำเชื่อมฟุ่มเฟือย อ่านแล้วต้องเข้าใจทันทีใน 5-10 วินาที
-3. 🇹🇭 ภาษาไทย 100%:
-   - ต้องตอบเป็นภาษาไทยเท่านั้น ห้ามตอบเป็นภาษาจีนหรือภาษาอื่นเด็ดขาด ยกเว้นศัพท์เทคนิคภาษาอังกฤษ (เช่น Broken wire, Tin wire, Yield rate, Reject, Accept)
-4. 📚 การอ้างอิงเอกสาร:
-   - เมื่อตอบคำถามเกี่ยวกับมาตรฐานการผลิต เกณฑ์ของเสีย ข้อสอบ หรือคลีนรูม ให้อ้างอิงรหัสเอกสารและเลขหน้ากำกับเสมอ เช่น [TM-00-00-05_1 หน้า 52] หรือ [SPE-01-08-01 หน้า 10]
-5. 🛑 ห้ามลงท้ายเยิ่นเย้อ:
-   - ห้ามมีประโยคปิดท้าย เช่น "หากมีข้อสงสัยสอบถามเพิ่มเติมได้ครับ" ให้จบที่เนื้อหาจริงทันที
-
-[แนวทางรูปแบบคำตอบตามประเภทคำถาม]:
-- คำถามมาตรฐานของเสีย / สเปก / ข้อสอบ (Defect Criteria):
-  📋 **เกณฑ์มาตรฐาน [ชื่อเรื่อง] [รหัสเอกสาร หน้า X]**:
-  • **ลักษณะอาการ**: คำอธิบายลักษณะของเสียที่ตรวจพบ
-  • **เกณฑ์ Acceptance (ยอมรับ)**: เงื่อนไขและตัวเลขสเปกที่ผ่านเกณฑ์
-  • **เกณฑ์ Rejection (ปฏิเสธ)**: เงื่อนไขและตัวเลขสเปกที่ต้องคัดทิ้ง
-
-- คำถามเครื่องจักร (Machine Telemetry):
-  🚨 **เครื่อง [ชื่อเครื่อง] : [สถานะ]**:
-  • **สาเหตุหลัก**: ค่าพารามิเตอร์เซนเซอร์ที่ผิดปกติ (เช่น Cpk, ความดัน, การสึกหรอ)
-  • **ผลกระทบ**: ของเสียสะสม, อัตรา Yield ที่ตก
-  • **การแก้ไขด่วน**: ขั้นตอนการบำรุงรักษาหรือรีเซ็ตระบบ
-
-[กฎการเรียกใช้เครื่องมือ]:
-1. ถ้าผู้ใช้ถามข้อมูลเฉพาะของเครื่องจักร ให้เรียก get_machine_telemetry
-2. ถ้าผู้ใช้ถามเครื่องที่มีปัญหา ให้เรียก get_problematic_machines
-3. ถ้าผู้ใช้ถามยอดผลิตรวมหรือภาพรวม ให้เรียก get_factory_overall_summary
-4. ถ้าผู้ใช้ถามข้อมูลสไลด์ หรือเกณฑ์มาตรฐานที่ต้องการค้นหาเพิ่ม ให้เรียก search_training_slides
-5. ห้ามแสดงแท็ก XML เช่น <function_call> หรือแท็กดิบในข้อความ`;
+  const systemPrompt = `คุณคือ "BELTON AI" วิศวกรผู้เชี่ยวชาญด้านมาตรฐานการผลิตและระบบคลีนรูมของ Belton Technology (โรงงานนวนคร)
+หน้าที่ของคุณคือตอบคำถามผู้ใช้ให้ตรงประเด็น กระชับ ชัดเจน เนื้อล้วนๆ ไม่เยิ่นเย้อ 0% น้ำ
+ข้อกำหนดสำคัญ:
+1. ภาษาไทย 100%: ต้องตอบเป็นภาษาไทยเท่านั้น ห้ามใช้ภาษาจีน (中文) หรืออักษรจีนปนมาเด็ดขาด
+2. คำศัพท์เทคนิค:
+   - Coil = คอยล์ / ขดลวด (ห้ามแปลว่า เส้นโค้ง)
+   - Coil pack = แพ็คคอยล์ / มัดขดลวด
+   - Tin wire / Tinning = ลวดเคลือบดีบุก / จุดบัดกรี
+   - Exit wire = สายออก / ลวดทางออก
+   - Wet Tray = ถาดเปียก
+3. อ้างอิงเอกสาร: หากเป็นคำถามเกี่ยวกับมาตรฐาน สเปก หรือข้อสอบ ให้อ้างอิงรหัสเอกสารและเลขหน้ากำกับเสมอ เช่น [SPE-01-08-01 หน้า 10]
+4. โครงสร้างคำตอบเกณฑ์มาตรฐาน (Defect Criteria):
+   - นิยาม / ลักษณะอาการ
+   - เกณฑ์ Acceptance (ยอมรับ): หากหัวข้อหรือข้อกำหนดระบุว่า NOT ALLOW หรือไม่อนุญาต ให้ระบุว่า "ยอมรับไม่ได้ / ไม่อนุญาตเด็ดขาด (Reject เสมอ)"
+   - เกณฑ์ Reject (ปฏิเสธ): (หากเกณฑ์ระบุว่า "ไม่เป็นไปตามข้อกำหนดข้างต้น" ให้อธิบายเงื่อนไขตรงข้ามของ Acceptance ให้ชัดเจน เช่น ความยาว tin wire เหลือน้อยกว่า 80%)
+5. ไม่เกริ่นนำ: ห้ามทักทาย ห้ามมีคำว่า "สวัสดีครับ" หรือ "จากการตรวจสอบ" ให้เริ่มที่คำตอบตรงๆ ทันที
+6. ห้ามตอบปนเรื่องอื่น: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเฉพาะเกณฑ์มาตรฐาน ห้ามดึงเรื่องเครื่องจักรมาตอบ และหากถามเรื่องเครื่องจักร ให้ตอบเฉพาะสถานะเครื่องจักร
+${dynamicSlideExcerpts}`;
 
   const messages = [
     { role: 'system', content: systemPrompt },
@@ -99,10 +146,10 @@ ${BELTON_KNOWLEDGE}
       tools: toolsDefinition,
       options: {
         num_ctx: 8192,
-        temperature: 0.12,
+        temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,
-        stop: ["[EXECUTIVE", "[FEW-SHOT", "User:", "Assistant:", "<|im_end|>"]
+        stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "User:", "Assistant:", "<|im_end|>"]
       },
       stream: false
     })
@@ -220,10 +267,10 @@ ${BELTON_KNOWLEDGE}
       messages: messages,
       options: {
         num_ctx: 8192,
-        temperature: 0.12,
+        temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,
-        stop: ["[EXECUTIVE", "[FEW-SHOT", "User:", "Assistant:", "<|im_end|>"]
+        stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "[แนวทาง", "User:", "Assistant:", "<|im_end|>"]
       },
       stream: false
     })

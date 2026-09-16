@@ -89,6 +89,100 @@ SLIDE_FILES = [
     }
 ]
 
+def sanitize_thai_text(text):
+    if not text:
+        return ""
+    
+    # 1. Spaced common factory words
+    spaced_words = {
+        r'เส\s+้น': 'เส้น',
+        r'ด\s+้\s*วย': 'ด้วย',
+        r'ข\s+้\s*อ': 'ข้อ',
+        r'หน\s+้\s*า': 'หน้า',
+        r'ใช\s+้': 'ใช้',
+        r'ได\s+้': 'ได้',
+        r'ให\s+้': 'ให้',
+        r'แล\s+้\s*ว': 'แล้ว',
+        r'ถ\s+้\s*า': 'ถ้า',
+        r'ต\s+้\s*อง': 'ต้อง',
+        r'ห\s+้\s*อง': 'ห้อง',
+        r'ไว\s+้': 'ไว้',
+        r'ไหม\s+้': 'ไหม้',
+        r'แห\s+้\s*ง': 'แห้ง',
+        r'เป\s+้\s*า': 'เป้า',
+        r'ร\s+้\s*อย': 'ร้อย',
+        r'น\s+้\s*อย': 'น้อย',
+        r'ช\s+ิ[*+]\s*น': 'ชิ้น',
+        r'ช\s+ิ\s*%\s*น': 'ชิ้น',
+        r'ส\s+ี': 'สี',
+        r'เป\s+็\s*น': 'เป็น',
+        r'ฝ\s+่\s*าย': 'ฝ่าย',
+        r'ฝุ\s+่\s*น': 'ฝุ่น',
+        r'พื\s+น\s*ที\s*': 'พื้นที่ ',
+        r'พื\s*[\*+]\s*น\s*ที\s*': 'พื้นที่ ',
+        r'เกี\s+ยว': 'เกี่ยว',
+        r'ซึ\s+ง': 'ซึ่ง',
+        r'เบลต\s+ั\s*น': 'เบลตัน',
+        r'ช\s+ั\s*a\s*น': 'ชั้น',
+        r'ผู\s+้': 'ผู้',
+        r'รู\s+้': 'รู้',
+        r'เข\s+้\s*า': 'เข้า'
+    }
+    for pat, rep in spaced_words.items():
+        text = re.sub(pat, rep, text)
+
+    # General spaced tone marks & vowels
+    text = re.sub(r'([\u0E00-\u0E7F])\s+([่้๊๋็์])', r'\1\2', text)
+    text = re.sub(r'([\u0E00-\u0E7F])\s+([ิีึืั])', r'\1\2', text)
+    text = re.sub(r'([\u0E00-\u0E7F])\s+([ุู])', r'\1\2', text)
+    text = re.sub(r'([่้๊๋])\s+([ะาำ])', r'\1\2', text)
+    text = re.sub(r'([่้๊๋])\s+([\u0E00-\u0E7F])', r'\1\2', text)
+    text = re.sub(r'([เแโใไ])\s+([\u0E00-\u0E7F])', r'\1\2', text)
+
+    # 2. Ligature glitches with digits/symbols (3, 4, *, +, 5, %, &)
+    glitch_replacements = [
+        (r'ซึ[34]ง', 'ซึ่ง'),
+        (r'ที[34]', 'ที่'),
+        (r'เพื[34]อ', 'เพื่อ'),
+        (r'ชื[34]อ', 'ชื่อ'),
+        (r'ยื[34]น', 'ยื่น'),
+        (r'อื[34]น', 'อื่น'),
+        (r'เปลี[34]ยน', 'เปลี่ยน'),
+        (r'ฝั[34]ง', 'ฝั่ง'),
+        (r'หนึ[34]ง', 'หนึ่ง'),
+        (r'สิ[34]ง', 'สิ่ง'),
+        (r'ตะกั[34]ว', 'ตะกั่ว'),
+        (r'กว[34]า', 'กว่า'),
+        (r'อย่[34]าง', 'อย่าง'),
+        (r'ว่[34]า', 'ว่า'),
+        (r'ต่า[34]ง', 'ต่าง'),
+        (r'ช่อ[34]ง', 'ช่อง'),
+        (r'ไม[34่]่', 'ไม่'),
+        (r'ไม[34]', 'ไม่'),
+        (r'ใช[34]', 'ใช่'),
+        (r'ใส[34]', 'ใส่'),
+        (r'ขึ[\*+]น', 'ขึ้น'),
+        (r'ชิ[\*+%&]น', 'ชิ้น'),
+        (r'เนื[\*+]อ', 'เนื้อ'),
+        (r'ทั[\*+]ง', 'ทั้ง'),
+        (r'นี[\*+]', 'นี้'),
+        (r'บี[\*+]', 'บี้'),
+        (r'คลํ[\*+]า', 'คล้ำ'),
+        (r'ครั[5\*+]ง', 'ครั้ง'),
+        (r'ตั[\*+]ง', 'ตั้ง'),
+        (r'นั[\*+]น', 'นั้น'),
+        (r'ชั[\*+]น', 'ชั้น'),
+        (r'อื\(นที\(ไม่', 'อื่นที่ไม่'),
+        (r'เป ็ น', 'เป็น')
+    ]
+
+    for pat, rep in glitch_replacements:
+        text = re.sub(pat, rep, text)
+
+    # Collapse multi-spaces
+    text = re.sub(r'[ \t]{2,}', ' ', text)
+    return text
+
 def clean_text(raw_text):
     if not raw_text:
         return ""
@@ -96,6 +190,8 @@ def clean_text(raw_text):
     text = raw_text.replace('\r\n', '\n').replace('\r', '\n')
     # Remove null characters
     text = text.replace('\x00', '')
+    # Sanitize Thai character distortions
+    text = sanitize_thai_text(text)
     # Collapse multiple consecutive newlines (> 2) into 2
     text = re.sub(r'\n{3,}', '\n\n', text)
     # Strip whitespace on lines
