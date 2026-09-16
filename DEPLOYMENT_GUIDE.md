@@ -18,7 +18,7 @@
    - **Default (Local)**: SQLite พร้อม Full-Text Search (FTS5) ผ่านไลบรารี `better-sqlite3` รองรับการทำงานแบบ Self-bootstrapping
    - **Enterprise (Cloud/Centralized)**: รองรับ PostgreSQL ผ่าน `pg` Pool (เปิดใช้งานโดยตั้งค่า `DATABASE_URL` ใน `.env`)
 4. **Local AI Copilot (RAG & Function Calling)**:
-   - ประมวลผลบนเครื่อง Local 100% ผ่าน **Ollama Engine** (โมเดล `qwen2.5:3b`)
+   - ประมวลผลบนเครื่อง Local 100% ผ่าน **Ollama Engine** (โมเดล `qwen2.5:14b` หรือเลือกรุ่นที่เหมาะสมกับฮาร์ดแวร์)
    - ไม่มีการส่งข้อมูลโรงงานออกภายนอก (Zero Cloud Dependency)
    - ระบบ RAG ดึงข้อมูลสไลด์ฝึกอบรม 273 หน้า จาก SQLite FTS5 ในเวลา < 1 มิลลิวินาที
 
@@ -29,10 +29,10 @@
 ### ฮาร์ดแวร์ที่แนะนำ (Recommended Hardware)
 | รายการ | ขั้นต่ำ (Minimum) | แนะนำ (Recommended) |
 |---|---|---|
-| **CPU** | Intel Core i5 / AMD Ryzen 5 (4 Cores+) | Intel Core i7 / AMD Ryzen 7 (8 Cores+) |
-| **RAM** | 8 GB | 16 GB ขึ้นไป |
-| **GPU** | Integrated GPU (รัน AI ผ่าน CPU) | NVIDIA GeForce RTX 3050 (4GB VRAM) ขึ้นไป |
-| **Storage** | SSD ขั้นต่ำ 2 GB สำหรับโปรเจกต์และโมเดล | NVMe SSD |
+| **CPU** | Intel Core i5 / AMD Ryzen 5 (6 Cores+) | Intel Core i7 / AMD Ryzen 7 (8 Cores+) |
+| **RAM** | 16 GB | 16 - 32 GB ขึ้นไป |
+| **GPU** | NVIDIA GeForce RTX 3050 (6GB VRAM) | NVIDIA RTX 4060 / RTX 3060 (8GB-12GB VRAM) ขึ้นไป |
+| **Storage** | SSD ขั้นต่ำ 15-20 GB (แนะนำจัดเก็บที่ Drive D:) | NVMe SSD |
 
 ### ซอฟต์แวร์ที่จำเป็น (Required Software)
 1. **Node.js**: เวอร์ชัน `18.x`, `20.x` หรือ `22.x LTS` (ดาวน์โหลดจาก [nodejs.org](https://nodejs.org))
@@ -70,7 +70,7 @@ PORT=8080
 
 # URL และชื่อโมเดลของ Ollama Local AI
 OLLAMA_BASE_URL=http://127.0.0.1:11434
-MODEL_NAME=qwen2.5:3b
+MODEL_NAME=qwen2.5:14b
 
 # ที่อยู่ไฟล์ฐานข้อมูล SQLite
 SQLITE_PATH=./data/scada.db
@@ -80,11 +80,19 @@ SQLITE_PATH=./data/scada.db
 ```
 
 ### ขั้นตอนที่ 4: ดาวน์โหลดและเปิดใช้งาน Ollama AI
-1. เปิด Terminal และดาวน์โหลดโมเดล `qwen2.5:3b`:
-   ```bash
-   ollama pull qwen2.5:3b
+1. กำหนดโฟลเดอร์จัดเก็บโมเดลไว้ที่ไดรฟ์อื่นที่ไม่ใช่ Drive C: (แนะนำสำหรับโมเดล 14B ขนาด ~9.0 GB):
+   ```cmd
+   # บน Windows CMD / Script:
+   set OLLAMA_MODELS=D:\ollama\models
+
+   # หรือรันผ่านสคริปต์ที่เตรียมไว้ในโปรเจกต์:
+   scripts\start_ollama.bat
    ```
-2. ตรวจสอบว่า Ollama Service กำลังทำงาน:
+2. ดาวน์โหลดโมเดล `qwen2.5:14b`:
+   ```bash
+   ollama pull qwen2.5:14b
+   ```
+3. ตรวจสอบว่า Ollama Service กำลังทำงาน:
    ```bash
    curl http://127.0.0.1:11434/
    # ได้ผลลัพธ์ตอบกลับว่า: "Ollama is running"
