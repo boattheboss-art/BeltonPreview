@@ -194,7 +194,7 @@ body.gemini-theme {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 20px 100px;
+  padding: 24px 20px 220px;
   position: relative;
   scroll-behavior: smooth;
 }
