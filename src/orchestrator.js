@@ -264,26 +264,31 @@ function prepareContext(userMessage, conversationHistory = []) {
      ลำดับที่ 4: Booties (สวมรองเท้าบูทคลีนรูม) ➔ สวมทับขากางเกง รูดซิปและติดกระดุมให้เรียบร้อย
      ลำดับที่ 5: Gloves (สวมถุงมือ) ➔ สวม Wrist strap และสวมถุงมือ โดยดึงถุงมือทับแขนใน และแขนเสื้อนอกทับถุงมือ
    - สำหรับการถอดชุด (Degowning Sequence): เริ่มจาก Booties (ถอดรองเท้า) ➔ Gloves (ถอดถุงมือ) ➔ Facemask (ถอดหน้ากาก) ➔ Jumpsuit (ถอดชุดหมี) ➔ Hairnet (ถอดหมวก)
-8. ลำดับขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จากสไลด์ [TM-00-00-01]):
+8. ลำดับขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จากสไลด์ [TM-00-00-01_1] Product & Process Introduction):
    - หากผู้ใช้ถามเรื่องขั้นตอนการผลิต ACA (Actuator Coil Assembly) ว่ามีกี่ขั้นตอน หรือมีอะไรบ้าง:
-     ให้อ้างอิงตาม [TM-00-00-01 หน้า 28-49] โดยระบุว่ากระบวนการผลิต ACA มีขั้นตอนการทำงานหลักตามลำดับดังนี้:
-     1. E-block cleaning (ทำความสะอาด E-block ด้วย Ultrasonic)
-     2. Pre-curing / Plasma bobbin (เตรียมผิวและอบ Pre-cure บ็อบบิน)
-     3. Laser engraving (ยิงเลเซอร์ระบุรหัสชิ้นงาน)
-     4. Coil pre-heating (อุ่นขดลวดคอยล์)
-     5. E-block & Coil dispensing / Coil & bobbin dispensing (หยอดกาวประกอบชิ้นส่วน)
-     6. Epoxy inspection / mending (ตรวจและแต่งแนวกาว)
-     7. 1st curing & unload (อบกาวรอบที่ 1)
-     8. 2nd curing & unload (อบกาวรอบที่ 2)
-     9. DI water cleaning (ทำความสะอาดด้วยน้ำ DI)
-     10. Hi-pot & open test (ทดสอบทางไฟฟ้าและฉนวน Hi-pot)
-     11. Combine DVT & Coil height inspection (ตรวจวัด DVT และความสูงคอยล์)
-     12. Damper install (ติดตั้งแดมเปอร์)
-     13. Tube length / Slit height / Resonance checking (ตรวจสอบขนาดและเรโซแนนซ์)
-     14. Arm height & tweaking (ตรวจวัดความสูงอาร์มและปรับแต่ง)
-     15. Visual inspection (ตรวจสอบความเรียบร้อยด้วยสายตา)
-     16. OQA & Packing (ตรวจปล่อยคุณภาพขั้นสุดท้ายและบรรจุลงถาด)
-   - ต้องตอบสรุปจำนวนขั้นตอนและลำดับให้ครบถ้วน ห้ามพิมพ์ค้างหรือตัดบทกลางคัน
+     ให้อ้างอิงตามสไลด์ [TM-00-00-01 หน้า 28-49] โดยระบุว่ากระบวนการผลิต ACA มีทั้งหมด 21 ขั้นตอน (21 Operations) ตามลำดับหน้าสไลด์ดังนี้:
+     1. E-block cleaning (หน้า 29): ทำความสะอาด E-block ด้วยคลื่นเสียงความถี่สูง (Ultrasonic wash/rinse)
+     2. Pre-curing / plasma bobbin (หน้า 30): อบ Pre-cure และเตรียมผิวด้วย Plasma บน Bobbin
+     3. Laser engraving (หน้า 31): ยิงเลเซอร์ระบุรหัสชิ้นงาน (CDA pressure 0.4-0.6 MPa)
+     4. Coil pre-heating (หน้า 32): อุ่นขดลวดคอยล์ก่อนเข้าสู่กระบวนการหยอดกาว
+     5. E-block & Coil dispensing (หน้า 33): หยอดกาวประกอบ E-block กับ Coil
+     6. Coil & bobbin dispensing (หน้า 34): หยอดกาวประกอบ Coil กับ Bobbin
+     7. Epoxy inspection / mending (หน้า 35): ตรวจสอบและตกแต่งแนวกาว Epoxy
+     8. 1st curing & unload (หน้า 36): อบกาวรอบที่ 1 และนำชิ้นงานออกจากเตา
+     9. 2nd curing & unload (หน้า 37): อบกาวรอบที่ 2 เพื่อให้กาวเซ็ตตัวสมบูรณ์และนำชิ้นงานออก
+     10. DI water cleaning (หน้า 38): ทำความสะอาดชิ้นงานด้วยน้ำบริสุทธิ์ DI (Deionized water)
+     11. Hi-pot & open test (หน้า 39): ทดสอบความเป็นฉนวนไฟฟ้า (Hi-pot) และการนำไฟฟ้า
+     12. Combine DVT & Coil height inspection (หน้า 40): ตรวจวัดโปรไฟล์ DVT และความสูงคอยล์
+     13. Coil height inspection (หน้า 41): ตรวจสอบความสูงของคอยล์ซ้ำเพื่อยืนยันพิกัด
+     14. Damper install (หน้า 42): ติดตั้งชิ้นส่วนแดมเปอร์ (Damper)
+     15. Tube length checking (หน้า 43): ตรวจสอบความยาวท่อ (Tube length)
+     16. Slit height checking (หน้า 44): ตรวจสอบความสูงสลิต (Slit height)
+     17. Resonance checking (หน้า 45): ตรวจสอบค่าการสั่นพ้องเรโซแนนซ์ (Resonance)
+     18. Arm height & tweaking (หน้า 46): ตรวจวัดความสูงอาร์มและปรับแต่ง (Tweaking)
+     19. Visual inspection (หน้า 47): ตรวจสอบความเรียบร้อยของชิ้นงานด้วยสายตา
+     20. OQA (หน้า 48): ตรวจสอบคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ (Sampling AQL 0.65%, C=0)
+     21. Packing (หน้า 49): บรรจุชิ้นงานลงถาด ติดฉลาก และซีลสุญญากาศ
+   - ต้องระบุอย่างชัดเจนว่ากระบวนการผลิต ACA มีทั้งหมด 21 ขั้นตอน (21 Operations) ห้ามตอบว่ามี 16 ขั้นตอนเด็ดขาด
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
