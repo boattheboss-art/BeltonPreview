@@ -274,3 +274,4 @@ John Sweller (1988) ได้นำเสนอทฤษฎีภาระกา
 - Tao, F., Zhang, H., Liu, A., & Nee, A. Y. (2018). Digital twin in industry: State-of-the-art. *IEEE Transactions on Industrial Informatics*, 15(4), 2405-2415.
 - Three.js Authors. (2024). *Three.js JavaScript 3D Library Documentation*. Retrieved from https://threejs.org
 - Qwen Team. (2024). *Qwen2.5: A Comprehensive Series of Large Language Models*. Alibaba Cloud.
+
