@@ -790,13 +790,42 @@ body.gemini-theme {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 2px 8px rgba(66, 133, 244, 0.4);
 }
 
 .gemini-send-btn:hover {
   transform: scale(1.06);
   box-shadow: 0 4px 14px rgba(155, 114, 203, 0.5);
+}
+
+/* Active working state: Square morphing with glowing pulse animation */
+.gemini-send-btn.is-working {
+  border-radius: 12px;
+  background: #1e1f23;
+  border: 2px solid var(--gemini-purple);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(155, 114, 203, 0.55);
+  animation: stopButtonPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes stopButtonPulse {
+  0%, 100% {
+    border-color: rgba(155, 114, 203, 0.7);
+    box-shadow: 0 0 12px rgba(155, 114, 203, 0.4), 0 0 4px rgba(66, 133, 244, 0.3);
+  }
+  50% {
+    border-color: #c084fc;
+    box-shadow: 0 0 22px rgba(155, 114, 203, 0.85), 0 0 10px rgba(66, 133, 244, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+.gemini-send-btn.is-working:hover {
+  background: #2b2c32;
+  border-color: #e879f9;
+  box-shadow: 0 0 24px rgba(155, 114, 203, 0.95);
+  transform: scale(1.08);
 }
 
 .input-disclaimer {

@@ -9,11 +9,43 @@
   const main = document.getElementById('geminiMain');
   const form = document.getElementById('geminiChatForm');
   const input = document.getElementById('chatInput');
+  const btnSubmit = document.getElementById('btnSubmit');
   const btnClear = document.getElementById('btnClearChat');
   const cards = document.querySelectorAll('.suggestion-card');
 
   let dialogueHistory = [];
   let isThinking = false;
+  let currentAbortController = null;
+  let activeStopHandler = null;
+
+  const SVG_SEND = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`;
+  const SVG_STOP = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2.5" ry="2.5"/></svg>`;
+
+  function setButtonState(isWorking) {
+    if (!btnSubmit) return;
+    if (isWorking) {
+      btnSubmit.classList.add('is-working');
+      btnSubmit.innerHTML = SVG_STOP;
+      btnSubmit.title = 'กดเพื่อหยุดการตอบข้อความ (Stop)';
+      btnSubmit.setAttribute('aria-label', 'Stop generating');
+      btnSubmit.type = 'button';
+      if (input) input.removeAttribute('required');
+    } else {
+      btnSubmit.classList.remove('is-working');
+      btnSubmit.innerHTML = SVG_SEND;
+      btnSubmit.title = 'ส่งคำถาม (Send)';
+      btnSubmit.setAttribute('aria-label', 'Send message');
+      btnSubmit.type = 'submit';
+      if (input) input.setAttribute('required', 'required');
+    }
+  }
+
+  function stopCurrentGeneration() {
+    if (typeof activeStopHandler === 'function') {
+      activeStopHandler();
+      activeStopHandler = null;
+    }
+  }
 
   // Format Markdown to clean HTML
   function formatMarkdown(text) {
@@ -193,9 +225,14 @@
 
   // Send message to Backend
   async function sendMessage(text) {
-    if (!text || !text.trim() || isThinking) return;
+    if (!text || !text.trim()) return;
+    if (isThinking) {
+      stopCurrentGeneration();
+      return;
+    }
     const cleanText = text.trim();
     isThinking = true;
+    setButtonState(true);
 
     // 1. Add user bubble
     appendUserMessage(cleanText);
@@ -255,6 +292,43 @@
       }
     }, 1150);
 
+    currentAbortController = new AbortController();
+    let displayedText = '';
+    let typeInterval = null;
+
+    activeStopHandler = () => {
+      console.log('[Copilot] Generation stopped by user.');
+      if (currentAbortController) {
+        try { currentAbortController.abort(); } catch (e) {}
+      }
+      clearInterval(timerInterval);
+      clearInterval(stepInterval);
+      if (typeInterval) clearInterval(typeInterval);
+
+      thoughtBox.classList.remove('is-thinking');
+      thoughtBox.classList.remove('is-open');
+      rowEl.classList.remove('is-thinking');
+
+      if (cursorEl && cursorEl.parentNode) {
+        cursorEl.parentNode.removeChild(cursorEl);
+      }
+
+      if (displayedText) {
+        textEl.style.display = 'inline';
+        textEl.innerHTML = formatMarkdown(displayedText);
+        dialogueHistory.push({ role: 'assistant', content: displayedText });
+      } else {
+        textEl.style.display = 'inline';
+        textEl.innerHTML = '<span style="color:var(--text-muted);font-style:italic;">[หยุดการทำงานตามคำสั่ง]</span>';
+      }
+
+      isThinking = false;
+      activeStopHandler = null;
+      setButtonState(false);
+      if (input) input.focus();
+      scrollToBottom();
+    };
+
     try {
       const response = await fetch('/api/copilot/chat-stream', {
         method: 'POST',
@@ -262,7 +336,8 @@
         body: JSON.stringify({
           message: cleanText,
           history: dialogueHistory
-        })
+        }),
+        signal: currentAbortController.signal
       });
 
       if (!response.ok) {
@@ -273,11 +348,11 @@
       const decoder = new TextDecoder('utf-8');
       let sseBuffer = '';
       let charQueue = [];
-      let displayedText = '';
+      displayedText = '';
       let isStreamFinished = false;
       let actionData = null;
       let hasStartedTyping = false;
-      let typeInterval = null;
+      typeInterval = null;
 
       function renderMetadata(meta) {
         if (!meta) return;
@@ -396,6 +471,8 @@
             if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
             dialogueHistory.push({ role: 'assistant', content: finalFull });
             isThinking = false;
+            activeStopHandler = null;
+            setButtonState(false);
             scrollToBottom();
           }
         }, 16);
@@ -459,6 +536,13 @@
     } catch (err) {
       clearInterval(timerInterval);
       clearInterval(stepInterval);
+      if (typeInterval) clearInterval(typeInterval);
+
+      if (err.name === 'AbortError') {
+        // Handled cleanly by stop action
+        return;
+      }
+
       console.error('Copilot Error:', err);
       thoughtBox.classList.remove('is-thinking');
       thoughtBox.classList.remove('is-open');
@@ -470,14 +554,31 @@
         <span style="font-size:12px;opacity:0.8;">กรุณาตรวจสอบว่าได้เปิดคำสั่ง <code>gpu</code> หรือ <code>scripts/start_ollama.bat</code> ในเครื่องของคุณแล้วหรือไม่ครับ</span>
       </div>`;
       isThinking = false;
+      activeStopHandler = null;
+      setButtonState(false);
       scrollToBottom();
     }
+  }
+
+  // Handle Stop Button Click
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', (e) => {
+      if (isThinking) {
+        e.preventDefault();
+        e.stopPropagation();
+        stopCurrentGeneration();
+      }
+    });
   }
 
   // Handle Form Submit
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (isThinking) {
+        stopCurrentGeneration();
+        return;
+      }
       const val = input.value;
       input.value = '';
       sendMessage(val);
@@ -487,6 +588,9 @@
   // Handle Suggestion Cards Click
   cards.forEach(card => {
     card.addEventListener('click', () => {
+      if (isThinking) {
+        stopCurrentGeneration();
+      }
       const q = card.getAttribute('data-query');
       if (q) sendMessage(q);
     });
