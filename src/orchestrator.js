@@ -214,14 +214,51 @@ function prepareContext(userMessage, conversationHistory = []) {
 
   // 3. Dynamic Slide Retrieval (RAG) from local SQLite FTS5 database (669 pages: Belton + Seagate)
   let dynamicSlideExcerpts = '';
-  if (!isCasualMessage) {
+  const isAcaProcessFlowQuery = /(aca|actuator coil assembly).*(กี่ขั้นตอน|มีขั้นตอน|ขั้นตอน|กระบวนการ|flow|process)/i.test(userMessage) 
+                             || /(ขั้นตอน|กระบวนการ).*(aca)/i.test(userMessage);
+
+  if (isAcaProcessFlowQuery) {
+    retrievedSlidesList = [{
+      doc_code: 'TM-00-00-01',
+      doc_name: 'Product & Process Introduction (ACA Process Flow)',
+      page_number: 28,
+      title: 'ACA Process Flow (21 Operations: หน้า 29 ถึง 49)'
+    }];
+    dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:
+เอกสาร: [TM-00-00-01] Product & Process Introduction (หน้า 28-49)
+หัวข้อ: ACA Process Flow (กระบวนการผลิต ACA ทั้งหมด 21 ขั้นตอน เรียงตามลำดับหน้า 29 ถึง 49)
+เนื้อหาข้อกำหนด:
+ขั้นตอนที่ 1 (หน้า 29): E-block cleaning (ทำความสะอาด E-block ด้วย Ultrasonic)
+ขั้นตอนที่ 2 (หน้า 30): Pre-curing / plasma bobbin (เตรียมผิวและอบ Pre-cure บ็อบบิน)
+ขั้นตอนที่ 3 (หน้า 31): Laser engraving (ยิงเลเซอร์ระบุรหัสชิ้นงาน)
+ขั้นตอนที่ 4 (หน้า 32): Coil pre-heating (อุ่นขดลวดคอยล์ก่อนหยอดกาว)
+ขั้นตอนที่ 5 (หน้า 33): E-block & Coil dispensing (หยอดกาวประกอบ E-block กับ Coil)
+ขั้นตอนที่ 6 (หน้า 34): Coil & bobbin dispensing (หยอดกาวประกอบ Coil กับ Bobbin)
+ขั้นตอนที่ 7 (หน้า 35): Epoxy inspection / mending (ตรวจสอบและแต่งแนวกาว Epoxy)
+ขั้นตอนที่ 8 (หน้า 36): 1st curing & unload (อบกาวรอบที่ 1 และนำชิ้นงานออก)
+ขั้นตอนที่ 9 (หน้า 37): 2nd curing & unload (อบกาวรอบที่ 2 และนำชิ้นงานออก)
+ขั้นตอนที่ 10 (หน้า 38): DI water cleaning (ทำความสะอาดด้วยน้ำบริสุทธิ์ DI)
+ขั้นตอนที่ 11 (หน้า 39): Hi-pot & open test (ทดสอบทางไฟฟ้าและฉนวน Hi-pot)
+ขั้นตอนที่ 12 (หน้า 40): Combine DVT & Coil height inspection (ตรวจวัด DVT และความสูงคอยล์)
+ขั้นตอนที่ 13 (หน้า 41): Coil height inspection (ตรวจวัดความสูงของคอยล์)
+ขั้นตอนที่ 14 (หน้า 42): Damper install (ติดตั้งแดมเปอร์)
+ขั้นตอนที่ 15 (หน้า 43): Tube length checking (ตรวจสอบความยาวท่อ)
+ขั้นตอนที่ 16 (หน้า 44): Slit height checking (ตรวจสอบความสูงสลิต)
+ขั้นตอนที่ 17 (หน้า 45): Resonance checking (ตรวจสอบค่าเรโซแนนซ์)
+ขั้นตอนที่ 18 (หน้า 46): Arm height & tweaking (ตรวจวัดความสูงอาร์มและปรับแต่ง)
+ขั้นตอนที่ 19 (หน้า 47): Visual inspection (ตรวจสอบความเรียบร้อยด้วยสายตา)
+ขั้นตอนที่ 20 (หน้า 48): OQA (ตรวจปล่อยคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ)
+ขั้นตอนที่ 21 (หน้า 49): Packing (บรรจุชิ้นงานลงถาดและซีลสุญญากาศ)
+
+[คำสั่งสำคัญ]: จงตอบว่ามี 21 ขั้นตอน และแจกแจงเรียงตามลำดับ 1 ถึง 21 นี้เท่านั้น ห้ามสลับลำดับ และห้ามใช้ภาษาจีนเด็ดขาด`;
+  } else if (!isCasualMessage) {
     try {
       const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
       if (retrievedSlides && retrievedSlides.length > 0) {
         retrievedSlidesList = retrievedSlides;
         dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
           retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
-          `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด หากเป็นคำถามเกี่ยวกับขั้นตอนการผลิต ACA (Actuator Coil Assembly) ให้ตอบ 21 ขั้นตอน เรียงลำดับ 1 ถึง 21 ตามที่ระบุไว้ในข้อ 8 อย่างเคร่งครัด ห้ามนำข้อความ sidebar ที่ไม่เรียงลำดับในสไลด์บางหน้ามาสลับลำดับโดยเด็ดขาด`;
+          `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด`;
       }
     } catch (searchErr) {
       console.warn('[Orchestrator Warning] Slide knowledge retrieval error:', searchErr.message);
@@ -643,6 +680,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
         }
       }
 
+      let hasChineseBlocked = false;
       let isFirstChunk = true;
       const rawText = await streamOllamaChat(`${OLLAMA_URL}/api/chat`, {
         model: MODEL_NAME,
@@ -654,11 +692,16 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
           temperature: isCasualMessage ? 0.35 : 0.08,
           top_p: 0.9,
           repeat_penalty: 1.15,
-          stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "[แนวทาง", "User:", "Assistant:", "<|im_end|>"]
+          stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "[แนวทาง", "User:", "Assistant:", "<|im_end|>", "请注意", "根据您", "注：", "注意："]
         },
         stream: true
       }, (chunk) => {
-        let cleanChunk = chunk;
+        if (hasChineseBlocked) return;
+        if (/[\u4e00-\u9fff]{2,}/.test(chunk)) {
+          hasChineseBlocked = true;
+          return;
+        }
+        let cleanChunk = chunk.replace(/[\u2e80-\u2eff\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/g, '');
         if (isFirstChunk && matchedExam) {
           cleanChunk = cleanChunk.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '');
           isFirstChunk = false;
@@ -810,6 +853,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
 
     console.log(`[Orchestrator Stream] Synthesizing tool response with stream (${MODEL_NAME})...`);
 
+    let hasToolChineseBlocked = false;
     const rawFinalText = await streamOllamaChat(`${OLLAMA_URL}/api/chat`, {
       model: MODEL_NAME,
       messages: messages,
@@ -820,12 +864,18 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
         temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,
-        stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "[แนวทาง", "User:", "Assistant:", "<|im_end|>"]
+        stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "[แนวทาง", "User:", "Assistant:", "<|im_end|>", "请注意", "根据您", "注：", "注意："]
       },
       stream: true
     }, (chunk) => {
-      if (typeof onToken === 'function') {
-        onToken(chunk);
+      if (hasToolChineseBlocked) return;
+      if (/[\u4e00-\u9fff]{2,}/.test(chunk)) {
+        hasToolChineseBlocked = true;
+        return;
+      }
+      const cleanChunk = chunk.replace(/[\u2e80-\u2eff\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/g, '');
+      if (typeof onToken === 'function' && cleanChunk) {
+        onToken(cleanChunk);
       }
     });
 
