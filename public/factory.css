@@ -3787,39 +3787,39 @@ body.is-overview-mode .fps-reticle {
   font-weight: 700;
   letter-spacing: 0.14em;
   color: #94a3b8;
-  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.85);
+  text-shadow: none;
 }
 
 .nava-tagline-line {
   width: 26px;
   height: 1.5px;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(148, 163, 184, 0.4);
 }
 
 .nava-hero-title {
   font-size: 2.8rem;
   font-weight: 800;
   line-height: 1.12;
-  color: #0f172a;
+  color: #ffffff;
   margin-bottom: 12px;
   letter-spacing: -0.02em;
-  text-shadow: 0 1px 24px rgba(255, 255, 255, 0.95), 0 0 45px rgba(255, 255, 255, 0.85);
+  text-shadow: none;
 }
 
 .highlight-blue {
-  color: #0066ff;
-  background: linear-gradient(135deg, #0066ff 0%, #0284c7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 16px rgba(0, 102, 255, 0.35));
+  color: #38bdf8;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: #38bdf8;
+  filter: none;
 }
 
 .nava-hero-desc {
   font-size: 0.94rem;
   line-height: 1.55;
-  color: #334155;
+  color: #cbd5e1;
   margin-bottom: 22px;
-  text-shadow: 0 1px 18px rgba(255, 255, 255, 0.9);
+  text-shadow: none;
 }
 
 .nava-actions {
@@ -3910,10 +3910,10 @@ body.is-overview-mode .fps-reticle {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: #64748b;
+  color: #94a3b8;
   margin-bottom: 12px;
   text-transform: uppercase;
-  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.85);
+  text-shadow: none;
 }
 
 .nava-facility-hero {
