@@ -16,6 +16,20 @@
   let isReloadingModel = false;
   let lastModelMtime = null;
 
+  // Nava Nakorn Plant Overview Portal (ESC / 3D Isometric Mode)
+  let isOverviewMode = true;
+  let overviewControls = null;
+  const OVERVIEW_CAM_POS = new THREE.Vector3(75.0, 70.0, 85.0);
+  const OVERVIEW_CAM_TARGET = new THREE.Vector3(0.0, 2.0, 10.0);
+  let isCameraFlying = false;
+  let flyStartTime = 0;
+  let flyDuration = 1800;
+  const flyStartPos = new THREE.Vector3();
+  const flyEndPos = new THREE.Vector3();
+  const flyStartTarget = new THREE.Vector3();
+  const flyEndTarget = new THREE.Vector3();
+  let flyCallback = null;
+
   // Collision bounding boxes for physical boundaries (Cleared for free exploration in new Blender GLB model)
   const wallColliders = [];
 
@@ -596,8 +610,8 @@
     const height = window.innerHeight;
 
     camera = new THREE.PerspectiveCamera(65, width / height, 0.1, 400);
-    camera.position.copy(playerPos);
-    camera.quaternion.setFromEuler(euler);
+    camera.position.copy(OVERVIEW_CAM_POS);
+    camera.lookAt(OVERVIEW_CAM_TARGET);
 
     renderer = new THREE.WebGLRenderer({
       canvas: canvas,
@@ -610,6 +624,20 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
+
+    // Setup 360 OrbitControls for Nava Nakorn Plant Overview
+    if (typeof THREE.OrbitControls !== 'undefined') {
+      overviewControls = new THREE.OrbitControls(camera, renderer.domElement);
+      overviewControls.target.copy(OVERVIEW_CAM_TARGET);
+      overviewControls.enableDamping = true;
+      overviewControls.dampingFactor = 0.06;
+      overviewControls.maxPolarAngle = Math.PI / 2.05;
+      overviewControls.minDistance = 20;
+      overviewControls.maxDistance = 260;
+      overviewControls.enabled = true;
+    }
+
+    document.body.classList.add('is-overview-mode');
 
     setupLighting();
     initMiniMap();
@@ -648,6 +676,8 @@
         const res = await fetch('/api/scada/summary');
         if (res.ok) {
           textEl.textContent = 'DB: SQLITE 50/50 LIVE';
+          const navaDbText = document.getElementById('navaDbStatusText');
+          if (navaDbText) navaDbText.textContent = textEl.textContent;
           if (dotEl) {
             dotEl.style.backgroundColor = '#10b981';
             dotEl.style.boxShadow = '0 0 8px #10b981';
@@ -661,6 +691,8 @@
         if (res2.ok) {
           const data = await res2.json();
           textEl.textContent = `DB: SQLITE 50/50 LIVE`;
+          const navaDbText = document.getElementById('navaDbStatusText');
+          if (navaDbText) navaDbText.textContent = textEl.textContent;
           if (dotEl) {
             dotEl.style.backgroundColor = '#10b981';
             dotEl.style.boxShadow = '0 0 8px #10b981';
@@ -674,7 +706,7 @@
     badgeEl.addEventListener('click', () => {
       fetchScadaStatus();
       if (lastRecordCount > 0) {
-        showToast('🗄️ SCADA SQLITE DB', `Live Ingestion Active · ${lastRecordCount.toLocaleString()} logs committed`);
+        showToast('SCADA SQLITE DB', `Live Ingestion Active · ${lastRecordCount.toLocaleString()} logs committed`);
       }
     });
 
@@ -1671,41 +1703,111 @@
     const canvas = document.getElementById('factoryCanvas');
     const overlay = document.getElementById('fpsStartOverlay');
     const startBtn = document.getElementById('btnStartWalk');
+    const backToOverviewBtn = document.getElementById('btnBackToOverview');
+    const exportNavaBtn = document.getElementById('btnExportNavaModel');
 
-    function enterWalkthrough() {
+    function enterOverviewMode(animate = true) {
+      isOverviewMode = true;
+      document.body.classList.add('is-overview-mode');
+      if (overlay) overlay.classList.remove('is-hidden');
+
+      if (document.pointerLockElement) {
+        try { document.exitPointerLock(); } catch(e) {}
+      }
+
+      if (animate) {
+        flyStartPos.copy(camera.position);
+        flyEndPos.copy(OVERVIEW_CAM_POS);
+        const currentLookAt = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).add(camera.position);
+        flyStartTarget.copy(currentLookAt);
+        flyEndTarget.copy(OVERVIEW_CAM_TARGET);
+        flyDuration = 1600;
+        flyStartTime = performance.now();
+        isCameraFlying = true;
+        flyCallback = () => {
+          if (overviewControls) {
+            overviewControls.target.copy(OVERVIEW_CAM_TARGET);
+            overviewControls.enabled = true;
+          }
+        };
+      } else {
+        camera.position.copy(OVERVIEW_CAM_POS);
+        camera.lookAt(OVERVIEW_CAM_TARGET);
+        if (overviewControls) {
+          overviewControls.target.copy(OVERVIEW_CAM_TARGET);
+          overviewControls.enabled = true;
+        }
+      }
+    }
+
+    function enterWalkthroughMode(animate = true) {
       if (overlay) overlay.classList.add('is-hidden');
+      document.body.classList.remove('is-overview-mode');
+
+      if (overviewControls) {
+        overviewControls.enabled = false;
+      }
+
       initAudio();
-      try {
-        canvas.requestPointerLock();
-      } catch (e) {
-        console.warn('Pointer lock request error:', e);
+
+      if (animate) {
+        flyStartPos.copy(camera.position);
+        flyEndPos.copy(playerPos);
+        flyStartTarget.copy(overviewControls ? overviewControls.target : OVERVIEW_CAM_TARGET);
+        const walkLookAt = new THREE.Vector3(playerPos.x, playerPos.y, playerPos.z - 10.0);
+        flyEndTarget.copy(walkLookAt);
+        flyDuration = 1800;
+        flyStartTime = performance.now();
+        isCameraFlying = true;
+        flyCallback = () => {
+          isOverviewMode = false;
+          euler.set(0, 0, 0, 'YXZ');
+          camera.quaternion.setFromEuler(euler);
+          try {
+            if (canvas) canvas.requestPointerLock();
+          } catch(e) {}
+        };
+      } else {
+        isOverviewMode = false;
+        camera.position.copy(playerPos);
+        euler.set(0, 0, 0, 'YXZ');
+        camera.quaternion.setFromEuler(euler);
+        try {
+          if (canvas) canvas.requestPointerLock();
+        } catch(e) {}
       }
     }
 
     if (startBtn) {
       startBtn.disabled = false;
       startBtn.classList.add('ready');
-      startBtn.textContent = 'ENTER CLEANROOM TOUR (CLICK)';
       startBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        enterWalkthrough();
+        enterWalkthroughMode(true);
       });
     }
 
-    // Allow clicking the overlay backdrop to resume
-    if (overlay) {
-      overlay.addEventListener('click', (e) => {
-        enterWalkthrough();
+    if (backToOverviewBtn) {
+      backToOverviewBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        enterOverviewMode(true);
       });
     }
 
-    // Re-lock mouse when clicking canvas if unlocked
+    if (exportNavaBtn) {
+      exportNavaBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        exportFactoryToGLTF();
+      });
+    }
+
+    // Re-lock mouse when clicking canvas if unlocked and in walkthrough mode
     canvas.addEventListener('click', () => {
-      if (!isPointerLocked && !isDispensingModalOpen) {
+      if (!isOverviewMode && !isPointerLocked && !isDispensingModalOpen) {
         const logoutModal = document.getElementById('logoutConfirmModal');
         const isLoggingOut = logoutModal && (logoutModal.classList.contains('is-active') || logoutModal.classList.contains('is-open'));
         if (!isLoggingOut) {
-          enterWalkthrough();
+          try { canvas.requestPointerLock(); } catch(e) {}
         }
       }
     });
@@ -1718,20 +1820,17 @@
       if (!isPointerLocked) {
         Object.keys(keys).forEach(k => keys[k] = false);
 
-        // When pointer lock is released (e.g. user pressed ESC), show pause/resume menu overlay
+        // When pointer lock is released (e.g. user pressed ESC), return to overview portal
         const logoutModal = document.getElementById('logoutConfirmModal');
         const isLoggingOut = logoutModal && (logoutModal.classList.contains('is-active') || logoutModal.classList.contains('is-open'));
-        if (!isLoggingOut && !isDispensingModalOpen && overlay) {
-          overlay.classList.remove('is-hidden');
-          if (startBtn) {
-            startBtn.textContent = 'RESUME CLEANROOM TOUR (CLICK)';
-          }
+        if (!isLoggingOut && !isDispensingModalOpen) {
+          enterOverviewMode(true);
         }
       }
     });
 
     document.addEventListener('mousemove', (e) => {
-      if (!isPointerLocked) return;
+      if (!isPointerLocked || isOverviewMode) return;
       const sensitivity = 0.0022;
       euler.y -= e.movementX * sensitivity;
       euler.x -= e.movementY * sensitivity;
@@ -1740,6 +1839,11 @@
     });
 
     window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!isOverviewMode && !isDispensingModalOpen) {
+          enterOverviewMode(true);
+        }
+      }
       if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
     });
 
@@ -3160,8 +3264,18 @@
     const delta = Math.min((performance.now() - prevTime) * 0.001, 0.1);
     prevTime = performance.now();
 
-    try { updatePlayer(delta); } catch (e) { console.error('updatePlayer error:', e); }
-    try { drawRadar(); } catch (e) { console.error('drawRadar error:', e); }
+    if (isCameraFlying) {
+      updateCameraFlight();
+    } else if (isOverviewMode) {
+      if (overviewControls) {
+        overviewControls.update();
+        updateCompassNeedle();
+      }
+    } else {
+      try { updatePlayer(delta); } catch (e) { console.error('updatePlayer error:', e); }
+      try { drawRadar(); } catch (e) { console.error('drawRadar error:', e); }
+    }
+
     try { updateMachineAnimations(delta, performance.now() * 0.001); } catch (e) { console.error('updateMachineAnimations error:', e); }
     try { updateDispensingStation(delta, performance.now() * 0.001); } catch (e) { console.error('updateDispensingStation error:', e); }
 
@@ -3169,6 +3283,34 @@
       renderer.render(scene, camera);
     } catch (e) {
       console.error('renderer.render error:', e);
+    }
+  }
+
+  function updateCameraFlight() {
+    const elapsed = performance.now() - flyStartTime;
+    const progress = Math.min(1.0, elapsed / flyDuration);
+    // Smooth easeInOutCubic
+    const ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    camera.position.lerpVectors(flyStartPos, flyEndPos, ease);
+    const curTarget = new THREE.Vector3().lerpVectors(flyStartTarget, flyEndTarget, ease);
+    camera.lookAt(curTarget);
+
+    if (progress >= 1.0) {
+      isCameraFlying = false;
+      if (flyCallback) {
+        const cb = flyCallback;
+        flyCallback = null;
+        cb();
+      }
+    }
+  }
+
+  function updateCompassNeedle() {
+    const compassDial = document.getElementById('navaCompassDial');
+    if (compassDial && camera && overviewControls) {
+      const rotY = Math.atan2(camera.position.x - overviewControls.target.x, camera.position.z - overviewControls.target.z);
+      compassDial.style.transform = `rotate(${-rotY * (180 / Math.PI)}deg)`;
     }
   }
 

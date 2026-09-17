@@ -73,24 +73,42 @@
 
       <!-- Apple Action Pills in Top Bar -->
       <div class="fps-top-actions apple-top-actions">
+        <button type="button" id="btnBackToOverview" class="apple-pill-btn btn-overview-toggle" title="Switch to Plant Overview (ESC)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span class="action-text">OVERVIEW (ESC)</span>
+        </button>
         <div id="scadaDbSyncBadge" class="apple-pill-btn btn-scada-db" title="SQLite SCADA Live Database (Auto-Updates Every 30s)">
           <span class="scada-db-dot" id="scadaDbDot"></span>
           <span class="action-text" id="scadaDbText">DB: CONNECTING...</span>
         </div>
         <button type="button" id="btnDispensingAI" class="apple-pill-btn btn-dispensing" title="View ACA Line AI Dispensing Digital Twin">
-          <span class="action-icon">💧</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+          </svg>
           <span class="action-text">ACA AI DISPENSING</span>
         </button>
         <button type="button" id="btnBlenderSync" class="apple-pill-btn btn-sync-active" title="Toggle Blender Live Sync">
-          <span class="action-icon">🔄</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
           <span class="action-text" id="blenderSyncText">BLENDER SYNC</span>
         </button>
         <button type="button" id="btnExportGLTF" class="apple-pill-btn btn-export" title="Export Full Factory 3D Model to Blender (.glb)">
-          <span class="action-icon">📦</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
           <span class="action-text" id="exportBtnText">EXPORT (.GLB)</span>
         </button>
         <button type="button" id="btnAudioToggle" class="apple-pill-btn active" title="Toggle Cleanroom Audio">
-          <span class="action-icon">🔊</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
           <span class="action-text" id="audioBtnText">AUDIO ON</span>
         </button>
       </div>
@@ -220,34 +238,83 @@
     </div>
   </div>
 
-  <!-- Luxury First-Person Start & Control Overlay -->
-  <div id="fpsStartOverlay" class="fps-overlay">
-    <div class="fps-card">
-      <div class="fps-badge">// FIRST-PERSON CLEANROOM WALKTHROUGH</div>
-      <h1 class="fps-title">EXPLORE NAVANAKORN PLANT</h1>
-      <p class="fps-desc">Click anywhere to enter first-person view and walk through the facility.</p>
-      
-      <div class="fps-keys-grid">
-        <div class="key-col">
-          <div class="key-combo"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div>
-          <span class="key-lbl">MOVE / STRAFE</span>
+  <!-- =========================================================================
+       NAVA NAKORN PLANT OVERVIEW PORTAL (ESC / OVERVIEW 3D MODE)
+       Matching Design from media_1789628102684.png with 360° Live 3D Orbit
+       ========================================================================= -->
+  <div id="fpsStartOverlay" class="nava-overview-portal">
+    <!-- Top Bar -->
+    <header class="nava-top-bar">
+      <a href="/" class="nava-brand" title="BELTON AI Home">
+        <img src="belton_logo.png" alt="BELTON Logo" class="nava-logo-img">
+        <div class="nava-brand-text">
+          <span class="nava-brand-title">BELTON AI</span>
+          <span class="nava-brand-sub">Digital Twin Platform</span>
         </div>
-        <div class="key-col">
-          <div class="key-combo"><kbd>MOUSE</kbd></div>
-          <span class="key-lbl">LOOK 360°</span>
+      </a>
+
+      <nav class="nava-nav-tabs">
+        <a href="/factory" class="nava-tab active">
+          <svg class="nava-tab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+          <span>Digital Twin</span>
+        </a>
+        <a href="/product" class="nava-tab">
+          <svg class="nava-tab-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+          <span>Products</span>
+        </a>
+      </nav>
+
+      <div class="nava-top-status">
+        <div class="nava-status-pill pill-online">
+          <span class="status-dot-green"></span>
+          <span>System Online</span>
         </div>
-        <div class="key-col">
-          <div class="key-combo"><kbd>SHIFT</kbd></div>
-          <span class="key-lbl">SPRINT</span>
+        <div class="nava-status-pill pill-sqlite" id="navaSqlitePill">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+          </svg>
+          <span id="navaDbStatusText">DB : SQLITE 50/50 LIVE</span>
         </div>
-        <div class="key-col">
-          <div class="key-combo"><kbd>ESC</kbd></div>
-          <span class="key-lbl">RELEASE MOUSE</span>
+        <div class="nava-admin-pill">
+          <div class="admin-avatar">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+          <span>Admin</span>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
         </div>
       </div>
+    </header>
 
-      <!-- 3D Model Real-Time Loading Progress -->
-      <div id="modelLoadingContainer" class="model-loading-box">
+    <!-- Left Floating Hero Card -->
+    <aside class="nava-left-card">
+      <div class="nava-tagline-row">
+        <span class="nava-tagline">DIGITAL TWIN</span>
+        <span class="nava-tagline-line"></span>
+      </div>
+      <h1 class="nava-hero-title">
+        Explore<br>
+        <span class="highlight-blue">Nava Nakorn Plant</span>
+      </h1>
+      <p class="nava-hero-desc">
+        Step into your facility with a real-time 3D environment, powered by AI and data-driven insights.
+      </p>
+
+      <!-- 3D Model Real-Time Loading Progress (Disappears when 100%) -->
+      <div id="modelLoadingContainer" class="model-loading-box" style="margin-bottom: 16px;">
         <div class="model-loading-header">
           <span class="loading-label" id="loadingStatusText">LOADING BLENDER CLEANROOM MODEL...</span>
           <span class="loading-percent" id="loadingPercentText">0%</span>
@@ -257,14 +324,130 @@
         </div>
       </div>
 
-      <div class="fps-actions-row">
-        <button type="button" id="btnStartWalk" class="btn-enter-walk ready">ENTER CLEANROOM TOUR (CLICK)</button>
-        <button type="button" id="btnExportGLTFOverlay" class="btn-export-walk">
-          <span class="action-icon">📦</span>
-          <span id="exportOverlayBtnText">EXPORT TO BLENDER (.GLB)</span>
+      <div class="nava-actions">
+        <button type="button" id="btnStartWalk" class="btn-enter-nava ready">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+          <span id="btnEnterDigitalTwinText">Enter Digital Twin</span>
+        </button>
+        <button type="button" id="btnExportNavaModel" class="btn-export-nava" title="Export 3D Model (.GLB)">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Export 3D Model</span>
         </button>
       </div>
-    </div>
+
+      <!-- 3D Orbit Instruction Hint -->
+      <div class="nava-orbit-hint">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+        <span>Drag mouse to rotate 3D factory 360° · Scroll to zoom</span>
+      </div>
+    </aside>
+
+    <!-- Right Floating Card / Facility Information -->
+    <aside class="nava-right-card">
+      <div class="nava-card-header">FACILITY INFORMATION</div>
+      
+      <div class="nava-facility-hero">
+        <img src="assets/nava_nakorn_plant_thumb.png" alt="Nava Nakorn Plant" class="nava-plant-img">
+        <div class="nava-plant-meta">
+          <div class="nava-plant-name">Nava Nakorn Plant</div>
+          <div class="nava-plant-sub">Manufacturing Plant</div>
+        </div>
+      </div>
+
+      <div class="nava-spec-table">
+        <div class="nava-spec-row">
+          <div class="nava-spec-lbl">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+            </svg>
+            <span>Total Area</span>
+          </div>
+          <div class="nava-spec-val">12,500 m²</div>
+        </div>
+
+        <div class="nava-spec-row">
+          <div class="nava-spec-lbl">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+            <span>Zones</span>
+          </div>
+          <div class="nava-spec-val">12</div>
+        </div>
+
+        <div class="nava-spec-row">
+          <div class="nava-spec-lbl">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+            <span>Model Version</span>
+          </div>
+          <div class="nava-spec-val">v1.0.0</div>
+        </div>
+
+        <div class="nava-spec-row">
+          <div class="nava-spec-lbl">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Status</span>
+          </div>
+          <div class="nava-spec-val status-green">
+            <span class="status-dot-green"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Bottom HUD Bar -->
+    <footer class="nava-bottom-bar">
+      <div class="nava-bottom-left">
+        <div class="nava-pill-indicator"><span class="status-dot-green"></span> 3D Ready</div>
+        <div class="nava-pill-divider">|</div>
+        <div class="nava-pill-indicator"><span class="status-dot-green"></span> Live Data</div>
+        <div class="nava-pill-divider">|</div>
+        <div class="nava-pill-indicator"><span class="status-dot-green"></span> AI Ready</div>
+      </div>
+
+      <!-- Real-Time 3D Rotating Compass Dial -->
+      <div class="nava-compass-widget">
+        <div class="compass-rose">
+          <span class="compass-dir dir-n">N</span>
+          <span class="compass-dir dir-e">E</span>
+          <span class="compass-dir dir-s">S</span>
+          <span class="compass-dir dir-w">W</span>
+          <div class="compass-arrow-dial" id="navaCompassDial">
+            <svg class="compass-arrow-svg" viewBox="0 0 32 32" width="24" height="24">
+              <polygon points="16,3 21,16 16,13 11,16" fill="#0066ff"/>
+              <polygon points="16,29 21,16 16,19 11,16" fill="#94a3b8"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="nava-bottom-right">
+        <div class="smarter-line">
+          <span class="smarter-dash">—</span>
+          <div class="smarter-texts">
+            <span class="smarter-main">Smarter Factory</span>
+            <span class="smarter-sub">Brighter Tomorrow</span>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
 
   <!-- Luxury Confirm Logout Modal (Pure Frosted White Glass) -->
