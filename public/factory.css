@@ -3764,9 +3764,16 @@ body.is-overview-mode .fps-reticle {
 .nava-left-card {
   pointer-events: auto;
   position: absolute;
-  top: 110px;
+  top: 100px;
   left: 44px;
   max-width: 440px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 24px;
+  padding: 26px 28px;
+  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.08);
   z-index: 10;
 }
 
@@ -3791,11 +3798,11 @@ body.is-overview-mode .fps-reticle {
 }
 
 .nava-hero-title {
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   color: #0f172a;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   letter-spacing: -0.02em;
 }
 
@@ -3989,6 +3996,13 @@ body.is-overview-mode .fps-reticle {
   font-size: 0.78rem;
   font-weight: 600;
   color: #334155;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .nava-pill-indicator {
@@ -4008,6 +4022,12 @@ body.is-overview-mode .fps-reticle {
   transform: translateX(-50%);
   width: 72px;
   height: 72px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .compass-rose {
@@ -4044,6 +4064,13 @@ body.is-overview-mode .fps-reticle {
   display: flex;
   align-items: center;
   gap: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .smarter-dash {

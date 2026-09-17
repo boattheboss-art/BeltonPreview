@@ -359,13 +359,13 @@ optimizer = optim.AdamW(model.parameters(), lr=0.003, weight_decay=1e-4)
 # 5. Real-Time Terminal Training Loop
 def train_model():
     print("====================================================================")
-    print("🚀 BELTON TECHNOLOGY - IN-HOUSE AI COPILOT NEURAL TRAINER (v5.5)")
+    print(" BELTON TECHNOLOGY - IN-HOUSE AI COPILOT NEURAL TRAINER (v5.5)")
     print("   Training Real-Time Neural Intent, SCADA & Conversational Brain")
     print("====================================================================")
-    print(f"📊 Total Dataset Samples : {len(dataset_samples)} verified industrial & chitchat queries")
-    print(f"🧠 Total Intent Classes  : {len(INTENTS)} domains (SCADA, Yield, 66 Steps, Chitchat, Humor)")
-    print(f"📚 Vocabulary Size       : {len(VOCAB)} tokens")
-    print(f"⚙️ Target Device          : {hardware_info}")
+    print(f" Total Dataset Samples : {len(dataset_samples)} verified industrial & chitchat queries")
+    print(f" Total Intent Classes  : {len(INTENTS)} domains (SCADA, Yield, 66 Steps, Chitchat, Humor)")
+    print(f" Vocabulary Size       : {len(VOCAB)} tokens")
+    print(f" Target Device          : {hardware_info}")
     print("--------------------------------------------------------------------\n")
 
     EPOCHS = 45

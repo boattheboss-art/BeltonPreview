@@ -221,11 +221,17 @@
             child.castShadow = true;
             child.receiveShadow = true;
 
+            const cName = (child.name || '').toLowerCase();
+            // Remove / hide overhead ceiling to allow cutaway architectural Digital Twin view
+            if (cName.includes('ceiling') || cName.includes('roof')) {
+              child.visible = false;
+              return;
+            }
+
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             mats.forEach(m => {
               if (!m) return;
               const mName = (m.name || '').toLowerCase();
-              const cName = (child.name || '').toLowerCase();
               const isGlass = mName.includes('glass') || mName.includes('window') || 
                               mName.startsWith('material_10') || mName.includes('material_10.') ||
                               cName.includes('glass') || cName.includes('window');
@@ -251,7 +257,18 @@
           } else {
             factoryModel.remove(staticGlbFacility);
           }
-          console.log('⚡ [Cleanroom De-duplicate] Removed static GLB cleanroom machines. Fully restored animated real-time dispensing workcells with zero Z-fighting.');
+          console.log('[Cleanroom De-duplicate] Removed static GLB cleanroom machines. Fully restored animated real-time dispensing workcells.');
+        }
+
+        // Remove GLB Ceiling and Overhead Luminaires for unobstructed cutaway architectural view
+        const staticCeiling = factoryModel.getObjectByName('Ceiling_And_Luminaires');
+        if (staticCeiling) {
+          if (staticCeiling.parent) {
+            staticCeiling.parent.remove(staticCeiling);
+          } else {
+            factoryModel.remove(staticCeiling);
+          }
+          console.log('[Cleanroom Cutaway] Removed GLB Ceiling_And_Luminaires for architectural cutaway view.');
         }
 
         scene.add(factoryModel);
@@ -264,13 +281,31 @@
         if (fillBar) fillBar.style.width = '100%';
         if (percentTxt) percentTxt.textContent = '100%';
         if (statusTxt) statusTxt.textContent = 'FACTORY 3D MODEL READY (100%)';
+        const enterTxt = document.getElementById('btnEnterDigitalTwinText');
+        if (enterTxt) {
+          enterTxt.textContent = 'Enter Digital Twin';
+        } else if (startBtn) {
+          startBtn.textContent = 'Enter Digital Twin';
+        }
         if (startBtn) {
           startBtn.disabled = false;
-          startBtn.textContent = 'ENTER CLEANROOM (CLICK)';
           startBtn.classList.add('ready');
         }
 
-        showToast('⚡ MODEL LOADED', 'Loaded complete factory GLB from Blender (~25 MB)');
+        // Auto-hide the loading progress container once 100% ready
+        setTimeout(() => {
+          const box = document.getElementById('modelLoadingContainer');
+          if (box) {
+            box.style.transition = 'opacity 0.4s ease, max-height 0.4s ease, margin 0.4s ease';
+            box.style.opacity = '0';
+            box.style.maxHeight = '0px';
+            box.style.overflow = 'hidden';
+            box.style.marginBottom = '0px';
+            setTimeout(() => { box.style.display = 'none'; }, 400);
+          }
+        }, 1200);
+
+        showToast('MODEL READY', 'Loaded complete factory 3D environment');
         updateLocationHUD();
         if (onComplete) onComplete();
       },
@@ -283,26 +318,28 @@
           if (rawPct >= 100) {
             if (fillBar) fillBar.style.width = '100%';
             if (percentTxt) percentTxt.textContent = '100%';
-            if (statusTxt) statusTxt.textContent = '⚡ ดาวน์โหลดครบแล้ว! กำลังโหลด 3D Geometry เข้าสู่หน้าจอ...';
+            if (statusTxt) statusTxt.textContent = 'ดาวน์โหลดครบแล้ว กำลังประมวลผล 3D Geometry...';
             if (startBtn) {
               startBtn.disabled = false;
               startBtn.classList.add('ready');
-              startBtn.textContent = 'ENTER CLEANROOM (CLICK)';
             }
+            const enterTxt = document.getElementById('btnEnterDigitalTwinText');
+            if (enterTxt) enterTxt.textContent = 'Enter Digital Twin';
           } else {
             const percent = Math.min(rawPct, 99);
             if (fillBar) fillBar.style.width = percent + '%';
             if (percentTxt) percentTxt.textContent = percent + '%';
             if (statusTxt) statusTxt.textContent = 'DOWNLOADING MODEL: ' + loadedMB + ' / ' + totalMB + ' MB (' + percent + '%)';
-            if (startBtn) startBtn.textContent = 'LOADING MODEL (' + percent + '%)...';
+            const enterTxt = document.getElementById('btnEnterDigitalTwinText');
+            if (enterTxt) enterTxt.textContent = 'Loading Model (' + percent + '%)...';
           }
         }
       },
       (err) => {
         console.error('Failed to load factory GLB:', err);
         isReloadingModel = false;
-        if (statusTxt) statusTxt.textContent = '⚠️ FAILED TO LOAD GLB (CHECK CONNECTION)';
-        showToast('⚠️ ERROR', 'Could not load factory GLB from server');
+        if (statusTxt) statusTxt.textContent = 'FAILED TO LOAD GLB (CHECK CONNECTION)';
+        showToast('ERROR', 'Could not load factory GLB from server');
       }
     );
   }
@@ -552,17 +589,8 @@
     gridHelper.position.y = 0.002;
     shellGroup.add(gridHelper);
 
-    // 3. Cleanroom Overhead Suspended Ceiling (Y = 5.2)
-    const ceilingGeo = new THREE.PlaneGeometry(240, 160);
-    const ceilingMat = new THREE.MeshStandardMaterial({
-      color: 0xf8fafc,
-      roughness: 0.75,
-      metalness: 0.1
-    });
-    const ceilingMesh = new THREE.Mesh(ceilingGeo, ceilingMat);
-    ceilingMesh.rotation.x = Math.PI / 2;
-    ceilingMesh.position.y = 5.2;
-    shellGroup.add(ceilingMesh);
+    // 3. Cleanroom Overhead Suspended Ceiling (Removed for open-top architectural cutaway Digital Twin view)
+    // NOTE: Intentionally omitted so all 50 ACA dispensing workcells, conveyors, robots, and andon lights are 100% visible from above.
 
     // 4. Perimeter Cleanroom Modular Partition Walls
     const wallMat = new THREE.MeshStandardMaterial({
