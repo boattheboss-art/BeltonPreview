@@ -52,9 +52,9 @@ app.post('/api/copilot/chat', async (req, res) => {
         res.json(result);
     } catch (err) {
         console.error('[Copilot Chat Error]:', err.message);
-        if (err.message.includes('ECONNREFUSED') || err.message.includes('fetch failed')) {
+        if (err.message.includes('ECONNREFUSED') || err.message.includes('fetch failed') || err.message.includes('ENOTFOUND')) {
             return res.json({
-                reply: 'ระบบวิศวกร AI Copilot ยังไม่สามารถเชื่อมต่อกับ Ollama Local Service ได้ในขณะนี้\n\n**คำแนะนำสำหรับผู้ดูแลระบบ / IT:**\n1. ตรวจสอบว่าได้เปิดใช้งาน Ollama แล้วหรือยัง โดยเปิด Terminal แล้วสั่ง: `ollama serve`\n2. ตรวจสอบว่าได้ดาวน์โหลดโมเดลแล้วหรือไม่: `ollama pull qwen2.5:14b`\n3. หากต้องการตรวจสอบขั้นตอนขึ้นระบบอย่างละเอียด สามารถเปิดดูได้ที่ไฟล์ `DEPLOYMENT_GUIDE.md` ครับ',
+                reply: 'กรุณาติดต่อผู้เปิดเซิฟเวอร์',
                 toolsUsed: [],
                 action: null
             });
@@ -96,7 +96,16 @@ app.post('/api/copilot/chat-stream', async (req, res) => {
             },
             onError: (err) => {
                 console.error('[Chat-Stream Error]:', err.message);
-                sendEvent('error', { message: err.message });
+                const isOllamaDown = err.message.includes('ECONNREFUSED') ||
+                                     err.message.includes('fetch failed') ||
+                                     err.message.includes('ENOTFOUND') ||
+                                     err.message.includes('connect');
+                if (isOllamaDown) {
+                    sendEvent('token', { token: 'กรุณาติดต่อผู้เปิดเซิฟเวอร์' });
+                    sendEvent('done', { fullText: 'กรุณาติดต่อผู้เปิดเซิฟเวอร์' });
+                } else {
+                    sendEvent('error', { message: err.message });
+                }
                 res.end();
             }
         });
@@ -106,10 +115,16 @@ app.post('/api/copilot/chat-stream', async (req, res) => {
         });
     } catch (err) {
         console.error('[Chat-Stream Error]:', err.message);
+        const isOllamaDown = err.message.includes('ECONNREFUSED') ||
+                             err.message.includes('fetch failed') ||
+                             err.message.includes('ENOTFOUND') ||
+                             err.message.includes('connect');
+        const fallbackMsg = isOllamaDown ? 'กรุณาติดต่อผู้เปิดเซิฟเวอร์' : err.message;
         if (!res.headersSent) {
-            res.status(500).json({ error: err.message });
+            res.status(200).json({ reply: fallbackMsg, error: fallbackMsg });
         } else {
-            res.write(`event: error\ndata: ${JSON.stringify({ message: err.message })}\n\n`);
+            sendEvent('token', { token: fallbackMsg });
+            sendEvent('done', { fullText: fallbackMsg });
             res.end();
         }
     }

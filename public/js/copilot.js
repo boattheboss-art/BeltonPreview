@@ -549,10 +549,8 @@
       rowEl.classList.remove('is-thinking');
       textEl.style.display = 'block';
       if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
-      textEl.innerHTML = `<div style="color:#ef4444;background:rgba(239,68,68,0.1);padding:12px 16px;border-radius:12px;border:1px solid rgba(239,68,68,0.25);">
-        <b>ข้อผิดพลาด:</b> ${err.message}<br>
-        <span style="font-size:12px;opacity:0.8;">กรุณาตรวจสอบว่าได้เปิดคำสั่ง <code>gpu</code> หรือ <code>scripts/start_ollama.bat</code> ในเครื่องของคุณแล้วหรือไม่ครับ</span>
-      </div>`;
+      textEl.innerHTML = formatMarkdown('กรุณาติดต่อผู้เปิดเซิฟเวอร์');
+      dialogueHistory.push({ role: 'assistant', content: 'กรุณาติดต่อผู้เปิดเซิฟเวอร์' });
       isThinking = false;
       activeStopHandler = null;
       setButtonState(false);

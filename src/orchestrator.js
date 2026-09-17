@@ -839,20 +839,21 @@ async function streamOllamaChat(url, payload, onTokenChunk) {
 // -------------------------------------------------------------------------
 async function runOrchestrator(userMessage, conversationHistory = []) {
   const startTime = Date.now();
-  const ctx = prepareContext(userMessage, conversationHistory);
-  const {
-    isCasualMessage,
-    retrievedSlidesList,
-    toolsUsed,
-    matchedExam,
-    messages,
-    toolsToProvide
-  } = ctx;
-  let triggeredAction = null;
+  try {
+    const ctx = prepareContext(userMessage, conversationHistory);
+    const {
+      isCasualMessage,
+      retrievedSlidesList,
+      toolsUsed,
+      matchedExam,
+      messages,
+      toolsToProvide
+    } = ctx;
+    let triggeredAction = null;
 
-  console.log(`[Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
+    console.log(`[Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
 
-  const firstRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
+    const firstRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -1034,7 +1035,24 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
       finalReply = flowPrefix + finalReply;
     }
   }
-  return buildResult(finalReply, triggeredAction);
+    return buildResult(finalReply, triggeredAction);
+  } catch (err) {
+    console.error('[Orchestrator Error]:', err.message);
+    const isOllamaDown = err.message.includes('ECONNREFUSED') ||
+                         err.message.includes('fetch failed') ||
+                         err.message.includes('ENOTFOUND') ||
+                         err.message.includes('Ollama API Error') ||
+                         err.message.includes('connect');
+    if (isOllamaDown) {
+      return {
+        reply: 'กรุณาติดต่อผู้เปิดเซิฟเวอร์',
+        toolsUsed: [],
+        action: null,
+        thoughtMetadata: formatThoughtMetadata({ startTime, retrievedSlidesList: [], toolsUsed: [], matchedExam: null })
+      };
+    }
+    throw err;
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -1293,6 +1311,26 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
 
   } catch (err) {
     console.error('[Orchestrator Stream Error]:', err.message);
+    const isOllamaDown = err.message.includes('ECONNREFUSED') ||
+                         err.message.includes('fetch failed') ||
+                         err.message.includes('ENOTFOUND') ||
+                         err.message.includes('Ollama API Error') ||
+                         err.message.includes('connect') ||
+                         err.message.includes('terminated') ||
+                         err.message.includes('premature') ||
+                         err.message.includes('closed');
+
+    if (isOllamaDown) {
+      const serverOffMsg = 'กรุณาติดต่อผู้เปิดเซิฟเวอร์';
+      if (typeof onToken === 'function') {
+        onToken(serverOffMsg);
+      }
+      if (typeof onDone === 'function') {
+        onDone({ fullText: serverOffMsg, thoughtMetadata: formatThoughtMetadata({ startTime, retrievedSlidesList: [], toolsUsed: [], matchedExam: null }) });
+      }
+      return;
+    }
+
     if (typeof onError === 'function') {
       onError(err);
     }
