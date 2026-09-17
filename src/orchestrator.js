@@ -183,6 +183,139 @@ function isFollowUpQuery(userMsg) {
   return false;
 }
 
+const BELTON_MANUFACTURING_PROCESS_FLOWS = {
+  coil_winding: {
+    key: 'coil_winding',
+    productName: 'Coil Winding',
+    docCode: 'TM-00-00-01',
+    pages: 'หน้า 14-27',
+    coverPage: 13,
+    totalSteps: 14,
+    matches: (msg) => {
+      const m = msg.toLowerCase();
+      const isCoil = /(coil\s*winding|ขดลวด|คอยล์\s*ไวน์ดิง)/i.test(m);
+      const isFlow = /(ขั้นตอน|กระบวนการ|flow|process|มีอะไรบ้าง|กี่ขั้นตอน|กี่ขั้น)/i.test(m);
+      return isCoil && isFlow;
+    },
+    steps: [
+      { step: 1, page: 14, name: 'Winding & Unwire', desc: 'กรอขดลวดคอยล์และเตรียมตำแหน่ง Lead wire' },
+      { step: 2, page: 15, name: 'Out gassing', desc: 'อบไล่แก๊ส (Baking 180 ± 5 °C นาน 6 ชั่วโมง)' },
+      { step: 3, page: 16, name: 'Dip coating', desc: 'จุ่มเคลือบผิวคอยล์ด้วยกาว Epoxy EPO-TEK 353ND' },
+      { step: 4, page: 17, name: 'Baking', desc: 'อบกาวในเตาอบ (Baking oven)' },
+      { step: 5, page: 18, name: 'Auto 3 in 1 & UV cure', desc: 'จัดแนวสาย (Routing), ตัดสาย (Cutting), แต้มกาว UV และอบ UV' },
+      { step: 6, page: 19, name: 'Auto Lead wire stripping', desc: 'ปอกฉนวนสาย Lead wire ด้วยเครื่อง Stripping' },
+      { step: 7, page: 20, name: 'Coil cleaning', desc: 'ทำความสะอาดขจัดคราบตกค้างในถัง Ultrasonic cleaning' },
+      { step: 8, page: 21, name: 'Coil thickness inspection', desc: 'ตรวจวัดความหนาของคอยล์ด้วยเกจวัดเทียบสเปก' },
+      { step: 9, page: 22, name: 'Tube cutting', desc: 'ตัดความยาวส่วนเกินของท่อ Tube' },
+      { step: 10, page: 23, name: 'Tube insert & wire tracking', desc: 'สวมท่อเข้าสายไฟและจัดตำแหน่งสาย' },
+      { step: 11, page: 24, name: 'Baking', desc: 'อบกาวซ้ำในเตาอบ' },
+      { step: 12, page: 25, name: 'Coil resistance', desc: 'ตรวจสอบค่าความต้านทานไฟฟ้าของขดลวดคอยล์' },
+      { step: 13, page: 26, name: 'Visual inspection', desc: 'ตรวจสอบความเรียบร้อยของคอยล์ด้วยสายตา' },
+      { step: 14, page: 27, name: 'OQA & Packing', desc: 'ตรวจปล่อยคุณภาพขั้นสุดท้าย (OQA) และบรรจุลงบรรจุภัณฑ์' }
+    ]
+  },
+  aca: {
+    key: 'aca',
+    productName: 'ACA (Actuator Coil Assembly)',
+    docCode: 'TM-00-00-01',
+    pages: 'หน้า 28-49',
+    coverPage: 28,
+    totalSteps: 21,
+    matches: (msg) => {
+      const m = msg.toLowerCase();
+      const isAca = /(aca|actuator coil assembly)/i.test(m);
+      const isFlow = /(ขั้นตอน|กระบวนการ|flow|process|มีอะไรบ้าง|กี่ขั้นตอน|กี่ขั้น)/i.test(m);
+      return isAca && isFlow;
+    },
+    steps: [
+      { step: 1, page: 29, name: 'E-block cleaning', desc: 'ทำความสะอาด E-block ด้วยคลื่นเสียงความถี่สูง Ultrasonic wash/rinse' },
+      { step: 2, page: 30, name: 'Pre-curing / plasma bobbin', desc: 'อบ Pre-cure และเตรียมผิวด้วย Plasma บน Bobbin' },
+      { step: 3, page: 31, name: 'Laser engraving', desc: 'ยิงเลเซอร์ระบุรหัสชิ้นงาน (CDA pressure 0.4-0.6 MPa)' },
+      { step: 4, page: 32, name: 'Coil pre-heating', desc: 'อุ่นขดลวดคอยล์ก่อนเข้าสู่กระบวนการหยอดกาว' },
+      { step: 5, page: 33, name: 'E-block & Coil dispensing', desc: 'หยอดกาวประกอบ E-block กับ Coil' },
+      { step: 6, page: 34, name: 'Coil & bobbin dispensing', desc: 'หยอดกาวประกอบ Coil กับ Bobbin' },
+      { step: 7, page: 35, name: 'Epoxy inspection / mending', desc: 'ตรวจสอบและตกแต่งแนวกาว Epoxy' },
+      { step: 8, page: 36, name: '1st curing & unload', desc: 'อบกาวรอบที่ 1 และนำชิ้นงานออกจากเตา' },
+      { step: 9, page: 37, name: '2nd curing & unload', desc: 'อบกาวรอบที่ 2 เพื่อให้กาวเซ็ตตัวสมบูรณ์และนำชิ้นงานออก' },
+      { step: 10, page: 38, name: 'DI water cleaning', desc: 'ทำความสะอาดชิ้นงานด้วยน้ำบริสุทธิ์ DI (Deionized water)' },
+      { step: 11, page: 39, name: 'Hi-pot & open test', desc: 'ทดสอบความเป็นฉนวนไฟฟ้า (Hi-pot) และการนำไฟฟ้า' },
+      { step: 12, page: 40, name: 'Combine DVT & Coil height inspection', desc: 'ตรวจวัดโปรไฟล์ DVT และความสูงคอยล์' },
+      { step: 13, page: 41, name: 'Coil height inspection', desc: 'ตรวจสอบความสูงของคอยล์ซ้ำเพื่อยืนยันพิกัด' },
+      { step: 14, page: 42, name: 'Damper install', desc: 'ติดตั้งชิ้นส่วนแดมเปอร์ (Damper)' },
+      { step: 15, page: 43, name: 'Tube length checking', desc: 'ตรวจสอบความยาวท่อ (Tube length)' },
+      { step: 16, page: 44, name: 'Slit height checking', desc: 'ตรวจสอบความสูงสลิต (Slit height)' },
+      { step: 17, page: 45, name: 'Resonance checking', desc: 'ตรวจสอบค่าการสั่นพ้องเรโซแนนซ์ (Resonance)' },
+      { step: 18, page: 46, name: 'Arm height & tweaking', desc: 'ตรวจวัดความสูงอาร์มและปรับแต่ง (Tweaking)' },
+      { step: 19, page: 47, name: 'Visual inspection', desc: 'ตรวจสอบความเรียบร้อยของชิ้นงานด้วยสายตา' },
+      { step: 20, page: 48, name: 'OQA', desc: 'ตรวจสอบคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ (Sampling AQL 0.65%, C=0)' },
+      { step: 21, page: 49, name: 'Packing', desc: 'บรรจุชิ้นงานลงถาด ติดฉลาก และซีลสุญญากาศ' }
+    ]
+  },
+  fcof: {
+    key: 'fcof',
+    productName: 'FCOF (Flip Chip On Flex)',
+    docCode: 'TM-00-00-01',
+    pages: 'หน้า 50-64',
+    coverPage: 50,
+    totalSteps: 14,
+    matches: (msg) => {
+      const m = msg.toLowerCase();
+      const isFcof = /(fcof|flip chip on flex)/i.test(m);
+      const isFlow = /(ขั้นตอน|กระบวนการ|flow|process|มีอะไรบ้าง|กี่ขั้นตอน|กี่ขั้น)/i.test(m);
+      return isFcof && isFlow;
+    },
+    steps: [
+      { step: 1, page: 51, name: 'Flex Baking', desc: 'อบแผ่น Flex เพื่อไล่ความชื้น (ควบคุม Temp & Duration)' },
+      { step: 2, page: 52, name: 'Solder Paste Printing', desc: 'พิมพ์เนื้อครีมบัดกรี (Solder Paste) ลงบนแผ่น Flex' },
+      { step: 3, page: 53, name: 'SMT Placement (Chip components)', desc: 'วางชิ้นส่วนอุปกรณ์ Chip ลงบน Solder paste' },
+      { step: 4, page: 54, name: 'SMT Placement (Connector placement)', desc: 'วาง Connector ด้วยหัวจับ Pick & Place' },
+      { step: 5, page: 55, name: 'Die Placement (Pre-amp placement)', desc: 'วางชิป Pre-amp โดยจุ่มฟลักซ์ Tacky flux' },
+      { step: 6, page: 56, name: 'Reflow Soldering', desc: 'เข้าเตาอบ Reflow หลอมประสานตะกั่ว (คุม Temp และ N2/O2)' },
+      { step: 7, page: 57, name: 'Underfill Dispensing', desc: 'หยอดกาว Underfill ใต้ชิป Pre-amp เพื่อเสริมความแข็งแรง' },
+      { step: 8, page: 58, name: 'AOI Inspection', desc: 'ตรวจสอบความถูกต้องด้วยระบบกล้องอัตโนมัติ (Automated Optical Inspection)' },
+      { step: 9, page: 59, name: 'Snap Cure', desc: 'อบกาว Underfill ให้แห้งตัวอย่างรวดเร็ว และถ่ายลงตะกร้าล้าง' },
+      { step: 10, page: 60, name: 'Flex Cleaning', desc: 'ล้างทำความสะอาดด้วยน้ำบริสุทธิ์ DI (คุม Temp, Speed, Pressure, pH, Resistivity)' },
+      { step: 11, page: 61, name: 'X-Ray Inspection', desc: 'ตรวจสอบรอยเชื่อมบัดกรีและช่องว่างใต้ Pre-amp bumps ด้วยรังสี X-Ray' },
+      { step: 12, page: 62, name: 'QMAX Test', desc: 'ทดสอบคุณสมบัติและการทำงานทางไฟฟ้าด้วยเครื่อง QMAX' },
+      { step: 13, page: 63, name: 'FMVI / OQA', desc: 'ตรวจสอบชิ้นงานขั้นสุดท้ายด้วยกล้องจุลทรรศน์ (FVMI) และฝ่ายประกันคุณภาพ (OQA)' },
+      { step: 14, page: 64, name: 'Packing', desc: 'บรรจุชิ้นงานลงบรรจุภัณฑ์และบันทึก Traveller Card' }
+    ]
+  },
+  apfa: {
+    key: 'apfa',
+    productName: 'APFA (Arm Pivot Flex Assembly / Hook Up)',
+    docCode: 'TM-00-00-01',
+    pages: 'หน้า 65-82',
+    coverPage: 65,
+    totalSteps: 17,
+    matches: (msg) => {
+      const m = msg.toLowerCase();
+      const isApfa = /(apfa|arm pivot flex assembly|hook up|hookup)/i.test(m);
+      const isFlow = /(ขั้นตอน|กระบวนการ|flow|process|มีอะไรบ้าง|กี่ขั้นตอน|กี่ขั้น)/i.test(m);
+      return isApfa && isFlow;
+    },
+    steps: [
+      { step: 1, page: 66, name: 'Bending', desc: 'ดัดขึ้นรูปชิ้นงาน Flex' },
+      { step: 2, page: 67, name: 'Soldering ground pin and VCM pad', desc: 'บัดกรี Ground pin และ VCM pad (คุมอุณหภูมิหัวแร้งและชนิดลวดบัดกรี)' },
+      { step: 3, page: 68, name: 'Flex bracket install', desc: 'ประกอบขายึด Flex bracket' },
+      { step: 4, page: 69, name: 'Load in carrier', desc: 'วางชิ้นงานลงใน Carrier รองรับ' },
+      { step: 5, page: 70, name: 'AQ Cleaning', desc: 'ทำความสะอาดชิ้นงานแบบ Aqueous ด้วยน้ำบริสุทธิ์ DI' },
+      { step: 6, page: 71, name: 'Unload from carrier', desc: 'ปลดชิ้นงานออกจาก Carrier' },
+      { step: 7, page: 72, name: 'DCM attachment', desc: 'ประกอบชิ้นส่วน DCM' },
+      { step: 8, page: 73, name: 'T-ring insertion', desc: 'สวมแหวน T-ring (คุมทิศทาง Orientation และการลงน้ำยา IPA)' },
+      { step: 9, page: 74, name: 'Pivot Install', desc: 'ติดตั้งแกน Pivot (ควบคุมความสูง Pivot height และแรงกด Force)' },
+      { step: 10, page: 75, name: 'VMI', desc: 'ตรวจสอบชิ้นส่วนเชิงกลด้วยสายตา/กล้องจุลทรรศน์' },
+      { step: 11, page: 76, name: 'Pivot height checking', desc: 'ตรวจสอบพิกัดความสูงของ Pivot ตามสเปก' },
+      { step: 12, page: 77, name: 'Arm height test', desc: 'ทดสอบความสูงของอาร์ม (Arm height)' },
+      { step: 13, page: 78, name: 'Electrical test', desc: 'ทดสอบคุณสมบัติทางไฟฟ้า (Resistance, Polarity, Preamp ID)' },
+      { step: 14, page: 79, name: 'Tray label attachment', desc: 'ติดฉลากระบุรายละเอียดลงบนถาดบรรจุ' },
+      { step: 15, page: 80, name: 'OQA', desc: 'ตรวจปล่อยคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ' },
+      { step: 16, page: 81, name: 'Final scan', desc: 'สแกนบาร์โค้ดบันทึกเข้าระบบ' },
+      { step: 17, page: 82, name: 'Packing', desc: 'บรรจุชิ้นงานและซีลสุญญากาศ (ควบคุม Vacuum level และ Seal time)' }
+    ]
+  }
+};
+
 function prepareContext(userMessage, conversationHistory = []) {
   const isCasualMessage = isGreetingOrChitchat(userMessage) || isThankYou(userMessage);
   let retrievedSlidesList = [];
@@ -212,45 +345,63 @@ function prepareContext(userMessage, conversationHistory = []) {
     }
   }
 
-  // 3. Dynamic Slide Retrieval (RAG) from local SQLite FTS5 database (669 pages: Belton + Seagate)
+  // 3. Dynamic Slide Retrieval (RAG) & Authoritative Manufacturing Process Flows
   let dynamicSlideExcerpts = '';
-  const isAcaProcessFlowQuery = /(aca|actuator coil assembly).*(กี่ขั้นตอน|มีขั้นตอน|ขั้นตอน|กระบวนการ|flow|process)/i.test(userMessage) 
-                             || /(ขั้นตอน|กระบวนการ).*(aca)/i.test(userMessage);
+  let matchedProcessFlow = null;
 
-  if (isAcaProcessFlowQuery) {
+  if (!isCasualMessage) {
+    for (const flowKey of Object.keys(BELTON_MANUFACTURING_PROCESS_FLOWS)) {
+      const flow = BELTON_MANUFACTURING_PROCESS_FLOWS[flowKey];
+      if (typeof flow.matches === 'function' && flow.matches(userMessage)) {
+        matchedProcessFlow = flow;
+        break;
+      }
+    }
+  }
+
+  const isAllProductsFlowQuery = !isCasualMessage && !matchedProcessFlow && (
+    /(ผลิตภัณฑ์|product|สายการผลิต).*(กี่ขั้นตอน|มีกี่ขั้นตอน|มีอะไรบ้าง|ทั้งหมด)/i.test(userMessage)
+    || /(แต่ละ|ทุก).*(ผลิตภัณฑ์|product).*(กี่ขั้นตอน|มีขั้นตอน)/i.test(userMessage)
+    || /(มีกี่ผลิตภัณฑ์|มีผลิตภัณฑ์อะไรบ้าง|โรงงานมีกี่line|lineการผลิต)/i.test(userMessage)
+    || /(กระบวนการผลิต).*(มีกี่|ทั้งหมด|อะไรบ้าง|ของโรงงาน)/i.test(userMessage)
+  );
+
+  if (matchedProcessFlow) {
     retrievedSlidesList = [{
-      doc_code: 'TM-00-00-01',
-      doc_name: 'Product & Process Introduction (ACA Process Flow)',
-      page_number: 28,
-      title: 'ACA Process Flow (21 Operations: หน้า 29 ถึง 49)'
+      doc_code: matchedProcessFlow.docCode,
+      doc_name: `Product & Process Introduction (${matchedProcessFlow.productName} Process Flow)`,
+      page_number: matchedProcessFlow.coverPage,
+      title: `${matchedProcessFlow.productName} Process Flow (${matchedProcessFlow.totalSteps} ขั้นตอน: ${matchedProcessFlow.pages})`
     }];
     dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:
-เอกสาร: [TM-00-00-01] Product & Process Introduction (หน้า 28-49)
-หัวข้อ: ACA Process Flow (กระบวนการผลิต ACA ทั้งหมด 21 ขั้นตอน เรียงตามลำดับหน้า 29 ถึง 49)
+เอกสาร: [${matchedProcessFlow.docCode}] Product & Process Introduction (${matchedProcessFlow.pages})
+หัวข้อ: ${matchedProcessFlow.productName} Process Flow (กระบวนการผลิตมีทั้งหมด ${matchedProcessFlow.totalSteps} ขั้นตอน เรียงตามลำดับ)
 เนื้อหาข้อกำหนด:
-ขั้นตอนที่ 1 (หน้า 29): E-block cleaning (ทำความสะอาด E-block ด้วย Ultrasonic)
-ขั้นตอนที่ 2 (หน้า 30): Pre-curing / plasma bobbin (เตรียมผิวและอบ Pre-cure บ็อบบิน)
-ขั้นตอนที่ 3 (หน้า 31): Laser engraving (ยิงเลเซอร์ระบุรหัสชิ้นงาน)
-ขั้นตอนที่ 4 (หน้า 32): Coil pre-heating (อุ่นขดลวดคอยล์ก่อนหยอดกาว)
-ขั้นตอนที่ 5 (หน้า 33): E-block & Coil dispensing (หยอดกาวประกอบ E-block กับ Coil)
-ขั้นตอนที่ 6 (หน้า 34): Coil & bobbin dispensing (หยอดกาวประกอบ Coil กับ Bobbin)
-ขั้นตอนที่ 7 (หน้า 35): Epoxy inspection / mending (ตรวจสอบและแต่งแนวกาว Epoxy)
-ขั้นตอนที่ 8 (หน้า 36): 1st curing & unload (อบกาวรอบที่ 1 และนำชิ้นงานออก)
-ขั้นตอนที่ 9 (หน้า 37): 2nd curing & unload (อบกาวรอบที่ 2 และนำชิ้นงานออก)
-ขั้นตอนที่ 10 (หน้า 38): DI water cleaning (ทำความสะอาดด้วยน้ำบริสุทธิ์ DI)
-ขั้นตอนที่ 11 (หน้า 39): Hi-pot & open test (ทดสอบทางไฟฟ้าและฉนวน Hi-pot)
-ขั้นตอนที่ 12 (หน้า 40): Combine DVT & Coil height inspection (ตรวจวัด DVT และความสูงคอยล์)
-ขั้นตอนที่ 13 (หน้า 41): Coil height inspection (ตรวจวัดความสูงของคอยล์)
-ขั้นตอนที่ 14 (หน้า 42): Damper install (ติดตั้งแดมเปอร์)
-ขั้นตอนที่ 15 (หน้า 43): Tube length checking (ตรวจสอบความยาวท่อ)
-ขั้นตอนที่ 16 (หน้า 44): Slit height checking (ตรวจสอบความสูงสลิต)
-ขั้นตอนที่ 17 (หน้า 45): Resonance checking (ตรวจสอบค่าเรโซแนนซ์)
-ขั้นตอนที่ 18 (หน้า 46): Arm height & tweaking (ตรวจวัดความสูงอาร์มและปรับแต่ง)
-ขั้นตอนที่ 19 (หน้า 47): Visual inspection (ตรวจสอบความเรียบร้อยด้วยสายตา)
-ขั้นตอนที่ 20 (หน้า 48): OQA (ตรวจปล่อยคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ)
-ขั้นตอนที่ 21 (หน้า 49): Packing (บรรจุชิ้นงานลงถาดและซีลสุญญากาศ)
+${matchedProcessFlow.steps.map(s => `ขั้นตอนที่ ${s.step} (หน้า ${s.page}): ${s.name} (${s.desc})`).join('\n')}
 
-[คำสั่งสำคัญ]: จงตอบว่ามี 21 ขั้นตอน และแจกแจงเรียงตามลำดับ 1 ถึง 21 นี้เท่านั้น ห้ามสลับลำดับ และห้ามใช้ภาษาจีนเด็ดขาด`;
+[คำสั่งการตอบที่ต้องปฏิบัติตามอย่างเคร่งครัด]:
+1. ต้องระบุจำนวนขั้นตอนของ ${matchedProcessFlow.productName} ให้ถูกต้องชัดเจน คือ "มีทั้งหมด ${matchedProcessFlow.totalSteps} ขั้นตอน" (ห้ามตอบ 21 ขั้นตอน หากไม่ใช่ ACA โดยเด็ดขาด!)
+2. แจกแจงเรียงตามลำดับ 1 ถึง ${matchedProcessFlow.totalSteps} ให้ครบถ้วนตามรายการด้านบน โดยเริ่มที่ "1. [ชื่อขั้นตอน]" ทันที ห้ามตัดทอนหรือข้ามขั้นตอนเด็ดขาด
+3. ห้ามใช้ภาษาจีนเด็ดขาด`;
+  } else if (isAllProductsFlowQuery) {
+    retrievedSlidesList = [{
+      doc_code: 'TM-00-00-01',
+      doc_name: 'Product & Process Introduction (Line Separation)',
+      page_number: 7,
+      title: 'Belton 4 Product Manufacturing Lines'
+    }];
+    dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:
+เอกสาร: [TM-00-00-01] Product & Process Introduction (หน้า 7-82)
+หัวข้อ: 4 สายการผลิตหลักของโรงงาน Belton (Line Separation)
+1. Coil Winding: มีทั้งหมด 14 ขั้นตอน (หน้า 14-27)
+2. ACA (Actuator Coil Assembly): มีทั้งหมด 21 ขั้นตอน (หน้า 28-49)
+3. FCOF (Flip Chip On Flex): มีทั้งหมด 14 ขั้นตอน (หน้า 50-64)
+4. APFA (Arm Pivot Flex Assembly / Hook Up): มีทั้งหมด 17 ขั้นตอน (หน้า 65-82)
+
+[คำสั่งสำคัญ]:
+1. จงระบุให้ชัดเจนว่าโรงงาน Belton มี 4 สายการผลิต/ผลิตภัณฑ์หลัก และแต่ละผลิตภัณฑ์มีจำนวนขั้นตอนต่างกัน ไม่เท่ากัน โดยระบุตัวเลขจำนวนขั้นตอนให้ตรงตามรายการข้างต้น
+2. ห้ามตอบว่าทุกผลิตภัณฑ์มี 21 ขั้นตอนเด็ดขาด (มีเพียง ACA เท่านั้นที่มี 21 ขั้นตอน)
+3. ห้ามใช้ภาษาจีนเด็ดขาด`;
   } else if (!isCasualMessage) {
     try {
       const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
@@ -302,30 +453,24 @@ function prepareContext(userMessage, conversationHistory = []) {
      ลำดับที่ 5: Gloves (สวมถุงมือ) ➔ สวม Wrist strap และสวมถุงมือ โดยดึงถุงมือทับแขนใน และแขนเสื้อนอกทับถุงมือ
    - สำหรับการถอดชุด (Degowning Sequence): เริ่มจาก Booties (ถอดรองเท้า) ➔ Gloves (ถอดถุงมือ) ➔ Facemask (ถอดหน้ากาก) ➔ Jumpsuit (ถอดชุดหมี) ➔ Hairnet (ถอดหมวก)
 8. ลำดับขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จากสไลด์ [TM-00-00-01_1] Product & Process Introduction):
-   - หากผู้ใช้ถามเรื่องขั้นตอนการผลิต ACA (Actuator Coil Assembly) ว่ามีกี่ขั้นตอน หรือมีอะไรบ้าง:
-     ให้ระบุว่ากระบวนการผลิต ACA มีทั้งหมด 21 ขั้นตอน (21 Operations) ตามเอกสาร [TM-00-00-01 หน้า 28-49] โดยเรียงลำดับตาม 21 หน้าสไลด์ (หน้า 29-49) ดังนี้เท่านั้น:
-     1. E-block cleaning (หน้า 29): ทำความสะอาด E-block ด้วยคลื่นเสียงความถี่สูง Ultrasonic wash/rinse
-     2. Pre-curing / plasma bobbin (หน้า 30): อบ Pre-cure และเตรียมผิวด้วย Plasma บน Bobbin
-     3. Laser engraving (หน้า 31): ยิงเลเซอร์ระบุรหัสชิ้นงาน (CDA pressure 0.4-0.6 MPa)
-     4. Coil pre-heating (หน้า 32): อุ่นขดลวดคอยล์ก่อนเข้าสู่กระบวนการหยอดกาว
-     5. E-block & Coil dispensing (หน้า 33): หยอดกาวประกอบ E-block กับ Coil
-     6. Coil & bobbin dispensing (หน้า 34): หยอดกาวประกอบ Coil กับ Bobbin
-     7. Epoxy inspection / mending (หน้า 35): ตรวจสอบและตกแต่งแนวกาว Epoxy
-     8. 1st curing & unload (หน้า 36): อบกาวรอบที่ 1 และนำชิ้นงานออกจากเตา
-     9. 2nd curing & unload (หน้า 37): อบกาวรอบที่ 2 เพื่อให้กาวเซ็ตตัวสมบูรณ์และนำชิ้นงานออก
-     10. DI water cleaning (หน้า 38): ทำความสะอาดชิ้นงานด้วยน้ำบริสุทธิ์ DI (Deionized water)
-     11. Hi-pot & open test (หน้า 39): ทดสอบความเป็นฉนวนไฟฟ้า (Hi-pot) และการนำไฟฟ้า
-     12. Combine DVT & Coil height inspection (หน้า 40): ตรวจวัดโปรไฟล์ DVT และความสูงคอยล์
-     13. Coil height inspection (หน้า 41): ตรวจสอบความสูงของคอยล์ซ้ำเพื่อยืนยันพิกัด
-     14. Damper install (หน้า 42): ติดตั้งชิ้นส่วนแดมเปอร์ (Damper)
-     15. Tube length checking (หน้า 43): ตรวจสอบความยาวท่อ (Tube length)
-     16. Slit height checking (หน้า 44): ตรวจสอบความสูงสลิต (Slit height)
-     17. Resonance checking (หน้า 45): ตรวจสอบค่าการสั่นพ้องเรโซแนนซ์ (Resonance)
-     18. Arm height & tweaking (หน้า 46): ตรวจวัดความสูงอาร์มและปรับแต่ง (Tweaking)
-     19. Visual inspection (หน้า 47): ตรวจสอบความเรียบร้อยของชิ้นงานด้วยสายตา
-     20. OQA (หน้า 48): ตรวจสอบคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ (Sampling AQL 0.65%, C=0)
-     21. Packing (หน้า 49): บรรจุชิ้นงานลงถาด ติดฉลาก และซีลสุญญากาศ
-   - ต้องตอบเรียงตามลำดับ 1 ถึง 21 นี้เท่านั้น ห้ามสลับลำดับ และห้ามตัดตอนเด็ดขาด
+   โรงงาน Belton แบ่งสายการผลิตออกเป็น 4 ผลิตภัณฑ์หลัก แต่ละผลิตภัณฑ์มีจำนวนขั้นตอนต่างกัน ห้ามจำสับสน:
+   - 1) Coil Winding: มีทั้งหมด 14 ขั้นตอน (หน้า 14-27)
+     1. Winding & Unwire (หน้า 14), 2. Out gassing (หน้า 15), 3. Dip coating (หน้า 16), 4. Baking (หน้า 17), 5. Auto 3 in 1 & UV cure (หน้า 18), 6. Auto Lead wire stripping (หน้า 19), 7. Coil cleaning (หน้า 20), 8. Coil thickness inspection (หน้า 21), 9. Tube cutting (หน้า 22), 10. Tube insert & wire tracking (หน้า 23), 11. Baking (หน้า 24), 12. Coil resistance (หน้า 25), 13. Visual inspection (หน้า 26), 14. OQA & Packing (หน้า 27)
+   - 2) ACA (Actuator Coil Assembly): มีทั้งหมด 21 ขั้นตอน (หน้า 28-49)
+     1. E-block cleaning (หน้า 29), 2. Pre-curing / plasma bobbin (หน้า 30), 3. Laser engraving (หน้า 31), 4. Coil pre-heating (หน้า 32), 5. E-block & Coil dispensing (หน้า 33), 6. Coil & bobbin dispensing (หน้า 34), 7. Epoxy inspection / mending (หน้า 35), 8. 1st curing & unload (หน้า 36), 9. 2nd curing & unload (หน้า 37), 10. DI water cleaning (หน้า 38), 11. Hi-pot & open test (หน้า 39), 12. Combine DVT & Coil height inspection (หน้า 40), 13. Coil height inspection (หน้า 41), 14. Damper install (หน้า 42), 15. Tube length checking (หน้า 43), 16. Slit height checking (หน้า 44), 17. Resonance checking (หน้า 45), 18. Arm height & tweaking (หน้า 46), 19. Visual inspection (หน้า 47), 20. OQA (หน้า 48), 21. Packing (หน้า 49)
+   - 3) FCOF (Flip Chip On Flex): มีทั้งหมด 14 ขั้นตอน (หน้า 50-64)
+     1. Flex Baking (หน้า 51), 2. Solder Paste Printing (หน้า 52), 3. SMT Placement (Chip components) (หน้า 53), 4. SMT Placement (Connector) (หน้า 54), 5. Die Placement (Pre-amp) (หน้า 55), 6. Reflow Soldering (หน้า 56), 7. Underfill Dispensing (หน้า 57), 8. AOI Inspection (หน้า 58), 9. Snap Cure (หน้า 59), 10. Flex Cleaning (หน้า 60), 11. X-Ray Inspection (หน้า 61), 12. QMAX Test (หน้า 62), 13. FMVI / OQA (หน้า 63), 14. Packing (หน้า 64)
+   - 4) APFA (Arm Pivot Flex Assembly / Hook Up): มีทั้งหมด 17 ขั้นตอน (หน้า 65-82)
+     1. Bending (หน้า 66), 2. Soldering ground pin & VCM pad (หน้า 67), 3. Flex bracket install (หน้า 68), 4. Load in carrier (หน้า 69), 5. AQ Cleaning (หน้า 70), 6. Unload from carrier (หน้า 71), 7. DCM attachment (หน้า 72), 8. T-ring insertion (หน้า 73), 9. Pivot Install (หน้า 74), 10. VMI (หน้า 75), 11. Pivot height checking (หน้า 76), 12. Arm height test (หน้า 77), 13. Electrical test (หน้า 78), 14. Tray label attachment (หน้า 79), 15. OQA (หน้า 80), 16. Final scan (หน้า 81), 17. Packing (หน้า 82)
+
+   [กฎเหล็กการตอบจำนวนขั้นตอน]:
+   - ต้องตรวจสอบชื่อผลิตภัณฑ์เสมอ และระบุจำนวนขั้นตอนให้ถูกต้องตรงตามผลิตภัณฑ์นั้น:
+     * หากถาม Coil Winding ➔ มีทั้งหมด 14 ขั้นตอน
+     * หากถาม ACA ➔ มีทั้งหมด 21 ขั้นตอน
+     * หากถาม FCOF ➔ มีทั้งหมด 14 ขั้นตอน
+     * หากถาม APFA ➔ มีทั้งหมด 17 ขั้นตอน
+   - ห้ามเหมาตอบว่ามี 21 ขั้นตอนกับผลิตภัณฑ์อื่นที่ไม่ใช่ ACA โดยเด็ดขาด!
+   - หากเป็นกระบวนการอื่น ให้นับจำนวนขั้นตอนจริงที่มีในสไลด์ก่อนเสมอ แล้วจึงตอบตามจำนวนจริงนั้น
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
@@ -343,6 +488,7 @@ ${dynamicSlideExcerpts}`;
     retrievedSlidesList,
     toolsUsed,
     matchedExam,
+    matchedProcessFlow,
     dynamicSlideExcerpts,
     systemPrompt,
     messages,
@@ -638,6 +784,12 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
 
     finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
     finalReply = officialPrefix + finalReply;
+  } else if (matchedProcessFlow) {
+    const flowPrefix = `กระบวนการผลิต **${matchedProcessFlow.productName}** ตามเอกสาร [${matchedProcessFlow.docCode} ${matchedProcessFlow.pages}] มีทั้งหมด **${matchedProcessFlow.totalSteps} ขั้นตอน** ดังนี้ครับ:\n\n`;
+    finalReply = finalReply.replace(/^(?:กระบวนการผลิต[^\n]*มีทั้งหมด\s*\d+\s*ขั้นตอน[^\n]*\n*)+/i, '').trim();
+    if (!finalReply.startsWith(flowPrefix)) {
+      finalReply = flowPrefix + finalReply;
+    }
   }
   return buildResult(finalReply, triggeredAction);
 }
@@ -656,6 +808,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
       retrievedSlidesList,
       toolsUsed,
       matchedExam,
+      matchedProcessFlow,
       messages,
       toolsToProvide
     } = ctx;
@@ -674,6 +827,12 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
         officialPrefix = matchedExam.correct_answer === 'ถูก'
           ? `**เฉลย: ถูก** (ข้อความในโจทย์ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`
           : `**เฉลย: ผิด** (ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`;
+
+        if (typeof onToken === 'function') {
+          onToken(officialPrefix);
+        }
+      } else if (matchedProcessFlow) {
+        officialPrefix = `กระบวนการผลิต **${matchedProcessFlow.productName}** ตามเอกสาร [${matchedProcessFlow.docCode} ${matchedProcessFlow.pages}] มีทั้งหมด **${matchedProcessFlow.totalSteps} ขั้นตอน** ดังนี้ครับ:\n\n`;
 
         if (typeof onToken === 'function') {
           onToken(officialPrefix);
@@ -702,8 +861,13 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
           return;
         }
         let cleanChunk = chunk.replace(/[\u2e80-\u2eff\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/g, '');
-        if (isFirstChunk && matchedExam) {
-          cleanChunk = cleanChunk.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '');
+        if (isFirstChunk && (matchedExam || matchedProcessFlow)) {
+          if (matchedExam) {
+            cleanChunk = cleanChunk.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '');
+          }
+          if (matchedProcessFlow) {
+            cleanChunk = cleanChunk.replace(/^(?:กระบวนการผลิต[^\n]*มีทั้งหมด\s*\d+\s*ขั้นตอน[^\n]*\n*)+/i, '');
+          }
           isFirstChunk = false;
         }
         if (cleanChunk && typeof onToken === 'function') {
