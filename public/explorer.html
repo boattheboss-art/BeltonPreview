@@ -1249,7 +1249,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/belton-navbar.css">
+    <script src="js/belton-navbar.js" defer></script>
 </head>
 
 <body>
@@ -1333,40 +1334,51 @@
         </div>
     </div>
 
-    <!-- Top Navigation Bar -->
-    <div class="top-nav-wrap">
-        <nav class="top-nav">
-            <div class="nav-left">
-                <a href="/" class="nav-brand" style="text-decoration: none;">
-                    <img src="belton_logo.png" alt="BELTON AI Logo" style="width: 26px; height: 26px; border-radius: 50%; object-fit: contain;">
-                    BELTON AI <span>Explorer PRO</span>
-                </a>
-                <button class="tool-btn" id="btn-mode" onclick="toggleAppMode()">
-                    ✋ โหมดกล้อง AR
-                </button>
-                <button class="tool-btn" id="btn-ar-submode" onclick="toggleArSubMode()" title="สลับโหมด AR: 360° หมุนอิสระ / ล็อกมุมมองขยับตามมือ" style="display: none;">
-                    🔄 AR: 360°
-                </button>
-                <button class="tool-btn" id="btn-ruler" onclick="toggleRuler()">
-                    📐 ไม้บรรทัด AR
-                </button>
-                <div class="zoom-controls-group">
-                    <button class="zoom-btn" onclick="adjustZoom(-1.8)" title="ซูมเข้า (ดูระยะใกล้)">🔍+</button>
-                    <span class="zoom-badge" id="zoom-badge">100%</span>
-                    <button class="zoom-btn" onclick="adjustZoom(1.8)" title="ซูมออก (ดูระยะไกล)">🔍−</button>
-                    <button class="zoom-btn zoom-reset" onclick="resetZoom()" title="รีเซ็ตระยะ">↺</button>
-                </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="status-pill">
-                    <span class="dot on" id="dot"></span>
-                    <span id="status-text">โหมดเมาส์ 3D (พร้อมใช้งาน)</span>
-                </div>
-                <button class="btn-logout-white" onclick="sessionStorage.removeItem('belton_logged_in'); window.location.href='/'" title="ออกจากระบบ และกลับสู่หน้า Intro">
-                    ออกจากระบบ
-                </button>
-            </div>
-        </nav>
+    <!-- BELTON AI UNIFIED GLOBAL NAVBAR -->
+    <header class="belton-nav-wrapper" id="beltonGlobalNavbar">
+      <a href="/" class="belton-nav-brand" title="BELTON AI Home">
+        <img src="belton_logo.png" alt="BELTON AI Logo">
+        <span class="brand-title">BELTON AI</span>
+        <span class="brand-badge">EXPLORER</span>
+      </a>
+      <nav class="belton-nav-center">
+        <ul class="belton-nav-links">
+          <li><a href="/" class="belton-nav-link" data-nav="home">HOME</a></li>
+          <li><a href="/explorer" class="belton-nav-link active" data-nav="explorer">3D MODEL</a></li>
+          <li><a href="/product" class="belton-nav-link" data-nav="product">PRODUCT</a></li>
+          <li><a href="/manufacturing" class="belton-nav-link" data-nav="manufacturing">LEGACY & LAB</a></li>
+          <li><a href="/factory" class="belton-nav-link" data-nav="factory">DIGITAL TWIN</a></li>
+          <li><a href="/copilot" class="belton-nav-link nav-ai-glow" data-nav="copilot">BELTON AI</a></li>
+        </ul>
+      </nav>
+      <div class="belton-nav-actions">
+        <button type="button" class="belton-nav-btn btn-logout btn-belton-logout" title="ออกจากระบบ และกลับสู่หน้าแรก">
+          LOGOUT
+        </button>
+      </div>
+    </header>
+
+    <!-- Secondary Floating 3D Tools Toolbar -->
+    <div class="belton-sub-toolbar" id="explorer3dToolbar">
+        <button class="tool-btn" id="btn-mode" onclick="toggleAppMode()">
+            โหมดกล้อง AR
+        </button>
+        <button class="tool-btn" id="btn-ar-submode" onclick="toggleArSubMode()" title="สลับโหมด AR: 360 หมุนอิสระ / ล็อกมุมมองขยับตามมือ" style="display: none;">
+            AR: 360
+        </button>
+        <button class="tool-btn" id="btn-ruler" onclick="toggleRuler()">
+            ไม้บรรทัด AR
+        </button>
+        <div class="zoom-controls-group">
+            <button class="zoom-btn" onclick="adjustZoom(-1.8)" title="ซูมเข้า (ดูระยะใกล้)">+</button>
+            <span class="zoom-badge" id="zoom-badge">100%</span>
+            <button class="zoom-btn" onclick="adjustZoom(1.8)" title="ซูมออก (ดูระยะไกล)">−</button>
+            <button class="zoom-btn zoom-reset" onclick="resetZoom()" title="รีเซ็ตระยะ">↺</button>
+        </div>
+        <div class="status-pill">
+            <span class="dot on" id="dot"></span>
+            <span id="status-text">โหมดเมาส์ 3D (พร้อมใช้งาน)</span>
+        </div>
     </div>
 
     <!-- Full-Screen Interactive Spline Companion (Seamless Background) -->

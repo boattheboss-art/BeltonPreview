@@ -13,6 +13,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/belton-navbar.css" />
+  <script src="js/belton-navbar.js" defer></script>
 
   <!-- Import Map -->
   <script type="importmap">
@@ -70,21 +72,21 @@
       </a>
 
       <ul id="navLinks" class="nav-links">
-        <li><a href="/" class="nav-link nav-link-highlight active">HOME</a></li>
-        <li><a href="/explorer" class="nav-link nav-link-highlight" id="nav3dModelLink">
+        <li><a href="/" class="nav-link nav-link-highlight active" data-nav="home">HOME</a></li>
+        <li><a href="/explorer" class="nav-link nav-link-highlight" id="nav3dModelLink" data-nav="explorer">
           <span>3D MODEL</span>
         </a></li>
-        <li><a href="/product" class="nav-link nav-link-highlight" id="navProductLink">
+        <li><a href="/product" class="nav-link nav-link-highlight" id="navProductLink" data-nav="product">
           <span>PRODUCT</span>
         </a></li>
-        <li><a href="/manufacturing" class="nav-link nav-link-highlight" id="navMfgLink">
+        <li><a href="/manufacturing" class="nav-link nav-link-highlight" id="navMfgLink" data-nav="manufacturing">
           <span>LEGACY & LAB</span>
         </a></li>
-        <li><a href="/factory" class="nav-link nav-link-highlight" id="navFactoryLink">
+        <li><a href="/factory" class="nav-link nav-link-highlight" id="navFactoryLink" data-nav="factory">
           <span>DIGITAL TWIN</span>
         </a></li>
-        <li><a href="/copilot" class="nav-link nav-link-highlight" id="navCopilotLink" style="background:linear-gradient(90deg,#4285F4,#9B72CB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">
-          <span>✨ BELTON AI</span>
+        <li><a href="/copilot" class="nav-link nav-link-highlight" id="navCopilotLink" data-nav="copilot" style="background:linear-gradient(90deg,#4285F4,#9B72CB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">
+          <span>BELTON AI</span>
         </a></li>
       </ul>
 

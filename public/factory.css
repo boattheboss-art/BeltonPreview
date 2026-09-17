@@ -2297,14 +2297,14 @@ input:checked + .toggle-slider:before {
    APPLE STUDIO SILVER / FROSTED WHITE GLASS THEME (VISIONOS & HIG)
    ========================================================================== */
 :root {
-  --apple-text-primary: #1D1D1F;
-  --apple-text-secondary: #6E6E73;
-  --apple-text-tertiary: #86868B;
-  --apple-glass-white: rgba(255, 255, 255, 0.86);
-  --apple-glass-card: rgba(255, 255, 255, 0.92);
-  --apple-glass-border: rgba(0, 0, 0, 0.08);
-  --apple-shadow-soft: 0 16px 36px -8px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --apple-rim-white: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --apple-text-primary: #f8fafc;
+  --apple-text-secondary: #94a3b8;
+  --apple-text-tertiary: #64748b;
+  --apple-glass-white: rgba(10, 15, 29, 0.78);
+  --apple-glass-card: rgba(13, 19, 36, 0.88);
+  --apple-glass-border: rgba(255, 255, 255, 0.12);
+  --apple-shadow-soft: 0 20px 40px -15px rgba(0, 0, 0, 0.65);
+  --apple-rim-white: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 
   --apple-green: #34C759;
   --apple-blue: #007AFF;
@@ -2406,17 +2406,18 @@ input:checked + .toggle-slider:before {
   align-items: center;
   gap: 10px;
   padding: 6px 14px;
-  background: #FFFFFF !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 100px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .apple-dynamic-island:hover {
   transform: scale(1.02);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
 }
 
 .island-dot {
@@ -2456,7 +2457,7 @@ input:checked + .toggle-slider:before {
 .apple-nav-segmented .nav-list {
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
   padding: 3px !important;
   border-radius: 100px !important;
   gap: 2px !important;
@@ -2474,20 +2475,27 @@ input:checked + .toggle-slider:before {
 }
 
 .apple-nav-segmented .nav-item:hover {
-  color: var(--apple-text-primary) !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .apple-nav-segmented .nav-item.active {
-  background: #FFFFFF !important;
-  color: var(--apple-text-primary) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .apple-nav-segmented .nav-logout {
-  background: transparent !important;
-  border: none !important;
+  background: rgba(239, 68, 68, 0.16) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  color: #fca5a5 !important;
   cursor: pointer;
+}
+
+.apple-nav-segmented .nav-logout:hover {
+  background: rgba(239, 68, 68, 0.32) !important;
+  color: #ffffff !important;
 }
 
 /* Apple Action Pills in Top Bar */
@@ -2505,8 +2513,8 @@ input:checked + .toggle-slider:before {
   height: 34px !important;
   padding: 0 14px !important;
   border-radius: 100px !important;
-  background: #FFFFFF !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   color: var(--apple-text-primary) !important;
   font-size: 11px !important;
   font-weight: 600 !important;
@@ -2514,14 +2522,14 @@ input:checked + .toggle-slider:before {
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .apple-pill-btn:hover {
-  background: #F5F5F7 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 .apple-pill-btn.btn-dispensing {

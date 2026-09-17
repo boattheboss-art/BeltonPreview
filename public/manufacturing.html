@@ -17,6 +17,7 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="manufacturing.css" />
+  <link rel="stylesheet" href="css/belton-navbar.css" />
 
   <!-- Audio Sfx -->
   <audio id="sfxClick" src="sao_click.wav" preload="auto"></audio>
@@ -30,6 +31,7 @@
     }
   </script>
 
+  <script src="js/belton-navbar.js" defer></script>
   <script src="js/manufacturing.js" defer></script>
 </head>
 <body class="lab-body">
@@ -41,19 +43,27 @@
     <div class="grid-subtle-overlay"></div>
   </div>
 
-  <!-- FLOATING LUXURY PILL NAVBAR -->
-  <header class="navbar-wrapper" id="mainNavbar">
-    <nav class="minimal-nav-pill">
-      <a href="/" class="nav-brand"><img src="belton_logo.png" alt="BELTON AI Logo" style="width: 22px; height: 22px; border-radius: 50%; object-fit: contain; margin-right: 6px; vertical-align: middle;">BELTON AI <span class="nav-brand-sub">LEGACY & 3D</span></a>
-      <div class="nav-links-group">
-        <a href="/" class="nav-item">HOME</a>
-        <a href="/product" class="nav-item">PRODUCT</a>
-        <a href="/factory" class="nav-item">DIGITAL TWIN</a>
-      </div>
-      <button class="nav-action-pill" id="mfgLogoutBtn" title="Sign out and return to Home">
+  <!-- BELTON AI UNIFIED GLOBAL NAVBAR -->
+  <header class="belton-nav-wrapper" id="mainNavbar">
+    <a href="/" class="belton-nav-brand" title="BELTON AI Home">
+      <img src="belton_logo.png" alt="BELTON AI Logo">
+      <span class="brand-title">BELTON AI</span>
+    </a>
+    <nav class="belton-nav-center">
+      <ul class="belton-nav-links">
+        <li><a href="/" class="belton-nav-link" data-nav="home">HOME</a></li>
+        <li><a href="/explorer" class="belton-nav-link" data-nav="explorer">3D MODEL</a></li>
+        <li><a href="/product" class="belton-nav-link" data-nav="product">PRODUCT</a></li>
+        <li><a href="/manufacturing" class="belton-nav-link active" data-nav="manufacturing">LEGACY & LAB</a></li>
+        <li><a href="/factory" class="belton-nav-link" data-nav="factory">DIGITAL TWIN</a></li>
+        <li><a href="/copilot" class="belton-nav-link nav-ai-glow" data-nav="copilot">BELTON AI</a></li>
+      </ul>
+    </nav>
+    <div class="belton-nav-actions">
+      <button type="button" class="belton-nav-btn btn-logout btn-belton-logout" id="mfgLogoutBtn" title="Sign out and return to Home">
         LOGOUT
       </button>
-    </nav>
+    </div>
   </header>
 
   <!-- =========================================================================

@@ -15,6 +15,8 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   
   <link rel="stylesheet" href="factory.css?v=20260909_ui_skills" />
+  <link rel="stylesheet" href="css/belton-navbar.css" />
+  <script src="js/belton-navbar.js" defer></script>
 </head>
 <body class="cleanroom-theme">
   <!-- 3D WebGL Canvas Container -->
@@ -59,13 +61,13 @@
       <!-- Navigation Segmented Control (Apple Pill Style) -->
       <nav class="nav-container apple-nav-segmented">
         <ul class="nav-list" id="navLinks">
-          <li><a href="/" class="nav-item">HOME</a></li>
-          <li><a href="/explorer" class="nav-item">3D MODEL</a></li>
-          <li><a href="/product" class="nav-item">PRODUCT</a></li>
-          <li><a href="/manufacturing" class="nav-item">LEGACY & LAB</a></li>
-          <li><a href="/factory" class="nav-item active">DIGITAL TWIN</a></li>
-          <li><a href="/copilot" class="nav-item nav-gemini" title="Open BELTON AI Copilot">✨ BELTON AI</a></li>
-          <li><button type="button" id="factoryLogoutBtn" class="nav-item nav-logout">LOGOUT</button></li>
+          <li><a href="/" class="nav-item" data-nav="home">HOME</a></li>
+          <li><a href="/explorer" class="nav-item" data-nav="explorer">3D MODEL</a></li>
+          <li><a href="/product" class="nav-item" data-nav="product">PRODUCT</a></li>
+          <li><a href="/manufacturing" class="nav-item" data-nav="manufacturing">LEGACY & LAB</a></li>
+          <li><a href="/factory" class="nav-item active" data-nav="factory">DIGITAL TWIN</a></li>
+          <li><a href="/copilot" class="nav-item nav-gemini" data-nav="copilot" title="Open BELTON AI Copilot">BELTON AI</a></li>
+          <li><button type="button" id="factoryLogoutBtn" class="nav-item nav-logout btn-belton-logout">LOGOUT</button></li>
         </ul>
       </nav>
 

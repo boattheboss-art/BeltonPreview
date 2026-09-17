@@ -1,0 +1,259 @@
+/* ==========================================================================
+   BELTON AI - Unified Dark Frosted Glass Global Navigation (VisionOS Style)
+   ========================================================================== */
+
+:root {
+  --bnav-bg: rgba(10, 15, 29, 0.78);
+  --bnav-blur: blur(32px) saturate(190%);
+  --bnav-border: 1px solid rgba(255, 255, 255, 0.12);
+  --bnav-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), 0 20px 40px -15px rgba(0, 0, 0, 0.65);
+  --bnav-text-main: #f8fafc;
+  --bnav-text-muted: #94a3b8;
+  --bnav-active-bg: rgba(255, 255, 255, 0.14);
+  --bnav-active-border: rgba(255, 255, 255, 0.24);
+  --bnav-hover-bg: rgba(255, 255, 255, 0.08);
+}
+
+.belton-nav-wrapper {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: calc(100% - 48px);
+  max-width: 1240px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 8px 18px;
+  background: var(--bnav-bg);
+  backdrop-filter: var(--bnav-blur);
+  -webkit-backdrop-filter: var(--bnav-blur);
+  border: var(--bnav-border);
+  border-radius: 999px;
+  box-shadow: var(--bnav-shadow);
+  box-sizing: border-box;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+.belton-nav-wrapper.reveal-ui {
+  transform: translateX(-50%) translateY(-24px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.belton-nav-wrapper.reveal-ui.is-revealed {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Brand Group */
+.belton-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--bnav-text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.belton-nav-brand img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: contain;
+  display: block;
+}
+
+.belton-nav-brand .brand-title {
+  display: inline-block;
+  color: #ffffff;
+}
+
+.belton-nav-brand .brand-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-transform: uppercase;
+}
+
+/* Center Links */
+.belton-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.belton-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--bnav-text-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.belton-nav-link:hover {
+  color: #ffffff;
+  background: var(--bnav-hover-bg);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.belton-nav-link.active {
+  color: #ffffff;
+  background: var(--bnav-active-bg);
+  border-color: var(--bnav-active-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.belton-nav-link.nav-ai-glow {
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.16), rgba(155, 114, 203, 0.2));
+  border-color: rgba(155, 114, 203, 0.35);
+  color: #c4b5fd;
+}
+
+.belton-nav-link.nav-ai-glow:hover,
+.belton-nav-link.nav-ai-glow.active {
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.28), rgba(155, 114, 203, 0.36));
+  border-color: rgba(196, 181, 253, 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(155, 114, 203, 0.35);
+}
+
+/* Right Actions */
+.belton-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.belton-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 18px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+
+.belton-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.belton-nav-btn.btn-logout {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.32);
+  color: #fca5a5;
+}
+
+.belton-nav-btn.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+}
+
+.belton-nav-btn.btn-login {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
+}
+
+.belton-nav-btn.btn-login:hover {
+  background: rgba(59, 130, 246, 0.35);
+  border-color: rgba(59, 130, 246, 0.65);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.35);
+}
+
+/* Secondary Floating Sub-Toolbar (For Explorer / Factory Tools) */
+.belton-sub-toolbar {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(10, 15, 29, 0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+}
+
+/* Responsive Handling */
+@media (max-width: 1080px) {
+  .belton-nav-wrapper {
+    width: calc(100% - 24px);
+    padding: 6px 12px;
+  }
+  .belton-nav-link {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+  .belton-nav-brand .brand-badge {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .belton-nav-wrapper {
+    top: 10px;
+    width: calc(100% - 16px);
+  }
+  .belton-nav-links {
+    gap: 4px;
+  }
+  .belton-nav-link {
+    padding: 5px 8px;
+    font-size: 0.68rem;
+  }
+  .belton-sub-toolbar {
+    top: 66px;
+    padding: 4px 10px;
+  }
+}
