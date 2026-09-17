@@ -83,9 +83,24 @@ function init() {
 
         // 4. Reveal Navigation Bar & Bottom CTA Buttons as zoom completes
         setTimeout(() => {
-          if (siteHeader) siteHeader.classList.add('intro-visible');
+          if (siteHeader) {
+            siteHeader.classList.add('intro-visible');
+            if (sessionStorage.getItem('belton_logged_in') === 'true') {
+              siteHeader.classList.add('just-authenticated');
+            }
+          }
           if (heroOverlayContent) heroOverlayContent.classList.add('intro-visible');
         }, 1400);
+
+        // Failsafe reveal for navbar in case 3D scene takes longer to settle
+        setTimeout(() => {
+          if (siteHeader && !siteHeader.classList.contains('intro-visible')) {
+            siteHeader.classList.add('intro-visible');
+            if (sessionStorage.getItem('belton_logged_in') === 'true') {
+              siteHeader.classList.add('just-authenticated');
+            }
+          }
+        }, 3800);
 
       }, 1200); // 1.2s gradual fade-in time
 

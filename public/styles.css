@@ -327,12 +327,10 @@ body.fade-step-bg #bgBeltonText {
   will-change: opacity, transform;
 }
 
-.site-header.intro-visible {
-  opacity: 1;
-}
-
+.site-header.intro-visible,
 .site-header.just-authenticated {
-  animation: navSlideDownEntrance 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  opacity: 1;
+  animation: navSlideDownEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .nav-container {
@@ -415,8 +413,8 @@ body.is-logged-in .nav-links {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 8px 18px;
-  border-radius: 12px;
+  padding: 7px 16px;
+  border-radius: 999px;
   border: 1px solid transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -427,9 +425,10 @@ body.is-logged-in .nav-links {
 .nav-link.active {
   color: #ffffff !important;
   font-weight: 700;
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   transform: none !important;
 }
 
@@ -437,12 +436,13 @@ body.is-logged-in .nav-links {
 .nav-link-highlight:hover {
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.38) !important;
+  border: 1px solid rgba(255, 255, 255, 0.32) !important;
+  border-radius: 999px !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 0 16px rgba(255, 255, 255, 0.16), inset 0 0 8px rgba(255, 255, 255, 0.06) !important;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
-  transform: scale(1.06) !important;
+  transform: translateY(-1px) !important;
 }
 
 .nav-link-highlight {
@@ -983,20 +983,33 @@ body.is-logged-in .hero-cta-group {
 /* ==========================================================================
    STAGGERED LOGIN UNLOCK CASCADE ANIMATION FOR NAVBAR
    ========================================================================== */
+body.is-logged-in .site-header.intro-visible #navLinks li:nth-child(1),
 body.is-logged-in .site-header.just-authenticated #navLinks li:nth-child(1) {
   animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
 }
+body.is-logged-in .site-header.intro-visible #navLinks li:nth-child(2),
 body.is-logged-in .site-header.just-authenticated #navLinks li:nth-child(2) {
-  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both;
+  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
 }
+body.is-logged-in .site-header.intro-visible #navLinks li:nth-child(3),
 body.is-logged-in .site-header.just-authenticated #navLinks li:nth-child(3) {
-  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.23s both;
 }
+body.is-logged-in .site-header.intro-visible #navLinks li:nth-child(4),
 body.is-logged-in .site-header.just-authenticated #navLinks li:nth-child(4) {
-  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.40s both;
+  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
 }
+body.is-logged-in .site-header.intro-visible #navLinks li:nth-child(5),
+body.is-logged-in .site-header.just-authenticated #navLinks li:nth-child(5) {
+  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.41s both;
+}
+body.is-logged-in .site-header.intro-visible #navLinks li:nth-child(6),
+body.is-logged-in .site-header.just-authenticated #navLinks li:nth-child(6) {
+  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.50s both;
+}
+body.is-logged-in .site-header.intro-visible #navGetStartedBtn,
 body.is-logged-in .site-header.just-authenticated #navGetStartedBtn {
-  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.52s both;
+  animation: navBoxUnlock 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.59s both;
 }
 
 @keyframes navBoxUnlock {
