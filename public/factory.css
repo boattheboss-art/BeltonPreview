@@ -2319,7 +2319,7 @@ input:checked + .toggle-slider:before {
   top: 14px;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 1100;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -3590,7 +3590,6 @@ input:checked + .toggle-slider:before {
    NAVA NAKORN PLANT OVERVIEW PORTAL (ESC / 3D ISOMETRIC MODE)
    Clean Scandinavian Studio White & VisionOS Frosted Glass
    ========================================================================== */
-body.is-overview-mode .apple-top-bar-wrap,
 body.is-overview-mode .fps-minimap-panel,
 body.is-overview-mode .fps-goal-tracker,
 body.is-overview-mode .fps-location-tag,

@@ -1741,6 +1741,10 @@
       isOverviewMode = true;
       document.body.classList.add('is-overview-mode');
       if (overlay) overlay.classList.remove('is-hidden');
+      if (backToOverviewBtn) {
+        const txt = backToOverviewBtn.querySelector('.action-text');
+        if (txt) txt.textContent = 'WALKTHROUGH (CLICK)';
+      }
 
       if (document.pointerLockElement) {
         try { document.exitPointerLock(); } catch(e) {}
@@ -1774,6 +1778,10 @@
     function enterWalkthroughMode(animate = true) {
       if (overlay) overlay.classList.add('is-hidden');
       document.body.classList.remove('is-overview-mode');
+      if (backToOverviewBtn) {
+        const txt = backToOverviewBtn.querySelector('.action-text');
+        if (txt) txt.textContent = 'OVERVIEW (ESC)';
+      }
 
       if (overviewControls) {
         overviewControls.enabled = false;
@@ -1819,9 +1827,15 @@
     }
 
     if (backToOverviewBtn) {
+      const txt = backToOverviewBtn.querySelector('.action-text');
+      if (txt) txt.textContent = isOverviewMode ? 'WALKTHROUGH (CLICK)' : 'OVERVIEW (ESC)';
       backToOverviewBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        enterOverviewMode(true);
+        if (isOverviewMode) {
+          enterWalkthroughMode(true);
+        } else {
+          enterOverviewMode(true);
+        }
       });
     }
 
