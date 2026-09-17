@@ -221,7 +221,7 @@ function prepareContext(userMessage, conversationHistory = []) {
         retrievedSlidesList = retrievedSlides;
         dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
           retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
-          `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด`;
+          `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด หากเป็นคำถามเกี่ยวกับขั้นตอนการผลิต ACA (Actuator Coil Assembly) ให้ตอบ 21 ขั้นตอน เรียงลำดับ 1 ถึง 21 ตามที่ระบุไว้ในข้อ 8 อย่างเคร่งครัด ห้ามนำข้อความ sidebar ที่ไม่เรียงลำดับในสไลด์บางหน้ามาสลับลำดับโดยเด็ดขาด`;
       }
     } catch (searchErr) {
       console.warn('[Orchestrator Warning] Slide knowledge retrieval error:', searchErr.message);
@@ -266,8 +266,8 @@ function prepareContext(userMessage, conversationHistory = []) {
    - สำหรับการถอดชุด (Degowning Sequence): เริ่มจาก Booties (ถอดรองเท้า) ➔ Gloves (ถอดถุงมือ) ➔ Facemask (ถอดหน้ากาก) ➔ Jumpsuit (ถอดชุดหมี) ➔ Hairnet (ถอดหมวก)
 8. ลำดับขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จากสไลด์ [TM-00-00-01_1] Product & Process Introduction):
    - หากผู้ใช้ถามเรื่องขั้นตอนการผลิต ACA (Actuator Coil Assembly) ว่ามีกี่ขั้นตอน หรือมีอะไรบ้าง:
-     ให้อ้างอิงตามสไลด์ [TM-00-00-01 หน้า 28-49] โดยระบุว่ากระบวนการผลิต ACA มีทั้งหมด 21 ขั้นตอน (21 Operations) ตามลำดับหน้าสไลด์ดังนี้:
-     1. E-block cleaning (หน้า 29): ทำความสะอาด E-block ด้วยคลื่นเสียงความถี่สูง (Ultrasonic wash/rinse)
+     ให้ระบุว่ากระบวนการผลิต ACA มีทั้งหมด 21 ขั้นตอน (21 Operations) ตามเอกสาร [TM-00-00-01 หน้า 28-49] โดยเรียงลำดับตาม 21 หน้าสไลด์ (หน้า 29-49) ดังนี้เท่านั้น:
+     1. E-block cleaning (หน้า 29): ทำความสะอาด E-block ด้วยคลื่นเสียงความถี่สูง Ultrasonic wash/rinse
      2. Pre-curing / plasma bobbin (หน้า 30): อบ Pre-cure และเตรียมผิวด้วย Plasma บน Bobbin
      3. Laser engraving (หน้า 31): ยิงเลเซอร์ระบุรหัสชิ้นงาน (CDA pressure 0.4-0.6 MPa)
      4. Coil pre-heating (หน้า 32): อุ่นขดลวดคอยล์ก่อนเข้าสู่กระบวนการหยอดกาว
@@ -288,7 +288,7 @@ function prepareContext(userMessage, conversationHistory = []) {
      19. Visual inspection (หน้า 47): ตรวจสอบความเรียบร้อยของชิ้นงานด้วยสายตา
      20. OQA (หน้า 48): ตรวจสอบคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ (Sampling AQL 0.65%, C=0)
      21. Packing (หน้า 49): บรรจุชิ้นงานลงถาด ติดฉลาก และซีลสุญญากาศ
-   - ต้องระบุอย่างชัดเจนว่ากระบวนการผลิต ACA มีทั้งหมด 21 ขั้นตอน (21 Operations) ห้ามตอบว่ามี 16 ขั้นตอนเด็ดขาด
+   - ต้องตอบเรียงตามลำดับ 1 ถึง 21 นี้เท่านั้น ห้ามสลับลำดับ และห้ามตัดตอนเด็ดขาด
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
