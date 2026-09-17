@@ -5,8 +5,8 @@ require('dotenv').config();
 
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:14b';
-const NUM_GPU = process.env.NUM_GPU ? parseInt(process.env.NUM_GPU, 10) : (MODEL_NAME.includes('14b') ? 30 : undefined);
-const NUM_CTX = process.env.NUM_CTX ? parseInt(process.env.NUM_CTX, 10) : (MODEL_NAME.includes('14b') ? 3584 : 8192);
+const NUM_GPU = process.env.NUM_GPU ? parseInt(process.env.NUM_GPU, 10) : (MODEL_NAME.includes('14b') ? 26 : undefined);
+const NUM_CTX = process.env.NUM_CTX ? parseInt(process.env.NUM_CTX, 10) : (MODEL_NAME.includes('14b') ? 6144 : 8192);
 
 async function fetchWithRetry(url, options, maxRetries = 2, delayMs = 600) {
   let lastError;
@@ -704,9 +704,22 @@ ${matchedProcessFlow.steps.map(s => `ขั้นตอนที่ ${s.step} (�
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
+  // Sliding window and condensation for multi-turn chat history
+  // Keep only the last 4 messages and condense long assistant replies (>280 chars) to prevent prompt context overflow
+  const recentHistory = (conversationHistory || []).slice(-4);
+  const trimmedHistory = recentHistory.map(m => {
+    if (m.role === 'assistant' && typeof m.content === 'string' && m.content.length > 280) {
+      return {
+        ...m,
+        content: m.content.slice(0, 260) + '... [สรุปสาระสำคัญเดิม]'
+      };
+    }
+    return m;
+  });
+
   const messages = [
     { role: 'system', content: systemPrompt },
-    ...conversationHistory,
+    ...trimmedHistory,
     { role: 'user', content: userMessage }
   ];
 
@@ -849,7 +862,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
       options: {
         num_ctx: NUM_CTX,
         num_gpu: NUM_GPU,
-        num_predict: toolsToProvide ? 128 : 850,
+        num_predict: toolsToProvide ? 128 : 1500,
         temperature: isCasualMessage ? 0.35 : 0.08,
         top_p: 0.9,
         repeat_penalty: 1.15,
@@ -990,7 +1003,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
       options: {
         num_ctx: NUM_CTX,
         num_gpu: NUM_GPU,
-        num_predict: 850,
+        num_predict: 1500,
         temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,
@@ -1077,7 +1090,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
         options: {
           num_ctx: NUM_CTX,
           num_gpu: NUM_GPU,
-          num_predict: 850,
+          num_predict: 1500,
           temperature: isCasualMessage ? 0.35 : 0.08,
           top_p: 0.9,
           repeat_penalty: 1.15,
@@ -1254,7 +1267,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
       options: {
         num_ctx: NUM_CTX,
         num_gpu: NUM_GPU,
-        num_predict: 850,
+        num_predict: 1500,
         temperature: 0.08,
         top_p: 0.85,
         repeat_penalty: 1.15,
