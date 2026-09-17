@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { runOrchestrator } = require('./src/orchestrator.js');
+const { runOrchestrator, runOrchestratorStream } = require('./src/orchestrator.js');
 const { getMachineTelemetry, getProblematicMachines, getFactorySummary } = require('./src/db/database.js');
 require('dotenv').config();
 
@@ -37,7 +37,7 @@ app.post('/api/copilot-log', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-// Agentic Orchestrator Endpoint (Ollama Qwen 2.5:3b + Function Calling + SQLite SCADA DB)
+// Agentic Orchestrator Endpoint (Standard JSON)
 app.post('/api/copilot/chat', async (req, res) => {
     try {
         const { message, history } = req.body || {};
@@ -51,15 +51,67 @@ app.post('/api/copilot/chat', async (req, res) => {
         const result = await runOrchestrator(message, formattedHistory);
         res.json(result);
     } catch (err) {
-        console.error('❌ /api/copilot/chat Error:', err.message);
+        console.error('[Copilot Chat Error]:', err.message);
         if (err.message.includes('ECONNREFUSED') || err.message.includes('fetch failed')) {
             return res.json({
-                reply: '⚠️ ระบบวิศวกร AI Copilot ยังไม่สามารถเชื่อมต่อกับ Ollama Local Service ได้ในขณะนี้\n\n**คำแนะนำสำหรับผู้ดูแลระบบ / IT:**\n1. ตรวจสอบว่าได้เปิดใช้งาน Ollama แล้วหรือยัง โดยเปิด Terminal แล้วสั่ง: `ollama serve`\n2. ตรวจสอบว่าได้ดาวน์โหลดโมเดลแล้วหรือไม่: `ollama pull qwen2.5:14b`\n3. หากต้องการตรวจสอบขั้นตอนขึ้นระบบอย่างละเอียด สามารถเปิดดูได้ที่ไฟล์ `DEPLOYMENT_GUIDE.md` ครับ',
+                reply: 'ระบบวิศวกร AI Copilot ยังไม่สามารถเชื่อมต่อกับ Ollama Local Service ได้ในขณะนี้\n\n**คำแนะนำสำหรับผู้ดูแลระบบ / IT:**\n1. ตรวจสอบว่าได้เปิดใช้งาน Ollama แล้วหรือยัง โดยเปิด Terminal แล้วสั่ง: `ollama serve`\n2. ตรวจสอบว่าได้ดาวน์โหลดโมเดลแล้วหรือไม่: `ollama pull qwen2.5:14b`\n3. หากต้องการตรวจสอบขั้นตอนขึ้นระบบอย่างละเอียด สามารถเปิดดูได้ที่ไฟล์ `DEPLOYMENT_GUIDE.md` ครับ',
                 toolsUsed: [],
                 action: null
             });
         }
         res.status(500).json({ error: err.message });
+    }
+});
+
+// Real-time Streaming Orchestrator Endpoint (Server-Sent Events)
+app.post('/api/copilot/chat-stream', async (req, res) => {
+    try {
+        const { message, history } = req.body || {};
+        if (!message) {
+            return res.status(400).json({ error: 'message is required' });
+        }
+        const formattedHistory = (history || []).map(h => ({
+            role: h.role === 'bot' ? 'assistant' : 'user',
+            content: h.text || h.content || ''
+        }));
+
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache, no-transform',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no'
+        });
+
+        const sendEvent = (event, data) => {
+            res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+        };
+
+        await runOrchestratorStream(message, formattedHistory, {
+            onMeta: (meta) => sendEvent('meta', meta),
+            onToken: (token) => sendEvent('token', { token }),
+            onAction: (action) => sendEvent('action', action),
+            onDone: (data) => {
+                sendEvent('done', data || {});
+                res.end();
+            },
+            onError: (err) => {
+                console.error('[Chat-Stream Error]:', err.message);
+                sendEvent('error', { message: err.message });
+                res.end();
+            }
+        });
+
+        req.on('close', () => {
+            res.end();
+        });
+    } catch (err) {
+        console.error('[Chat-Stream Error]:', err.message);
+        if (!res.headersSent) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.write(`event: error\ndata: ${JSON.stringify({ message: err.message })}\n\n`);
+            res.end();
+        }
     }
 });
 

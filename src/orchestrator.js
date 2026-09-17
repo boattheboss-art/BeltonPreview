@@ -16,7 +16,7 @@ async function fetchWithRetry(url, options, maxRetries = 2, delayMs = 600) {
       return res;
     } catch (err) {
       lastError = err;
-      console.warn(`⚠️ [Orchestrator Fetch] Attempt ${attempt}/${maxRetries} failed: ${err.message}. ${attempt < maxRetries ? `Retrying in ${delayMs}ms...` : ''}`);
+      console.warn(`[Orchestrator Fetch Warning] Attempt ${attempt}/${maxRetries} failed: ${err.message}. ${attempt < maxRetries ? `Retrying in ${delayMs}ms...` : ''}`);
       if (attempt < maxRetries) {
         await new Promise(r => setTimeout(r, delayMs));
       }
@@ -183,22 +183,20 @@ function isFollowUpQuery(userMsg) {
   return false;
 }
 
-async function runOrchestrator(userMessage, conversationHistory = []) {
-  const startTime = Date.now();
+function prepareContext(userMessage, conversationHistory = []) {
   const isCasualMessage = isGreetingOrChitchat(userMessage) || isThankYou(userMessage);
   let retrievedSlidesList = [];
   const toolsUsed = [];
-  let triggeredAction = null;
 
   // 1. Check if query is an exam statement / verification question from Master Exam database
   let examGroundTruthSnippet = '';
   const matchedExam = !isCasualMessage ? searchExamQuestion(userMessage) : null;
   if (matchedExam) {
-    console.log(`📑 [Orchestrator Exam Match] Found Master Exam Q#${matchedExam.question_number} [${matchedExam.doc_code}]: Answer="${matchedExam.correct_answer}"`);
+    console.log(`[Orchestrator Exam Match] Found Master Exam Q#${matchedExam.question_number} [${matchedExam.doc_code}]: Answer="${matchedExam.correct_answer}"`);
     examGroundTruthSnippet = `\n\n[ผลการตรวจสอบคลังข้อสอบทางการ (Master Exam Ground Truth)]:
 - รหัสข้อสอบ: ${matchedExam.doc_code} ข้อที่ ${matchedExam.question_number} หมวด ${matchedExam.product}
 - เฉลยทางการ: "${matchedExam.correct_answer}" (${matchedExam.correct_answer === 'ถูก' ? 'ข้อความในโจทย์ถูกต้องตามมาตรฐาน' : 'ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน'})
-- คำสั่งการตัดสิน: จงเปิดคำตอบด้วยคำตัดสินทางการทันที คือ "${matchedExam.correct_answer === 'ถูก' ? '✅ เฉลย: ถูก (ข้อความนี้ถูกต้องตามมาตรฐาน)' : '❌ เฉลย: ผิด (ข้อความนี้ไม่ถูกต้องตามมาตรฐาน)'}"
+- คำสั่งการตัดสิน: จงเปิดคำตอบด้วยคำตัดสินทางการทันที คือ "${matchedExam.correct_answer === 'ถูก' ? 'เฉลย: ถูก (ข้อความนี้ถูกต้องตามมาตรฐาน)' : 'เฉลย: ผิด (ข้อความนี้ไม่ถูกต้องตามมาตรฐาน)'}"
 - จากนั้นอธิบายเปรียบเทียบระหว่างสิ่งที่โจทย์ระบุ กับเกณฑ์จริงในสไลด์ให้เห็นความแตกต่างชัดเจนอย่างสุภาพและชัดเจน`;
   }
 
@@ -210,7 +208,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
     const contextKeywords = extractContextKeywords(conversationHistory);
     if (contextKeywords) {
       effectiveSearchQuery = `${contextKeywords} ${userMessage}`;
-      console.log(`🧠 [Orchestrator Multi-turn] Context augmented search: "${userMessage}" -> "${effectiveSearchQuery}"`);
+      console.log(`[Orchestrator Multi-turn] Context augmented search: "${userMessage}" -> "${effectiveSearchQuery}"`);
     }
   }
 
@@ -226,7 +224,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
           `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด`;
       }
     } catch (searchErr) {
-      console.warn('⚠️ [Orchestrator] Slide knowledge retrieval error:', searchErr.message);
+      console.warn('[Orchestrator Warning] Slide knowledge retrieval error:', searchErr.message);
     }
   }
 
@@ -254,8 +252,8 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
    - หากผู้ใช้ป้อนข้อความที่เป็นข้อสอบ หรือประโยคที่มีการกล่าวอ้างเกณฑ์สเปก (เช่น "กรณีนี้ยอมรับได้ (Accept)" หรือ "ถือเป็นงานเสีย (Reject)"):
    - ให้ทำหน้าที่เป็น "กรรมการตรวจข้อสอบ" เทียบกับ [ข้อมูลสไลด์และเกณฑ์มาตรฐาน] คำต่อคำ
    - ห้ามเชื่อตัวเลขหรือเงื่อนไขที่โจทย์อ้างเด็ดขาด ให้ยึดข้อมูลในสไลด์และ [ผลการตรวจสอบคลังข้อสอบทางการ] เป็นเกณฑ์จริงเท่านั้น
-   - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "❌ เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้งและอธิบายเกณฑ์จริง
-   - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "✅ เฉลย: ถูก" พร้อมสรุปเหตุผลยืนยัน
+   - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้งและอธิบายเกณฑ์จริง
+   - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "เฉลย: ถูก" พร้อมสรุปเหตุผลยืนยัน
 6. แยกแยะขอบเขต: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเกณฑ์มาตรฐาน ไม่ดึงเรื่องสถานะเครื่องจักรมาปน และหากถามเรื่องเครื่องจักร ให้ตอบสถานะหรือเรียก Tool ที่เกี่ยวข้อง
 7. การตอบคำถามเรื่องลำดับขั้นตอนและคู่มือฝึกอบรม (Step-by-Step Training Procedures):
    - หากผู้ใช้ถามเรื่องขั้นตอนการสวมชุดคลีนรูม (Gowning) หรือการถอดชุดคลีนรูม (Degowning) ว่ามีกี่ขั้นตอน หรือต้องใส่อันไหนก่อน-หลัง:
@@ -298,7 +296,130 @@ ${dynamicSlideExcerpts}`;
   const isMachineOrSystemQuery = /(เครื่อง|ตู้|วาร์ป|กล้อง|ส่อง|teleport|telemetry|scada|สรุปยอด|ผลิตรวม|ภาพรวมโรงงาน|กี่เครื่อง|ปัญหาเครื่อง|เครื่องเสีย|เครื่องพัง|เบอร์\s*\d+|#\s*\d+)/i.test(userMessage);
   const toolsToProvide = isCasualMessage ? undefined : ((!isMachineOrSystemQuery && dynamicSlideExcerpts) ? undefined : toolsDefinition);
 
-  console.log(`🤖 [Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
+  return {
+    isCasualMessage,
+    retrievedSlidesList,
+    toolsUsed,
+    matchedExam,
+    dynamicSlideExcerpts,
+    systemPrompt,
+    messages,
+    toolsToProvide
+  };
+}
+
+function formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam }) {
+  const durationMs = Date.now() - startTime;
+  const sources = (retrievedSlidesList || []).map(s => ({
+    docCode: s.doc_code,
+    docName: s.doc_name,
+    pageNumber: s.page_number,
+    title: s.title
+  }));
+
+  const toolsFormatted = (toolsUsed || []).map(t => {
+    switch (t.name) {
+      case 'get_machine_telemetry':
+        return `ดึงค่า Telemetry เครื่องจักร ACA-DISP-${t.args && t.args.machine_num ? (t.args.machine_num < 10 ? '0' + t.args.machine_num : t.args.machine_num) : ''} จาก SCADA`;
+      case 'get_problematic_machines':
+        return 'สืบค้นเครื่องจักรที่แจ้งเตือน / มีปัญหาจาก SCADA';
+      case 'get_factory_overall_summary':
+        return 'ประมวลผลยอดผลิตและ Yield รวมของโรงงานจาก SCADA';
+      case 'teleport_3d_camera':
+        return `ควบคุมมุมมองกล้อง 3D Cleanroom ซูมไปที่เครื่อง #${t.args && t.args.machine_num ? t.args.machine_num : ''}`;
+      case 'search_training_slides':
+        return 'สืบค้นฐานข้อมูลสไลด์และเกณฑ์มาตรฐาน (FTS5 Search)';
+      default:
+        return t.name;
+    }
+  });
+
+  return {
+    durationMs,
+    model: `${MODEL_NAME.includes('14b') ? 'Qwen 2.5:14b' : MODEL_NAME} (Local NVIDIA RTX 3050 GPU)`,
+    sources,
+    examMatch: matchedExam ? {
+      docCode: matchedExam.doc_code,
+      questionNumber: matchedExam.question_number,
+      product: matchedExam.product,
+      correctAnswer: matchedExam.correct_answer
+    } : null,
+    tools: toolsFormatted
+  };
+}
+
+async function streamOllamaChat(url, payload, onTokenChunk) {
+  const res = await fetchWithRetry(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Ollama API Error (${res.status}): ${errText}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  let buffer = '';
+  let fullGeneratedText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        const json = JSON.parse(trimmed);
+        if (json.message && json.message.content) {
+          const chunk = json.message.content;
+          fullGeneratedText += chunk;
+          if (typeof onTokenChunk === 'function') {
+            onTokenChunk(chunk);
+          }
+        }
+      } catch (e) {}
+    }
+  }
+
+  if (buffer && buffer.trim()) {
+    try {
+      const json = JSON.parse(buffer.trim());
+      if (json.message && json.message.content) {
+        fullGeneratedText += json.message.content;
+        if (typeof onTokenChunk === 'function') {
+          onTokenChunk(json.message.content);
+        }
+      }
+    } catch (e) {}
+  }
+
+  return fullGeneratedText;
+}
+
+// -------------------------------------------------------------------------
+// 1. Standard Synchronous Orchestrator (Returns full payload JSON)
+// -------------------------------------------------------------------------
+async function runOrchestrator(userMessage, conversationHistory = []) {
+  const startTime = Date.now();
+  const ctx = prepareContext(userMessage, conversationHistory);
+  const {
+    isCasualMessage,
+    retrievedSlidesList,
+    toolsUsed,
+    matchedExam,
+    messages,
+    toolsToProvide
+  } = ctx;
+  let triggeredAction = null;
+
+  console.log(`[Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
 
   const firstRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
@@ -328,7 +449,7 @@ ${dynamicSlideExcerpts}`;
   const responseJson = await firstRes.json();
   const assistantMsg = responseJson.message;
 
-  // Intercept text-based tool calling tags if Qwen emitted XML or raw function tags
+  // Intercept text-based tool calling tags
   if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
     const rawContent = assistantMsg.content || '';
     const funcMatch = rawContent.match(/<function-name>([a-zA-Z0-9_]+)<\/function-name>/i) 
@@ -349,11 +470,21 @@ ${dynamicSlideExcerpts}`;
       } else if (fnName === 'get_factory_overall_summary') {
         fnArgs = {};
       }
-      console.log(`💡 [Orchestrator Text-Tool Parser] Intercepted text tool tag: "${fnName}" with args:`, fnArgs);
+      console.log(`[Orchestrator Text-Tool Parser] Intercepted text tool tag: "${fnName}" with args:`, fnArgs);
       assistantMsg.tool_calls = [{
         function: { name: fnName, arguments: fnArgs }
       }];
     }
+  }
+
+  function buildResult(reply, action = null) {
+    const meta = formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam });
+    return {
+      reply,
+      toolsUsed,
+      action,
+      thoughtMetadata: meta
+    };
   }
 
   if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
@@ -381,7 +512,7 @@ ${dynamicSlideExcerpts}`;
       }
 
       if (fallbackTool) {
-        console.log(`💡 [Orchestrator Fallback] Intent triggered tool: "${fallbackTool}"`);
+        console.log(`[Orchestrator Fallback] Intent triggered tool: "${fallbackTool}"`);
         assistantMsg.tool_calls = [{
           function: { name: fallbackTool, arguments: fallbackArgs }
         }];
@@ -400,51 +531,6 @@ ${dynamicSlideExcerpts}`;
       }
       return buildResult(finalReply);
     }
-  }
-
-  function buildResult(reply, action = null) {
-    const durationMs = Date.now() - startTime;
-    const sources = (retrievedSlidesList || []).map(s => ({
-      docCode: s.doc_code,
-      docName: s.doc_name,
-      pageNumber: s.page_number,
-      title: s.title
-    }));
-
-    const toolsFormatted = toolsUsed.map(t => {
-      switch (t.name) {
-        case 'get_machine_telemetry':
-          return `ดึงค่า Telemetry เครื่องจักร ACA-DISP-${t.args && t.args.machine_num ? (t.args.machine_num < 10 ? '0' + t.args.machine_num : t.args.machine_num) : ''} จาก SCADA`;
-        case 'get_problematic_machines':
-          return 'สืบค้นเครื่องจักรที่แจ้งเตือน / มีปัญหาจาก SCADA';
-        case 'get_factory_overall_summary':
-          return 'ประมวลผลยอดผลิตและ Yield รวมของโรงงานจาก SCADA';
-        case 'teleport_3d_camera':
-          return `ควบคุมมุมมองกล้อง 3D Cleanroom ซูมไปที่เครื่อง #${t.args && t.args.machine_num ? t.args.machine_num : ''}`;
-        case 'search_training_slides':
-          return 'สืบค้นฐานข้อมูลสไลด์และเกณฑ์มาตรฐาน (FTS5 Search)';
-        default:
-          return t.name;
-      }
-    });
-
-    return {
-      reply,
-      toolsUsed,
-      action,
-      thoughtMetadata: {
-        durationMs,
-        model: `${MODEL_NAME.includes('14b') ? 'Qwen 2.5:14b' : MODEL_NAME} (Local NVIDIA RTX 3050 GPU)`,
-        sources,
-        examMatch: matchedExam ? {
-          docCode: matchedExam.doc_code,
-          questionNumber: matchedExam.question_number,
-          product: matchedExam.product,
-          correctAnswer: matchedExam.correct_answer
-        } : null,
-        tools: toolsFormatted
-      }
-    };
   }
 
   messages.push(assistantMsg);
@@ -475,7 +561,7 @@ ${dynamicSlideExcerpts}`;
     });
   }
 
-  console.log(`🔄 [Orchestrator] ${toolsUsed.length} tool(s) executed. Synthesizing final answer with Qwen 2.5...`);
+  console.log(`[Orchestrator] ${toolsUsed.length} tool(s) executed. Synthesizing final answer with Qwen 2.5...`);
 
   const finalRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
@@ -514,4 +600,241 @@ ${dynamicSlideExcerpts}`;
   return buildResult(finalReply, triggeredAction);
 }
 
-module.exports = { runOrchestrator };
+// -------------------------------------------------------------------------
+// 2. Real-time Streaming Orchestrator (Server-Sent Events / Token Streams)
+// -------------------------------------------------------------------------
+async function runOrchestratorStream(userMessage, conversationHistory = [], callbacks = {}) {
+  const startTime = Date.now();
+  const { onMeta, onToken, onAction, onDone, onError } = callbacks;
+
+  try {
+    const ctx = prepareContext(userMessage, conversationHistory);
+    const {
+      isCasualMessage,
+      retrievedSlidesList,
+      toolsUsed,
+      matchedExam,
+      messages,
+      toolsToProvide
+    } = ctx;
+
+    // Send initial metadata immediately (<0.1s)
+    if (typeof onMeta === 'function') {
+      onMeta(formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam }));
+    }
+
+    // Direct RAG or casual question (No tool calling required)
+    if (!toolsToProvide) {
+      console.log(`[Orchestrator Stream] Direct RAG stream (${MODEL_NAME}): "${userMessage}"`);
+
+      let officialPrefix = '';
+      if (matchedExam) {
+        officialPrefix = matchedExam.correct_answer === 'ถูก'
+          ? `**เฉลย: ถูก** (ข้อความในโจทย์ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`
+          : `**เฉลย: ผิด** (ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`;
+
+        if (typeof onToken === 'function') {
+          onToken(officialPrefix);
+        }
+      }
+
+      let isFirstChunk = true;
+      const rawText = await streamOllamaChat(`${OLLAMA_URL}/api/chat`, {
+        model: MODEL_NAME,
+        messages: messages,
+        options: {
+          num_ctx: NUM_CTX,
+          num_gpu: NUM_GPU,
+          num_predict: 850,
+          temperature: isCasualMessage ? 0.35 : 0.08,
+          top_p: 0.9,
+          repeat_penalty: 1.15,
+          stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "[แนวทาง", "User:", "Assistant:", "<|im_end|>"]
+        },
+        stream: true
+      }, (chunk) => {
+        let cleanChunk = chunk;
+        if (isFirstChunk && matchedExam) {
+          cleanChunk = cleanChunk.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '');
+          isFirstChunk = false;
+        }
+        if (cleanChunk && typeof onToken === 'function') {
+          onToken(cleanChunk);
+        }
+      });
+
+      if (typeof onDone === 'function') {
+        const finalMeta = formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam });
+        onDone({ fullText: officialPrefix + rawText, thoughtMetadata: finalMeta });
+      }
+      return;
+    }
+
+    // Tool check turn (Max 128 tokens)
+    console.log(`[Orchestrator Stream] Tool check turn (${MODEL_NAME}): "${userMessage}"`);
+
+    const firstRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: MODEL_NAME,
+        messages: messages,
+        tools: toolsToProvide,
+        options: {
+          num_ctx: NUM_CTX,
+          num_gpu: NUM_GPU,
+          num_predict: 128,
+          temperature: 0.08,
+          top_p: 0.9,
+          repeat_penalty: 1.15,
+          stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "User:", "Assistant:", "<|im_end|>"]
+        },
+        stream: false
+      })
+    });
+
+    if (!firstRes.ok) {
+      const errText = await firstRes.text();
+      throw new Error(`Ollama API Error (${firstRes.status}): ${errText}`);
+    }
+
+    const responseJson = await firstRes.json();
+    const assistantMsg = responseJson.message;
+
+    // Text-tool tag fallback
+    if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
+      const rawContent = assistantMsg.content || '';
+      const funcMatch = rawContent.match(/<function-name>([a-zA-Z0-9_]+)<\/function-name>/i) 
+                     || rawContent.match(/<tool_call>\s*{"name":\s*"([^"]+)"/i)
+                     || rawContent.match(/\{"name":\s*"([a-zA-Z0-9_]+)"/i);
+
+      if (funcMatch) {
+        const fnName = funcMatch[1];
+        let fnArgs = {};
+        if (fnName === 'search_training_slides') {
+          const qMatch = rawContent.match(/<query>([^<]+)<\/query>/i) || rawContent.match(/"query":\s*"([^"]+)"/i);
+          fnArgs = { query: qMatch ? qMatch[1] : userMessage };
+        } else if (fnName === 'get_machine_telemetry') {
+          const numMatch = userMessage.match(/\b([1-9]|[1-4][0-9]|50)\b/);
+          fnArgs = { machine_num: numMatch ? parseInt(numMatch[1], 10) : 27 };
+        } else if (fnName === 'get_problematic_machines') {
+          fnArgs = { filter: 'all' };
+        } else if (fnName === 'get_factory_overall_summary') {
+          fnArgs = {};
+        }
+        assistantMsg.tool_calls = [{ function: { name: fnName, arguments: fnArgs } }];
+      }
+    }
+
+    // Intent fallback if empty content and no tool calls
+    if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
+      if (!assistantMsg.content || assistantMsg.content.trim() === '') {
+        const lower = userMessage.toLowerCase();
+        let fallbackTool = null;
+        let fallbackArgs = {};
+        const machineMatch = userMessage.match(/(?:เครื่อง|เบอร์|ตู้|#)\s*(\d+)/i) || userMessage.match(/\b([1-9]|[1-4][0-9]|50)\b/);
+        if (lower.includes('วาร์ป') || lower.includes('ไปดู') || lower.includes('ส่อง') || lower.includes('กล้อง')) {
+          fallbackTool = 'teleport_3d_camera';
+          fallbackArgs = { machine_num: machineMatch ? parseInt(machineMatch[1], 10) : 27 };
+        } else if (lower.includes('พัง') || lower.includes('เสีย') || lower.includes('ปัญหา') || lower.includes('เตือน') || lower.includes('ผิดปกติ') || lower.includes('hold') || lower.includes('warning') || lower.includes('อาการ')) {
+          fallbackTool = 'get_problematic_machines';
+          fallbackArgs = { filter: 'all' };
+        } else if (machineMatch && (lower.includes('ข้อมูล') || lower.includes('สถานะ') || lower.includes('สเปก') || lower.includes('เป็นไง') || lower.includes('ขอ'))) {
+          fallbackTool = 'get_machine_telemetry';
+          fallbackArgs = { machine_num: parseInt(machineMatch[1], 10) };
+        } else if (lower.includes('ภาพรวม') || lower.includes('ผลิตรวม') || lower.includes('ยอดรวม') || lower.includes('กี่เครื่อง') || lower.includes('database') || lower.includes('ฐานข้อมูล')) {
+          fallbackTool = 'get_factory_overall_summary';
+          fallbackArgs = {};
+        } else if (lower.includes('สไลด์') || lower.includes('slide') || lower.includes('fcof') || lower.includes('aca') || lower.includes('apfa') || lower.includes('coil') || lower.includes('แต่งตัว') || lower.includes('กฎ') || lower.includes('ระเบียบ') || lower.includes('esd') || lower.includes('ซิลิโคน') || lower.includes('silicone') || lower.includes('สอบ') || lower.includes('เกณฑ์') || lower.includes('seagate') || lower.includes('spe-') || lower.includes('broken wire') || lower.includes('expose wire') || lower.includes('tray') || lower.includes('defect') || lower.includes('reject') || lower.includes('accept') || lower.includes('มาตรฐาน')) {
+          fallbackTool = 'search_training_slides';
+          fallbackArgs = { query: userMessage };
+        }
+
+        if (fallbackTool) {
+          assistantMsg.tool_calls = [{ function: { name: fallbackTool, arguments: fallbackArgs } }];
+        } else {
+          const fallbackMsg = 'ขออภัยครับ กรุณาระบุรายละเอียดเพิ่มเติม เช่น ถามข้อมูลเครื่องจักร (เช่น ขอข้อมูลเครื่อง 20), ตรวจสอบเครื่องที่มีปัญหา หรือสั่งให้วาร์ปกล้องได้เลยครับ';
+          if (typeof onToken === 'function') onToken(fallbackMsg);
+          if (typeof onDone === 'function') onDone({ fullText: fallbackMsg, thoughtMetadata: formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam }) });
+          return;
+        }
+      } else {
+        const cleanAns = cleanOutputText(assistantMsg.content);
+        if (typeof onToken === 'function') onToken(cleanAns);
+        if (typeof onDone === 'function') onDone({ fullText: cleanAns, thoughtMetadata: formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam }) });
+        return;
+      }
+    }
+
+    // Execute tool(s)
+    messages.push(assistantMsg);
+
+    for (const call of assistantMsg.tool_calls) {
+      const fnName = call.function.name;
+      const fnArgs = call.function.arguments;
+      toolsUsed.push({ name: fnName, args: fnArgs });
+
+      const toolResult = await executeTool(fnName, fnArgs);
+      if (fnName === 'search_training_slides' && toolResult && toolResult.slides) {
+        for (const s of toolResult.slides) {
+          if (!retrievedSlidesList.some(existing => existing.doc_code === s.doc_code && existing.page_number === s.page_number)) {
+            retrievedSlidesList.push(s);
+          }
+        }
+      }
+
+      if (fnName === 'teleport_3d_camera' && toolResult.action === 'teleport') {
+        if (typeof onAction === 'function') onAction(toolResult);
+        const targetStr = toolResult.targetNum < 10 ? '0' + toolResult.targetNum : toolResult.targetNum;
+        const warpText = `กำลังนำมุมมองกล้อง 3D ซูมไปยังเครื่อง **ACA-DISP-${targetStr}** แบบ Real-time เรียบร้อยครับ`;
+        if (typeof onToken === 'function') onToken(warpText);
+        if (typeof onDone === 'function') onDone({ fullText: warpText, action: toolResult, thoughtMetadata: formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam }) });
+        return;
+      }
+
+      messages.push({
+        role: 'tool',
+        content: JSON.stringify(toolResult)
+      });
+    }
+
+    // Send updated metadata with executed tools
+    if (typeof onMeta === 'function') {
+      onMeta(formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam }));
+    }
+
+    console.log(`[Orchestrator Stream] Synthesizing tool response with stream (${MODEL_NAME})...`);
+
+    const rawFinalText = await streamOllamaChat(`${OLLAMA_URL}/api/chat`, {
+      model: MODEL_NAME,
+      messages: messages,
+      options: {
+        num_ctx: NUM_CTX,
+        num_gpu: NUM_GPU,
+        num_predict: 850,
+        temperature: 0.08,
+        top_p: 0.85,
+        repeat_penalty: 1.15,
+        stop: ["[ข้อกำหนด", "[คำแนะนำ", "[คำสั่ง", "[แนวทาง", "User:", "Assistant:", "<|im_end|>"]
+      },
+      stream: true
+    }, (chunk) => {
+      if (typeof onToken === 'function') {
+        onToken(chunk);
+      }
+    });
+
+    if (typeof onDone === 'function') {
+      const finalMeta = formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matchedExam });
+      onDone({ fullText: rawFinalText, thoughtMetadata: finalMeta });
+    }
+
+  } catch (err) {
+    console.error('[Orchestrator Stream Error]:', err.message);
+    if (typeof onError === 'function') {
+      onError(err);
+    }
+  }
+}
+
+module.exports = { runOrchestrator, runOrchestratorStream };

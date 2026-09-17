@@ -28,7 +28,7 @@
       const pNum = parseInt(num, 10);
       const tag = pNum < 10 ? '0' + pNum : pNum;
       return `<a href="/factory?target=${pNum}" class="teleport-action-badge">
-        <span>📍 สั่งการกล้อง 3D: วาร์ปไปที่เครื่อง ACA-DISP-${tag}</span>
+        <span><svg style="display:inline-block;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/></svg>สั่งการกล้อง 3D: วาร์ปไปที่เครื่อง ACA-DISP-${tag}</span>
         <span style="font-size:11px;opacity:0.8;">(คลิกเพื่อเปิดดู 3D)</span>
       </a>`;
     });
@@ -256,7 +256,7 @@
     }, 1150);
 
     try {
-      const response = await fetch('/api/copilot/chat', {
+      const response = await fetch('/api/copilot/chat-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -269,36 +269,27 @@
         throw new Error('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ Copilot ได้ (HTTP ' + response.status + ')');
       }
 
-      const data = await response.json();
-      let reply = data.reply || '';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let sseBuffer = '';
+      let charQueue = [];
+      let displayedText = '';
+      let isStreamFinished = false;
+      let actionData = null;
+      let hasStartedTyping = false;
+      let typeInterval = null;
 
-      // Stop tickers
-      clearInterval(timerInterval);
-      clearInterval(stepInterval);
-
-      // Finalize the last active step as completed
-      if (currentStepItem) {
-        currentStepItem.classList.remove('active');
-        currentStepItem.classList.add('completed');
-        const iconWrapper = currentStepItem.querySelector('.step-icon-wrapper');
-        if (iconWrapper) iconWrapper.innerHTML = SVG_CHECK;
-      }
-
-      // If action was triggered, append action badge if not in text
-      if (data.action && data.action.type === 'teleport' && data.action.targetNum) {
-        if (!reply.includes('[ACTION:TELEPORT:')) {
-          reply += `\n\n[ACTION:TELEPORT:${data.action.targetNum}]`;
-        }
-      }
-
-      // Append verified telemetry data (Sources, Exam, SCADA, Model)
-      if (data.thoughtMetadata) {
-        const meta = data.thoughtMetadata;
+      function renderMetadata(meta) {
+        if (!meta) return;
         const finalSec = (meta.durationMs / 1000).toFixed(1);
         thoughtTime.textContent = `${finalSec} วินาที`;
         thoughtTitle.textContent = 'กระบวนการคิดและแหล่งข้อมูล';
 
-        // 1. Sources retrieved
+        // Clear existing dynamic sections to avoid duplicate appends
+        const existingSections = thoughtDropdown.querySelectorAll('.thought-section');
+        existingSections.forEach(s => s.remove());
+
+        // 1. Sources
         if (meta.sources && meta.sources.length > 0) {
           const sec = document.createElement('div');
           sec.className = 'thought-section';
@@ -315,7 +306,7 @@
           thoughtDropdown.appendChild(sec);
         }
 
-        // 2. Exam Ground Truth match
+        // 2. Exam match
         if (meta.examMatch) {
           const ex = meta.examMatch;
           const isCorrect = ex.correctAnswer === 'ถูก';
@@ -332,7 +323,7 @@
           thoughtDropdown.appendChild(sec);
         }
 
-        // 3. Tools executed
+        // 3. Tools
         if (meta.tools && meta.tools.length > 0) {
           const sec = document.createElement('div');
           sec.className = 'thought-section';
@@ -352,46 +343,118 @@
           <span class="thought-section-label">ระบบประมวลผล Local AI</span>
           <div class="thought-tags-list">
             <span class="thought-gpu-tag">
-              ${data.thoughtMetadata && data.thoughtMetadata.model ? data.thoughtMetadata.model : 'NVIDIA GeForce RTX 3050 (Local GPU) · Qwen 2.5:14b'}
+              ${meta.model || 'NVIDIA GeForce RTX 3050 (Local GPU) · Qwen 2.5:14b'}
             </span>
           </div>
         `;
         thoughtDropdown.appendChild(gpuSec);
-      } else {
-        thoughtTitle.textContent = 'กระบวนการคิดและแหล่งข้อมูล';
       }
 
-      // Finish thinking state
-      thoughtBox.classList.remove('is-thinking');
-      rowEl.classList.remove('is-thinking');
-      scrollToBottom();
+      function startTypingEngine() {
+        if (hasStartedTyping) return;
+        hasStartedTyping = true;
 
-      // Auto-collapse thought box after short pause so user sees steps complete
-      await new Promise(r => setTimeout(r, 600));
-      thoughtBox.classList.remove('is-open');
+        // Stop thinking tickers
+        clearInterval(timerInterval);
+        clearInterval(stepInterval);
 
-      // Start typewriter effect for reply
-      textEl.style.display = 'inline';
-      cursorEl.style.display = 'inline-block';
-
-      let charIdx = 0;
-      const chunkSize = Math.max(3, Math.floor(reply.length / 25));
-
-      const typeInterval = setInterval(() => {
-        charIdx += chunkSize;
-        const currentSlice = reply.slice(0, charIdx);
-        textEl.innerHTML = formatMarkdown(currentSlice);
-        scrollToBottom();
-
-        if (charIdx >= reply.length) {
-          clearInterval(typeInterval);
-          textEl.innerHTML = formatMarkdown(reply);
-          if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
-          isThinking = false;
-          dialogueHistory.push({ role: 'assistant', content: reply });
-          scrollToBottom();
+        // Finalize the last active step as completed
+        if (currentStepItem) {
+          currentStepItem.classList.remove('active');
+          currentStepItem.classList.add('completed');
+          const iconWrapper = currentStepItem.querySelector('.step-icon-wrapper');
+          if (iconWrapper) iconWrapper.innerHTML = SVG_CHECK;
         }
-      }, 25);
+
+        // Stop thinking state and auto-collapse thought box so user focuses on text
+        thoughtBox.classList.remove('is-thinking');
+        rowEl.classList.remove('is-thinking');
+        thoughtBox.classList.remove('is-open');
+
+        // Show text container & blinking cursor
+        textEl.style.display = 'inline';
+        cursorEl.style.display = 'inline-block';
+
+        // Adaptive high-frequency typing loop (character-by-character flow)
+        typeInterval = setInterval(() => {
+          if (charQueue.length > 0) {
+            // Pop 1 character per 16ms tick (~60 cps), adaptive burst if queue grows
+            const popCount = charQueue.length > 50 ? 4 : (charQueue.length > 20 ? 2 : 1);
+            const popped = charQueue.splice(0, popCount).join('');
+            displayedText += popped;
+            textEl.innerHTML = formatMarkdown(displayedText);
+            scrollToBottom();
+          } else if (isStreamFinished) {
+            clearInterval(typeInterval);
+            let finalFull = displayedText;
+            if (actionData && actionData.type === 'teleport' && actionData.targetNum) {
+              if (!finalFull.includes('[ACTION:TELEPORT:')) {
+                finalFull += `\n\n[ACTION:TELEPORT:${actionData.targetNum}]`;
+              }
+            }
+            textEl.innerHTML = formatMarkdown(finalFull);
+            if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
+            dialogueHistory.push({ role: 'assistant', content: finalFull });
+            isThinking = false;
+            scrollToBottom();
+          }
+        }, 16);
+      }
+
+      // Read SSE stream chunks
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          isStreamFinished = true;
+          startTypingEngine();
+          break;
+        }
+
+        sseBuffer += decoder.decode(value, { stream: true });
+        const rawEvents = sseBuffer.split('\n\n');
+        sseBuffer = rawEvents.pop();
+
+        for (const rawEvent of rawEvents) {
+          if (!rawEvent.trim()) continue;
+          const lines = rawEvent.split('\n');
+          let eventType = 'message';
+          let dataStr = '';
+
+          for (const l of lines) {
+            if (l.startsWith('event: ')) {
+              eventType = l.slice(7).trim();
+            } else if (l.startsWith('data: ')) {
+              dataStr = l.slice(6).trim();
+            }
+          }
+
+          if (!dataStr) continue;
+
+          try {
+            const parsed = JSON.parse(dataStr);
+            if (eventType === 'meta') {
+              renderMetadata(parsed);
+            } else if (eventType === 'token') {
+              if (parsed.token) {
+                startTypingEngine();
+                charQueue.push(...parsed.token.split(''));
+              }
+            } else if (eventType === 'action') {
+              actionData = parsed;
+            } else if (eventType === 'done') {
+              isStreamFinished = true;
+              if (parsed.thoughtMetadata) {
+                renderMetadata(parsed.thoughtMetadata);
+              }
+              startTypingEngine();
+            } else if (eventType === 'error') {
+              throw new Error(parsed.message || 'Stream generation error');
+            }
+          } catch (e) {
+            // JSON parse error on partial line
+          }
+        }
+      }
 
     } catch (err) {
       clearInterval(timerInterval);
@@ -404,7 +467,7 @@
       if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
       textEl.innerHTML = `<div style="color:#ef4444;background:rgba(239,68,68,0.1);padding:12px 16px;border-radius:12px;border:1px solid rgba(239,68,68,0.25);">
         <b>ข้อผิดพลาด:</b> ${err.message}<br>
-        <span style="font-size:12px;opacity:0.8;">กรุณาตรวจสอบว่าได้เปิดคำสั่ง <code>gpu</code> หรือ <code>StartGpuTunnel.bat</code> ในเครื่องของคุณแล้วหรือไม่ครับ</span>
+        <span style="font-size:12px;opacity:0.8;">กรุณาตรวจสอบว่าได้เปิดคำสั่ง <code>gpu</code> หรือ <code>scripts/start_ollama.bat</code> ในเครื่องของคุณแล้วหรือไม่ครับ</span>
       </div>`;
       isThinking = false;
       scrollToBottom();
