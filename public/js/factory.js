@@ -272,6 +272,21 @@
         }
 
         scene.add(factoryModel);
+
+        // Remove duplicate procedural fallback shell (floor and walls) so only authentic Blender GLB model remains
+        const fallbackShell = scene.getObjectByName('Procedural_Cleanroom_Shell');
+        if (fallbackShell) {
+          scene.remove(fallbackShell);
+          fallbackShell.traverse(node => {
+            if (node.geometry) node.geometry.dispose();
+            if (node.material) {
+              if (Array.isArray(node.material)) node.material.forEach(m => m.dispose());
+              else node.material.dispose();
+            }
+          });
+          console.log('[Cleanroom Shell] Removed duplicate Three.js procedural shell. 100% authentic Blender GLB Floor_Plates active.');
+        }
+
         isModelLoaded = true;
         isReloadingModel = false;
         initMachineAnimations();
@@ -571,18 +586,8 @@
     const shellGroup = new THREE.Group();
     shellGroup.name = 'Procedural_Cleanroom_Shell';
 
-    // 1. High-Spec Cleanroom Epoxy / Antistatic Vinyl Floor (Y = 0)
-    const floorGeo = new THREE.PlaneGeometry(240, 160);
-    const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.35,
-      metalness: 0.2
-    });
-    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
-    floorMesh.rotation.x = -Math.PI / 2;
-    floorMesh.position.y = -0.005;
-    floorMesh.receiveShadow = true;
-    shellGroup.add(floorMesh);
+    // 1. High-Spec Cleanroom Floor (Removed duplicate Three.js floor)
+    // NOTE: Intentionally omitted to prevent double-layer overlap with authentic Blender GLB Floor_Plates.
 
     // 2. High-Tech Precision Architectural Floor Grid (Removed per user request for clean floor view)
     // Intentionally omitted so the cleanroom floor is completely clean without grid lines.
