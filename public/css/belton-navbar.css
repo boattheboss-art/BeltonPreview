@@ -14,6 +14,20 @@
   --bnav-hover-bg: rgba(255, 255, 255, 0.08);
 }
 
+@keyframes beltonNavSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-35px) scale(0.95);
+  }
+  65% {
+    transform: translateX(-50%) translateY(3px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
 .belton-nav-wrapper {
   position: fixed;
   top: 18px;
@@ -33,19 +47,20 @@
   border-radius: 999px;
   box-shadow: var(--bnav-shadow);
   box-sizing: border-box;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: beltonNavSlideDown 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: auto;
 }
 
 .belton-nav-wrapper.reveal-ui {
-  transform: translateX(-50%) translateY(-24px);
+  animation: none;
+  transform: translateX(-50%) translateY(-28px);
   opacity: 0;
   pointer-events: none;
 }
 
 .belton-nav-wrapper.reveal-ui.is-revealed {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
+  animation: beltonNavSlideDown 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   pointer-events: auto;
 }
 
@@ -223,6 +238,8 @@
   border-radius: 999px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
+  animation: beltonNavSlideDown 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+  transition: all 0.3s ease;
 }
 
 /* Responsive Handling */
