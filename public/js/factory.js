@@ -584,10 +584,8 @@
     floorMesh.receiveShadow = true;
     shellGroup.add(floorMesh);
 
-    // 2. High-Tech Precision Architectural Floor Grid
-    const gridHelper = new THREE.GridHelper(240, 80, 0x0284c7, 0x334155);
-    gridHelper.position.y = 0.002;
-    shellGroup.add(gridHelper);
+    // 2. High-Tech Precision Architectural Floor Grid (Removed per user request for clean floor view)
+    // Intentionally omitted so the cleanroom floor is completely clean without grid lines.
 
     // 3. Cleanroom Overhead Suspended Ceiling (Removed for open-top architectural cutaway Digital Twin view)
     // NOTE: Intentionally omitted so all 50 ACA dispensing workcells, conveyors, robots, and andon lights are 100% visible from above.
