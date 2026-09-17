@@ -59,6 +59,7 @@ const DOMAIN_KEYWORDS = [
   'กฎ', 'ระเบียบ', 'วินัย', 'บทลงโทษ', 'พักงาน', 'ให้ออก', 'เตือน', 'หนังสือเตือน',
   'major', 'minor', 'critical', 'c1', 'c2', 'pass box', 'ชำรุด', 'เคสโทรศัพท์',
   // Manufacturing Processes
+  'pcba', 'pi-16-09-0001', 'microclean', 'topfill', 'dry baking', 'spi', 'pics', 'pcba routing',
   'fcof', 'aca', 'apfa', 'coil', 'coil winding', 'wms', 'flex baking', 'solder paste',
   'die placement', 'reflow', 'underfill', 'dispensing', 'snap cure', 'aoi',
   'cleaning', 'x-ray', 'qmax', 'fvmi', 'oqa', 'packing',
@@ -69,6 +70,7 @@ const DOMAIN_KEYWORDS = [
 ];
 
 const HIGH_PRIORITY_TERMS = [
+  'pi-16-09-0001', 'pcba', 'microclean', 'topfill', 'spi', 'pics',
   'spe', 'seagate', 'broken wire', 'expose wire', 'tinning', 'solder ball', 'wet tray', 'tray washing',
   'raw material', 'hookup', 'stiffener', 'accept', 'reject', 'defect', 'รอยบุบ', 'ลวดหัก', 'ลวดเปลือย',
   'fcof', 'aca', 'apfa', 'coil', 'silicone', 'ซิลิโคน', 'nvs', 'talc', 'ทัลค์', 'แป้ง',

@@ -6,7 +6,7 @@ require('dotenv').config();
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:14b';
 const NUM_GPU = process.env.NUM_GPU ? parseInt(process.env.NUM_GPU, 10) : (MODEL_NAME.includes('14b') ? 30 : undefined);
-const NUM_CTX = process.env.NUM_CTX ? parseInt(process.env.NUM_CTX, 10) : (MODEL_NAME.includes('14b') ? 2048 : 8192);
+const NUM_CTX = process.env.NUM_CTX ? parseInt(process.env.NUM_CTX, 10) : (MODEL_NAME.includes('14b') ? 3584 : 8192);
 
 async function fetchWithRetry(url, options, maxRetries = 2, delayMs = 600) {
   let lastError;
@@ -150,8 +150,8 @@ function extractContextKeywords(history) {
   if (!history || !Array.isArray(history) || history.length === 0) return '';
   for (let i = history.length - 1; i >= 0; i--) {
     const text = history[i].content || history[i].text || '';
-    const docMatch = text.match(/\b(SPE|TM)-[0-9]{2}-[0-9]{2}-[0-9]{2}(?:_[0-9]+)?\b/gi);
-    const terms = text.match(/\b(broken wire|expose wire|loose coil|tin wire|tinning|wet tray|damper|hard burr|scratch|dent|solder ball|stiffener|hookup|pcca|fcof|aca|apfa|cleanroom|esd|silicone|wire|coil)\b/gi);
+    const docMatch = text.match(/\b(SPE|TM|PI|II)-[0-9]{2}-[0-9]{2}-[0-9]{2,4}(?:_[0-9]+)?\b/gi);
+    const terms = text.match(/\b(pcba|underfill|topfill|spi|pics|routing|microclean|broken wire|expose wire|loose coil|tin wire|tinning|wet tray|damper|hard burr|scratch|dent|solder ball|stiffener|hookup|pcca|fcof|aca|apfa|cleanroom|esd|silicone|wire|coil)\b/gi);
     const parts = [];
     if (docMatch) parts.push(...docMatch);
     if (terms) parts.push(...terms);
@@ -168,7 +168,7 @@ function isFollowUpQuery(userMsg) {
   const m = userMsg.trim().replace(/\u0e40\u0e40/g, 'แ').toLowerCase();
 
   // If user explicitly mentions cleanroom, dress code, or specific engineering topics, it is a new search, NOT a multi-turn carry-over!
-  const hasSpecificDomainTopic = /(ชุด|คลีนรูม|cleanroom|สวม|ใส่|ถอด|gowning|degowning|booties|hairnet|jumpsuit|mask|spe-|tm-|coil|ขดลวด|คอยล์|wire|ลวด|tray|ถาด|damper|burr|scratch|dent|solder|บัดกรี|epoxy|fcof|aca|apfa|esd|epa|เครื่อง|ตู้|วาร์ป|กล้อง)/i.test(m);
+  const hasSpecificDomainTopic = /(ชุด|คลีนรูม|cleanroom|สวม|ใส่|ถอด|gowning|degowning|booties|hairnet|jumpsuit|mask|spe-|tm-|pi-|ii-|pcba|underfill|topfill|spi|pics|coil|ขดลวด|คอยล์|wire|ลวด|tray|ถาด|damper|burr|scratch|dent|solder|บัดกรี|epoxy|fcof|aca|apfa|esd|epa|เครื่อง|ตู้|วาร์ป|กล้อง)/i.test(m);
   if (hasSpecificDomainTopic) {
     if (/^(แล้วสเปกล่ะ|แล้วเกณฑ์ล่ะ|แล้วยังไง|แล้วไง|มีอะไรอีก|ขยายความหน่อย|ขอรายละเอียดเพิ่ม)$/i.test(m)) {
       return true;
@@ -313,8 +313,194 @@ const BELTON_MANUFACTURING_PROCESS_FLOWS = {
       { step: 16, page: 81, name: 'Final scan', desc: 'สแกนบาร์โค้ดบันทึกเข้าระบบ' },
       { step: 17, page: 82, name: 'Packing', desc: 'บรรจุชิ้นงานและซีลสุญญากาศ (ควบคุม Vacuum level และ Seal time)' }
     ]
+  },
+  pcba: {
+    key: 'pcba',
+    productName: 'PCBA (Printed Circuit Board Assembly)',
+    docCode: 'PI-16-09-0001',
+    pages: 'หน้า 1-5',
+    coverPage: 1,
+    isMultiCase: true,
+    totalSteps: '4 กรณี (Case 2.1: 30 ขั้นตอน, Case 2.2: 28 ขั้นตอน, Case 2.3: 33 ขั้นตอน, Case 2.4: 28 ขั้นตอน)',
+    matches: (msg) => {
+      const m = msg.toLowerCase();
+      const isPcba = /(pcba|printed circuit board assembly|pi-16-09-0001|case\s*2\.[1-4])/i.test(m);
+      const isFlow = /(ขั้นตอน|กระบวนการ|flow|process|มีอะไรบ้าง|กี่ขั้นตอน|กี่ขั้น|opn|case|กรณี)/i.test(m);
+      return isPcba && (isFlow || /(case\s*2\.[1-4]|pi-16-09-0001)/i.test(m));
+    },
+    cases: {
+      '2.1': {
+        caseId: '2.1',
+        title: 'Case 2.1: 2 sides (Top & Bottom) + With DSP/Flipchip + Cleaning',
+        thaiTitle: 'กรณีประกอบ 2 ด้าน มีชิ้นส่วน DSP/Flipchip และมีกระบวนการล้างทำความสะอาด',
+        page: 2,
+        totalSteps: 30,
+        steps: [
+          { step: 1, opn: 'OPN 10', name: 'PCB lot preparation', desc: 'จัดเตรียมล็อตแผ่นวงจรพิมพ์ PCB [PI-16-09-0002]' },
+          { step: 2, opn: 'OPN 20', name: 'PCB baking', desc: 'อบไล่ความชื้นแผ่น PCB [PI-16-09-0003]' },
+          { step: 3, opn: 'OPN 30', name: 'Laser mark barcode', desc: 'ยิงเลเซอร์มาร์กบาร์โค้ดระบุรหัสบอร์ด [PI-16-09-0017]' },
+          { step: 4, opn: 'OPN 40', name: 'Bad mark label and Kapton tape laminate', desc: 'ติดฉลาก Bad mark และติดเทปแคปตอนป้องกัน [PI-16-09-0004]' },
+          { step: 5, opn: 'OPN 50', name: 'Solder paste printed 1', desc: 'พิมพ์ครีมบัดกรีรอบที่ 1 ด้านที่ 1 [PI-16-09-0005]' },
+          { step: 6, opn: 'OPN 65', name: 'SPI 1', desc: 'ตรวจวัดคุณภาพเนื้อตะกั่วพิมพ์ 3D SPI รอบที่ 1 [PI-16-09-0006]' },
+          { step: 7, opn: 'OPN 70', name: 'SMT 1', desc: 'วางชิ้นส่วนอุปกรณ์ SMT ด้านที่ 1 [PI-16-09-0007]' },
+          { step: 8, opn: 'OPN 80', name: 'Reflow soldering 1', desc: 'เข้าเตาอบ Reflow หลอมประสานตะกั่วรอบที่ 1 [PI-16-09-0008]' },
+          { step: 9, opn: 'OPN 95', name: 'AOI 1', desc: 'ตรวจสอบรอยต่อตะกั่วและชิ้นส่วนด้วยกล้องอัตโนมัติรอบที่ 1 [PI-16-09-0020]' },
+          { step: 10, opn: 'OPN 105', name: 'X-ray inspection 1', desc: 'NPI 100% / Mass Sampling ตรวจเอกซเรย์จุดบัดกรีใต้ชิป [PI-16-09-0010]' },
+          { step: 11, opn: 'OPN 110', name: 'PCBA routing', desc: 'ตัดแยกขอบบอร์ด PCBA [PI-16-09-0022]' },
+          { step: 12, opn: 'OPN 120', name: 'Solder paste printed 2', desc: 'พิมพ์ครีมบัดกรีรอบที่ 2 ด้านที่ 2 [PI-16-09-0005]' },
+          { step: 13, opn: 'OPN 130', name: 'SPI 2', desc: 'ตรวจวัดเนื้อตะกั่วพิมพ์ 3D SPI รอบที่ 2 [PI-16-09-0006]' },
+          { step: 14, opn: 'OPN 140', name: 'SMT 2', desc: 'วางชิ้นส่วนอุปกรณ์ SMT ด้านที่ 2 [PI-16-09-0007]' },
+          { step: 15, opn: 'OPN 150', name: 'Reflow soldering 2', desc: 'เข้าเตาอบ Reflow หลอมประสานตะกั่วรอบที่ 2 [PI-16-09-0008]' },
+          { step: 16, opn: 'OPN 165', name: 'AOI 2', desc: 'ตรวจสอบด้วยกล้องอัตโนมัติรอบที่ 2 [PI-16-09-0020]' },
+          { step: 17, opn: 'OPN 175', name: 'X-ray inspection 2', desc: 'NPI 100% / Mass 100% ตรวจเอกซเรย์ 100% [PI-16-09-0010]' },
+          { step: 18, opn: 'OPN 180', name: 'Microclean', desc: 'ล้างทำความสะอาดคราบฟลักซ์ Microclean [PI-16-09-0018]' },
+          { step: 19, opn: 'OPN 190', name: 'Dry baking 1', desc: 'อบแห้งหลังล้างทำความสะอาด [PI-16-09-0019]' },
+          { step: 20, opn: 'OPN 200', name: 'Plasma cleaning', desc: 'ยิงพลาสม่าทำความสะอาดผิวหน้าสัมผัส [PI-16-09-0011 / PI-16-09-0026]' },
+          { step: 21, opn: 'OPN 210', name: 'Underfill dispense 1', desc: 'หยอดกาว Underfill ใต้ชิปรอบที่ 1 [PI-16-09-0012]' },
+          { step: 22, opn: 'OPN 220', name: 'Vacuum Pressure Oven 1', desc: 'เข้าตู้อบสุญญากาศไล่ฟองอากาศกาว Underfill รอบที่ 1 [PI-16-09-0025]' },
+          { step: 23, opn: 'OPN 230', name: 'Underfill cured 1', desc: 'อบให้กาว Underfill เซ็ตตัวสมบูรณ์รอบที่ 1 [PI-16-09-0013]' },
+          { step: 24, opn: 'OPN 240', name: 'Underfill dispense 2', desc: 'หยอดกาว Underfill รอบที่ 2 [PI-16-09-0012]' },
+          { step: 25, opn: 'OPN 250', name: 'Vacuum Pressure Oven 2', desc: 'เข้าตู้อบสุญญากาศรอบที่ 2 [PI-16-09-0025]' },
+          { step: 26, opn: 'OPN 260', name: 'Underfill cured 2', desc: 'อบให้กาว Underfill เซ็ตตัวรอบที่ 2 [PI-16-09-0013]' },
+          { step: 27, opn: 'OPN 275', name: '2D AOI Inspection', desc: 'ตรวจสอบ 2D AOI ตรวจแนวขอบกาวและชิ้นส่วน [PI-16-09-0029]' },
+          { step: 28, opn: 'OPN 285', name: 'FVMI', desc: 'ตรวจสอบความสมบูรณ์ขั้นสุดท้ายด้วยสายตา/กล้อง FVMI [SPE-16-09-01]' },
+          { step: 29, opn: 'OPN 295', name: 'OQA', desc: 'ตรวจปล่อยคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ OQA สุ่มตรวจ [II-16-09-03]' },
+          { step: 30, opn: 'OPN 300', name: 'Pack out', desc: 'บรรจุชิ้นงาน PCBA ลงกล่อง/บรรจุภัณฑ์ส่งมอบ [PI-16-09-0015]' }
+        ]
+      },
+      '2.2': {
+        caseId: '2.2',
+        title: 'Case 2.2: 2 sides (Top & Bottom) + No DSP/Flipchip + Cleaning',
+        thaiTitle: 'กรณีประกอบ 2 ด้าน ไม่มีชิ้นส่วน DSP/Flipchip และมีกระบวนการล้างทำความสะอาด',
+        page: 3,
+        totalSteps: 28,
+        steps: [
+          { step: 1, opn: 'OPN 10', name: 'PCB lot preparation', desc: 'จัดเตรียมล็อต PCB [PI-16-09-0002]' },
+          { step: 2, opn: 'OPN 20', name: 'PCB baking', desc: 'อบแผ่น PCB ไล่ความชื้น [PI-16-09-0003]' },
+          { step: 3, opn: 'OPN 30', name: 'Laser mark barcode', desc: 'ยิงเลเซอร์ระบุบาร์โค้ด [PI-16-09-0017]' },
+          { step: 4, opn: 'OPN 40', name: 'Bad mark label and Kapton tape laminate', desc: 'ติด Bad mark และเทปแคปตอน [PI-16-09-0004]' },
+          { step: 5, opn: 'OPN 50', name: 'Solder paste printed 1', desc: 'พิมพ์ครีมบัดกรีรอบที่ 1 [PI-16-09-0005]' },
+          { step: 6, opn: 'OPN 65', name: 'SPI 1', desc: 'ตรวจสอบเนื้อตะกั่วบัดกรี SPI รอบที่ 1 [PI-16-09-0006]' },
+          { step: 7, opn: 'OPN 70', name: 'SMT 1', desc: 'วางชิ้นส่วนอุปกรณ์ SMT รอบที่ 1 [PI-16-09-0007]' },
+          { step: 8, opn: 'OPN 80', name: 'Reflow soldering 1', desc: 'อบบัดกรี Reflow รอบที่ 1 [PI-16-09-0008]' },
+          { step: 9, opn: 'OPN 95', name: 'AOI 1', desc: 'ตรวจสอบด้วยกล้อง AOI รอบที่ 1 [PI-16-09-0020]' },
+          { step: 10, opn: 'OPN 105', name: 'X-ray inspection 1', desc: 'NPI 100% / Mass Sampling ตรวจเอกซเรย์ [PI-16-09-0010]' },
+          { step: 11, opn: 'OPN 110', name: 'Solder paste printed 2', desc: 'พิมพ์ครีมบัดกรีรอบที่ 2 ด้านที่ 2 [PI-16-09-0005]' },
+          { step: 12, opn: 'OPN 120', name: 'SPI 2', desc: 'ตรวจสอบเนื้อตะกั่วบัดกรี SPI รอบที่ 2 [PI-16-09-0006]' },
+          { step: 13, opn: 'OPN 130', name: 'SMT 2', desc: 'วางชิ้นส่วนอุปกรณ์ SMT รอบที่ 2 [PI-16-09-0007]' },
+          { step: 14, opn: 'OPN 140', name: 'Reflow soldering 2', desc: 'อบบัดกรี Reflow รอบที่ 2 [PI-16-09-0008]' },
+          { step: 15, opn: 'OPN 155', name: 'AOI 2', desc: 'ตรวจสอบด้วยกล้อง AOI รอบที่ 2 [PI-16-09-0020]' },
+          { step: 16, opn: 'OPN 165', name: 'X-ray inspection 2', desc: 'NPI 100% / Mass 100% ตรวจเอกซเรย์ 100% [PI-16-09-0010]' },
+          { step: 17, opn: 'OPN 170', name: 'Microclean', desc: 'ล้างทำความสะอาด Microclean [PI-16-09-0018]' },
+          { step: 18, opn: 'OPN 180', name: 'Dry baking 1', desc: 'อบแห้งหลังล้าง [PI-16-09-0019]' },
+          { step: 19, opn: 'OPN 190', name: 'Plasma cleaning', desc: 'ยิงพลาสม่าเตรียมผิว [PI-16-09-0011 / PI-16-09-0026]' },
+          { step: 20, opn: 'OPN 200', name: 'Underfill dispense', desc: 'หยอดกาว Underfill [PI-16-09-0012]' },
+          { step: 21, opn: 'OPN 210', name: 'Vacuum Pressure Oven', desc: 'เข้าตู้อบสุญญากาศไล่ฟองอากาศ [PI-16-09-0025]' },
+          { step: 22, opn: 'OPN 220', name: 'Underfill cured', desc: 'อบให้กาว Underfill แข็งตัว [PI-16-09-0013]' },
+          { step: 23, opn: 'OPN 230', name: 'Top fill dispense', desc: 'หยอดกาว Top fill ด้านบน [PI-16-09-0012]' },
+          { step: 24, opn: 'OPN 240', name: 'UV Cured', desc: 'อบแห้งกาวด้วยแสง UV [PI-16-09-0024]' },
+          { step: 25, opn: 'OPN 255', name: '2D AOI Inspection', desc: 'ตรวจสอบด้วยกล้อง 2D AOI [PI-16-09-0029]' },
+          { step: 26, opn: 'OPN 265', name: 'FVMI', desc: 'ตรวจสอบความสมบูรณ์ด้วยกล้อง FVMI [SPE-16-09-01]' },
+          { step: 27, opn: 'OPN 275', name: 'OQA', desc: 'ตรวจปล่อยคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ OQA [II-16-09-03]' },
+          { step: 28, opn: 'OPN 280', name: 'Pack out', desc: 'บรรจุชิ้นงาน PCBA ลงกล่องส่งมอบ [PI-16-09-0015]' }
+        ]
+      },
+      '2.3': {
+        caseId: '2.3',
+        title: 'Case 2.3: 2 sides + With DSP/Flipchip + Topfill & Underfill 2 sides + Cleaning',
+        thaiTitle: 'กรณีประกอบ 2 ด้าน มีชิ้นส่วน DSP/Flipchip หยอด Topfill และ Underfill ทั้ง 2 ด้าน และล้างทำความสะอาด',
+        page: 4,
+        totalSteps: 33,
+        steps: [
+          { step: 1, opn: 'OPN 20', name: 'PCB baking', desc: 'อบไล่ความชื้น PCB [PI-16-09-0003]' },
+          { step: 2, opn: 'OPN 30', name: 'Laser mark barcode', desc: 'ยิงเลเซอร์มาร์กบาร์โค้ด [PI-16-09-0017]' },
+          { step: 3, opn: 'OPN 40', name: 'Bad mark label and Kapton tape laminate', desc: 'ติดฉลาก Bad mark และเทปแคปตอน [PI-16-09-0004]' },
+          { step: 4, opn: 'OPN 50', name: 'Solder paste printed 1', desc: 'พิมพ์ครีมบัดกรีรอบที่ 1 [PI-16-09-0005]' },
+          { step: 5, opn: 'OPN 65', name: 'SPI 1', desc: 'ตรวจวัดตะกั่วพิมพ์ 3D SPI รอบที่ 1 [PI-16-09-0006]' },
+          { step: 6, opn: 'OPN 70', name: 'SMT 1', desc: 'วางชิ้นส่วนอุปกรณ์ SMT ด้านที่ 1 [PI-16-09-0007]' },
+          { step: 7, opn: 'OPN 80', name: 'Reflow soldering 1', desc: 'อบบัดกรี Reflow รอบที่ 1 [PI-16-09-0008]' },
+          { step: 8, opn: 'OPN 95', name: 'AOI 1', desc: 'ตรวจสอบด้วยกล้อง AOI รอบที่ 1 [PI-16-09-0020]' },
+          { step: 9, opn: 'OPN 105', name: 'X-ray inspection 1', desc: 'NPI 100% / Mass Sampling ตรวจเอกซเรย์ [PI-16-09-0010]' },
+          { step: 10, opn: 'OPN 110', name: 'PCBA routing', desc: 'ตัดแยกขอบบอร์ด PCBA [PI-16-09-0022]' },
+          { step: 11, opn: 'OPN 120', name: 'Solder paste printed 2', desc: 'พิมพ์ครีมบัดกรีรอบที่ 2 ด้านที่ 2 [PI-16-09-0005]' },
+          { step: 12, opn: 'OPN 130', name: 'SPI 2', desc: 'ตรวจวัดตะกั่วพิมพ์ 3D SPI รอบที่ 2 [PI-16-09-0006]' },
+          { step: 13, opn: 'OPN 140', name: 'SMT 2', desc: 'วางชิ้นส่วนอุปกรณ์ SMT ด้านที่ 2 [PI-16-09-0007]' },
+          { step: 14, opn: 'OPN 150', name: 'Reflow soldering 2', desc: 'อบบัดกรี Reflow รอบที่ 2 [PI-16-09-0008]' },
+          { step: 15, opn: 'OPN 165', name: 'AOI 2', desc: 'ตรวจสอบด้วยกล้อง AOI รอบที่ 2 [PI-16-09-0020]' },
+          { step: 16, opn: 'OPN 180', name: 'Microclean', desc: 'ล้างทำความสะอาด Microclean [PI-16-09-0018]' },
+          { step: 17, opn: 'OPN 190', name: 'Dry baking 1', desc: 'อบแห้งหลังล้าง [PI-16-09-0019]' },
+          { step: 18, opn: 'OPN 200', name: 'Plasma cleaning BOT', desc: 'ยิงพลาสม่าผิวบอร์ดด้านล่าง Bottom [PI-16-09-0011]' },
+          { step: 19, opn: 'OPN 210', name: 'Underfill dispense BOT', desc: 'หยอดกาว Underfill ด้านล่าง Bottom [PI-16-09-0012]' },
+          { step: 20, opn: 'OPN 220', name: 'Underfill cured BOT', desc: 'อบให้กาว Underfill ด้านล่างเซ็ตตัว [PI-16-09-0013]' },
+          { step: 21, opn: 'OPN 230', name: 'Plasma cleaning TOP', desc: 'ยิงพลาสม่าผิวบอร์ดด้านบน Top [PI-16-09-0011 / PI-16-09-0026]' },
+          { step: 22, opn: 'OPN 240', name: 'Underfill dispense TOP', desc: 'หยอดกาว Underfill ด้านบน Top [PI-16-09-0012]' },
+          { step: 23, opn: 'OPN 250', name: 'Vacuum Oven TOP', desc: 'เข้าเตาอบสุญญากาศไล่ฟองกาวด้านบน Top [PI-16-09-0025]' },
+          { step: 24, opn: 'OPN 260', name: 'Underfill cured TOP', desc: 'อบให้กาว Underfill ด้านบนเซ็ตตัว [PI-16-09-0013]' },
+          { step: 25, opn: 'OPN 270', name: 'Top fill dispense BOT', desc: 'หยอดกาว Top fill ด้านล่าง Bottom [PI-16-09-0012]' },
+          { step: 26, opn: 'OPN 280', name: 'UV Cured BOT', desc: 'ฉายแสง UV อบกาวด้านล่าง Bottom [PI-16-09-0024]' },
+          { step: 27, opn: 'OPN 290', name: 'Top fill dispense TOP', desc: 'หยอดกาว Top fill ด้านบน Top [PI-16-09-0012]' },
+          { step: 28, opn: 'OPN 300', name: 'UV Cured TOP', desc: 'ฉายแสง UV อบกาวด้านบน Top [PI-16-09-0024]' },
+          { step: 29, opn: 'OPN 310', name: 'Topfill baking', desc: 'อบเตาความร้อนให้กาว Topfill เซ็ตตัวสมบูรณ์ [PI-16-09-0024]' },
+          { step: 30, opn: 'OPN 320', name: '2D AOI Inspection', desc: 'ตรวจสอบแนวขอบกาวและชิ้นส่วนด้วย 2D AOI [PI-16-09-0029]' },
+          { step: 31, opn: 'OPN 335', name: 'FVMI', desc: 'ตรวจสอบความสมบูรณ์ขั้นสุดท้ายด้วยกล้อง FVMI [SPE-16-09-01]' },
+          { step: 32, opn: 'OPN 345', name: 'OQA', desc: 'ตรวจปล่อยคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ OQA [II-16-09-03]' },
+          { step: 33, opn: 'OPN 350', name: 'Pack out', desc: 'บรรจุชิ้นงาน PCBA ลงบรรจุภัณฑ์ส่งมอบ [PI-16-09-0015]' }
+        ]
+      },
+      '2.4': {
+        caseId: '2.4',
+        title: 'Case 2.4: 2 sides with PICs components + Cleaning 2 sides',
+        thaiTitle: 'กรณีประกอบ 2 ด้าน มีชิ้นส่วน PICs และมีกระบวนการล้างทำความสะอาดทั้ง 2 ด้าน',
+        page: 5,
+        totalSteps: 28,
+        steps: [
+          { step: 1, opn: 'OPN 10', name: 'PCB lot preparation', desc: 'จัดเตรียมล็อตแผ่นวงจรพิมพ์ PCB [PI-16-09-0002]' },
+          { step: 2, opn: 'OPN 20', name: 'PCB baking', desc: 'อบไล่ความชื้นแผ่น PCB [PI-16-09-0003]' },
+          { step: 3, opn: 'OPN 30', name: 'Laser mark barcode', desc: 'ยิงเลเซอร์มาร์กบาร์โค้ด [PI-16-09-0017]' },
+          { step: 4, opn: 'OPN 40', name: 'Bad mark label and Kapton tape laminate', desc: 'ติดฉลาก Bad mark และเทปแคปตอน [PI-16-09-0004]' },
+          { step: 5, opn: 'OPN 50', name: 'Solder paste printed 1', desc: 'พิมพ์ครีมบัดกรีรอบที่ 1 [PI-16-09-0005]' },
+          { step: 6, opn: 'OPN 65', name: 'SPI 1', desc: 'ตรวจวัดคุณภาพเนื้อตะกั่วบัดกรี SPI รอบที่ 1 [PI-16-09-0006]' },
+          { step: 7, opn: 'OPN 70', name: 'SMT 1', desc: 'วางชิ้นส่วนอุปกรณ์ SMT รอบที่ 1 [PI-16-09-0007]' },
+          { step: 8, opn: 'OPN 80', name: 'Reflow soldering 1', desc: 'เข้าเตาอบ Reflow หลอมประสานตะกั่วรอบที่ 1 [PI-16-09-0008]' },
+          { step: 9, opn: 'OPN 95', name: 'AOI 1', desc: 'ตรวจสอบด้วยกล้องอัตโนมัติ AOI รอบที่ 1 [PI-16-09-0020]' },
+          { step: 10, opn: 'OPN 110', name: 'X-ray inspection 1', desc: 'NPI 100% / Mass Sampling ตรวจเอกซเรย์รอบที่ 1 [PI-16-09-0010]' },
+          { step: 11, opn: 'OPN 120', name: 'Solder paste printed 2', desc: 'พิมพ์ครีมบัดกรีรอบที่ 2 ด้านที่ 2 [PI-16-09-0005]' },
+          { step: 12, opn: 'OPN 135', name: 'SPI 2', desc: 'ตรวจวัดคุณภาพเนื้อตะกั่วบัดกรี SPI รอบที่ 2 [PI-16-09-0006]' },
+          { step: 13, opn: 'OPN 145', name: 'Flip the PIC 180° into the tray', desc: 'พลิกชิ้นส่วน PIC 180 องศาลงในถาด Tray [PI-16-09-0030]' },
+          { step: 14, opn: 'OPN 155', name: 'SMT 2', desc: 'วางชิ้นส่วนอุปกรณ์ SMT รอบที่ 2 [PI-16-09-0007]' },
+          { step: 15, opn: 'OPN 180', name: 'AOI 2', desc: 'ตรวจสอบด้วยกล้องอัตโนมัติ AOI รอบที่ 2 [PI-16-09-0020]' },
+          { step: 16, opn: 'OPN 195', name: 'PIC Inspection', desc: 'ตรวจสอบชิ้นส่วน PICs [PI-16-09-0014]' },
+          { step: 17, opn: 'OPN 205', name: 'Microclean', desc: 'ล้างทำความสะอาด Microclean [PI-16-09-0018]' },
+          { step: 18, opn: 'OPN 215', name: 'Dry baking 1', desc: 'อบแห้งหลังล้างทำความสะอาด [PI-16-09-0019]' },
+          { step: 19, opn: 'OPN 230', name: 'X-ray inspection 2', desc: 'NPI 100% / Mass 100% ตรวจเอกซเรย์รอบที่ 2 [PI-16-09-0010]' },
+          { step: 20, opn: 'OPN 245', name: 'PIC Inspection', desc: 'ตรวจสอบชิ้นส่วน PICs ซ้ำเพื่อความสมบูรณ์ [PI-16-09-0014]' },
+          { step: 21, opn: 'OPN 255', name: 'Plasma cleaning', desc: 'ยิงพลาสม่าเตรียมผิวทำความสะอาด [PI-16-09-0011 / PI-16-09-0026]' },
+          { step: 22, opn: 'OPN 265', name: 'Underfill dispense', desc: 'หยอดกาว Underfill ใต้ชิป [PI-16-09-0012]' },
+          { step: 23, opn: 'OPN 275', name: 'Vacuum Pressure Oven', desc: 'เข้าตู้อบสุญญากาศไล่ฟองอากาศกาว [PI-16-09-0025]' },
+          { step: 24, opn: 'OPN 285', name: 'Underfill cured', desc: 'อบให้กาว Underfill เซ็ตตัวสมบูรณ์ [PI-16-09-0013]' },
+          { step: 25, opn: 'OPN 300', name: 'Offline AOI Inspection', desc: 'ตรวจสอบด้วยกล้อง AOI แบบออฟไลน์ [PI-16-09-0029]' },
+          { step: 26, opn: 'OPN 315', name: 'PIC Inspection & FVMI', desc: 'ตรวจสอบชิ้นส่วน PIC และตรวจสอบด้วยสายตาขั้นสุดท้าย [PI-16-09-0014 / SPE-16-09-01]' },
+          { step: 27, opn: 'OPN 330', name: 'OQA', desc: 'ตรวจปล่อยคุณภาพขั้นสุดท้ายโดยฝ่ายประกันคุณภาพ OQA [II-16-09-03]' },
+          { step: 28, opn: 'OPN 340', name: 'Pack out', desc: 'บรรจุชิ้นงาน PCBA ลงกล่อง/บรรจุภัณฑ์ส่งมอบ [PI-16-09-0015]' }
+        ]
+      }
+    }
   }
 };
+
+function getProcessFlowPrefix(matchedProcessFlow, userMessage) {
+  if (!matchedProcessFlow) return '';
+  if (matchedProcessFlow.key === 'pcba') {
+    const caseMatch = (userMessage || '').match(/(?:case|กรณี|ข้อ)\s*(2\.[1-4])/i) || (userMessage || '').match(/\b(2\.[1-4])\b/);
+    const requestedCaseKey = caseMatch ? caseMatch[1] : null;
+    if (requestedCaseKey && matchedProcessFlow.cases[requestedCaseKey]) {
+      const c = matchedProcessFlow.cases[requestedCaseKey];
+      return `กระบวนการผลิต **PCBA (${c.title})** ตามเอกสาร [${matchedProcessFlow.docCode} หน้า ${c.page}] มีทั้งหมด **${c.totalSteps} ขั้นตอน** ดังนี้ครับ:\n\n`;
+    }
+    return `กระบวนการผลิต **PCBA (Printed Circuit Board Assembly)** ตามเอกสารทางการ [${matchedProcessFlow.docCode} Rev. H] ไม่ได้มีขั้นตอนเดียว แต่แบ่งออกเป็น **4 กรณีหลัก (Cases)** โดยแต่ละกรณีมีจำนวนขั้นตอนดังนี้ครับ:\n\n`;
+  }
+  return `กระบวนการผลิต **${matchedProcessFlow.productName}** ตามเอกสาร [${matchedProcessFlow.docCode} ${matchedProcessFlow.pages}] มีทั้งหมด **${matchedProcessFlow.totalSteps} ขั้นตอน** ดังนี้ครับ:\n\n`;
+}
 
 function prepareContext(userMessage, conversationHistory = []) {
   const isCasualMessage = isGreetingOrChitchat(userMessage) || isThankYou(userMessage);
@@ -367,13 +553,72 @@ function prepareContext(userMessage, conversationHistory = []) {
   );
 
   if (matchedProcessFlow) {
-    retrievedSlidesList = [{
-      doc_code: matchedProcessFlow.docCode,
-      doc_name: `Product & Process Introduction (${matchedProcessFlow.productName} Process Flow)`,
-      page_number: matchedProcessFlow.coverPage,
-      title: `${matchedProcessFlow.productName} Process Flow (${matchedProcessFlow.totalSteps} ขั้นตอน: ${matchedProcessFlow.pages})`
-    }];
-    dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:
+    if (matchedProcessFlow.key === 'pcba') {
+      const caseMatch = userMessage.match(/(?:case|กรณี|ข้อ)\s*(2\.[1-4])/i) || userMessage.match(/\b(2\.[1-4])\b/);
+      const requestedCaseKey = caseMatch ? caseMatch[1] : null;
+
+      if (requestedCaseKey && matchedProcessFlow.cases[requestedCaseKey]) {
+        const c = matchedProcessFlow.cases[requestedCaseKey];
+        retrievedSlidesList = [{
+          doc_code: 'PI-16-09-0001',
+          doc_name: `Process Flow Chart for PCBA (${c.title})`,
+          page_number: c.page,
+          title: `${c.title} (${c.totalSteps} ขั้นตอน)`
+        }];
+        dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 674 หน้า]:
+เอกสาร: [PI-16-09-0001 Rev. H (Jul 09, 2026)] Process Flow Chart for PCBA Process Instruction (หน้า ${c.page} of 5)
+หัวข้อ: ${c.title} (${c.thaiTitle})
+จำนวนขั้นตอน: มีทั้งหมด ${c.totalSteps} ขั้นตอน
+เนื้อหาข้อกำหนดขั้นตอนการผลิต:
+${c.steps.map(s => `ขั้นตอนที่ ${s.step}: ${s.opn} - ${s.name} (${s.desc})`).join('\n')}
+
+[คำสั่งการตอบที่ต้องปฏิบัติตามอย่างเคร่งครัด]:
+1. ต้องระบุจำนวนขั้นตอนของ ${c.title} ให้ถูกต้องชัดเจน คือ "มีทั้งหมด ${c.totalSteps} ขั้นตอน" (ห้ามตอบ 21 ขั้นตอน หากไม่ใช่ ACA โดยเด็ดขาด!)
+2. แจกแจงเรียงตามลำดับ 1 ถึง ${c.totalSteps} ให้ครบถ้วนตามรายการด้านบน โดยเริ่มที่ "1. [ชื่อขั้นตอน]" ทันที ห้ามตัดทอนหรือข้ามขั้นตอนเด็ดขาด
+3. ห้ามใช้ภาษาจีนเด็ดขาด`;
+      } else {
+        // General PCBA flow query -> Explain all 4 cases clearly with step counts and summary
+        retrievedSlidesList = [
+          { doc_code: 'PI-16-09-0001', doc_name: 'Process Flow Chart for PCBA', page_number: 2, title: 'Case 2.1 (30 ขั้นตอน)' },
+          { doc_code: 'PI-16-09-0001', doc_name: 'Process Flow Chart for PCBA', page_number: 3, title: 'Case 2.2 (28 ขั้นตอน)' },
+          { doc_code: 'PI-16-09-0001', doc_name: 'Process Flow Chart for PCBA', page_number: 4, title: 'Case 2.3 (33 ขั้นตอน)' },
+          { doc_code: 'PI-16-09-0001', doc_name: 'Process Flow Chart for PCBA', page_number: 5, title: 'Case 2.4 (28 ขั้นตอน)' }
+        ];
+        dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 674 หน้า]:
+เอกสาร: [PI-16-09-0001 Rev. H (Jul 09, 2026)] Process Flow Chart for PCBA (หน้า 1-5)
+หัวข้อ: กระบวนการผลิต PCBA (Printed Circuit Board Assembly) แบ่งออกเป็น 4 กรณีหลัก (Cases) ตามโครงสร้างบอร์ดและชนิดอุปกรณ์ โดยแต่ละกรณีมีจำนวนขั้นตอนและรายละเอียดดังนี้:
+
+1. Case 2.1 (หน้า 2): บอร์ด 2 ด้าน (Top & Bottom) + มีชิ้นส่วน DSP/Flipchip + มีการล้าง Microclean
+   - จำนวนขั้นตอน: มีทั้งหมด 30 ขั้นตอน (OPN 10 ถึง OPN 300)
+   - ลักษณะเด่น: มีกระบวนการ PCBA routing (OPN 110) และ Underfill 2 รอบ (OPN 210-230, 240-260)
+
+2. Case 2.2 (หน้า 3): บอร์ด 2 ด้าน (Top & Bottom) + ไม่มีชิ้นส่วน DSP/Flipchip + มี Top fill + มีการล้าง Microclean
+   - จำนวนขั้นตอน: มีทั้งหมด 28 ขั้นตอน (OPN 10 ถึง OPN 280)
+   - ลักษณะเด่น: ไม่ใช้ DSP/Flipchip และไม่มี PCBA routing, มีกระบวนการ Top fill (OPN 230) และ UV Cured (OPN 240)
+
+3. Case 2.3 (หน้า 4): บอร์ด 2 ด้าน (Top & Bottom) + มีชิ้นส่วน DSP/Flipchip + Topfill & Underfill 2 ด้าน + มีการล้าง Microclean
+   - จำนวนขั้นตอน: มีทั้งหมด 33 ขั้นตอน (OPN 20 ถึง OPN 350)
+   - ลักษณะเด่น: เริ่มต้นที่ OPN 20 (PCB baking), มีทั้ง Underfill และ Topfill ทั้ง 2 ด้าน (BOT & TOP) รวม 33 ขั้นตอน
+
+4. Case 2.4 (หน้า 5): บอร์ด 2 ด้าน (Top & Bottom) + มีชิ้นส่วน PICs + ล้าง Microclean ทั้ง 2 ด้าน
+   - จำนวนขั้นตอน: มีทั้งหมด 28 ขั้นตอน (OPN 10 ถึง OPN 340)
+   - ลักษณะเด่น: ประกอบชิ้นส่วน PICs, มีการพลิก PIC 180 องศาลงถาด (OPN 145), ตรวจ PIC Inspection และล้าง Microclean ทั้ง 2 ด้าน
+
+[คำสั่งการตอบที่ต้องปฏิบัติตามอย่างเคร่งครัด]:
+1. ต้องตอบทันทีว่า กระบวนการผลิต PCBA ตามเอกสารมาตรฐาน [PI-16-09-0001 Rev. H] ไม่ได้มีขั้นตอนเดียว แต่แบ่งออกเป็น 4 กรณี (4 Cases) โดยแต่ละกรณีมีจำนวนขั้นตอนไม่เท่ากันตามรายละเอียดข้างต้น
+2. อธิบายสรุปลักษณะเด่นของแต่ละกรณีให้ชัดเจน ครบถ้วน สวยงาม และเข้าใจง่าย
+3. ห้ามตอบว่า PCBA มี 21 ขั้นตอนเด็ดขาด (มีเพียง ACA เท่านั้นที่มี 21 ขั้นตอน)
+4. ปิดท้ายด้วยการแจ้งผู้ใช้ว่า: "หากท่านต้องการให้ผมแจกแจงรายละเอียดขั้นตอนทั้งหมดของ Case ใดเป็นพิเศษ (เช่น Case 2.1, 2.2, 2.3 หรือ 2.4) สามารถแจ้งได้เลยครับ ผมพร้อมแจกแจงอย่างละเอียดครับ"
+5. ห้ามใช้ภาษาจีนเด็ดขาด`;
+      }
+    } else {
+      retrievedSlidesList = [{
+        doc_code: matchedProcessFlow.docCode,
+        doc_name: `Product & Process Introduction (${matchedProcessFlow.productName} Process Flow)`,
+        page_number: matchedProcessFlow.coverPage,
+        title: `${matchedProcessFlow.productName} Process Flow (${matchedProcessFlow.totalSteps} ขั้นตอน: ${matchedProcessFlow.pages})`
+      }];
+      dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 674 หน้า]:
 เอกสาร: [${matchedProcessFlow.docCode}] Product & Process Introduction (${matchedProcessFlow.pages})
 หัวข้อ: ${matchedProcessFlow.productName} Process Flow (กระบวนการผลิตมีทั้งหมด ${matchedProcessFlow.totalSteps} ขั้นตอน เรียงตามลำดับ)
 เนื้อหาข้อกำหนด:
@@ -383,23 +628,25 @@ ${matchedProcessFlow.steps.map(s => `ขั้นตอนที่ ${s.step} (�
 1. ต้องระบุจำนวนขั้นตอนของ ${matchedProcessFlow.productName} ให้ถูกต้องชัดเจน คือ "มีทั้งหมด ${matchedProcessFlow.totalSteps} ขั้นตอน" (ห้ามตอบ 21 ขั้นตอน หากไม่ใช่ ACA โดยเด็ดขาด!)
 2. แจกแจงเรียงตามลำดับ 1 ถึง ${matchedProcessFlow.totalSteps} ให้ครบถ้วนตามรายการด้านบน โดยเริ่มที่ "1. [ชื่อขั้นตอน]" ทันที ห้ามตัดทอนหรือข้ามขั้นตอนเด็ดขาด
 3. ห้ามใช้ภาษาจีนเด็ดขาด`;
+    }
   } else if (isAllProductsFlowQuery) {
     retrievedSlidesList = [{
       doc_code: 'TM-00-00-01',
       doc_name: 'Product & Process Introduction (Line Separation)',
       page_number: 7,
-      title: 'Belton 4 Product Manufacturing Lines'
+      title: 'Belton Product Manufacturing Lines & PCBA'
     }];
-    dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:
-เอกสาร: [TM-00-00-01] Product & Process Introduction (หน้า 7-82)
-หัวข้อ: 4 สายการผลิตหลักของโรงงาน Belton (Line Separation)
-1. Coil Winding: มีทั้งหมด 14 ขั้นตอน (หน้า 14-27)
-2. ACA (Actuator Coil Assembly): มีทั้งหมด 21 ขั้นตอน (หน้า 28-49)
-3. FCOF (Flip Chip On Flex): มีทั้งหมด 14 ขั้นตอน (หน้า 50-64)
-4. APFA (Arm Pivot Flex Assembly / Hook Up): มีทั้งหมด 17 ขั้นตอน (หน้า 65-82)
+    dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 674 หน้า]:
+เอกสาร: [TM-00-00-01] Product & Process Introduction (หน้า 7-82) และ [PI-16-09-0001] PCBA Process Flow Chart
+หัวข้อ: สายการผลิตและผลิตภัณฑ์หลักของโรงงาน Belton
+1. Coil Winding: มีทั้งหมด 14 ขั้นตอน (หน้า 14-27 ของ TM-00-00-01)
+2. ACA (Actuator Coil Assembly): มีทั้งหมด 21 ขั้นตอน (หน้า 28-49 ของ TM-00-00-01)
+3. FCOF (Flip Chip On Flex): มีทั้งหมด 14 ขั้นตอน (หน้า 50-64 ของ TM-00-00-01)
+4. APFA (Arm Pivot Flex Assembly / Hook Up): มีทั้งหมด 17 ขั้นตอน (หน้า 65-82 ของ TM-00-00-01)
+5. PCBA (Printed Circuit Board Assembly): แบ่งเป็น 4 กรณีตามสเปกบอร์ด [PI-16-09-0001 Rev. H] ได้แก่ Case 2.1 (30 ขั้นตอน), Case 2.2 (28 ขั้นตอน), Case 2.3 (33 ขั้นตอน), Case 2.4 (28 ขั้นตอน)
 
 [คำสั่งสำคัญ]:
-1. จงระบุให้ชัดเจนว่าโรงงาน Belton มี 4 สายการผลิต/ผลิตภัณฑ์หลัก และแต่ละผลิตภัณฑ์มีจำนวนขั้นตอนต่างกัน ไม่เท่ากัน โดยระบุตัวเลขจำนวนขั้นตอนให้ตรงตามรายการข้างต้น
+1. จงระบุให้ชัดเจนว่าโรงงาน Belton มีสายการผลิตและผลิตภัณฑ์หลัก แต่ละผลิตภัณฑ์มีจำนวนขั้นตอนต่างกัน ไม่เท่ากัน โดยระบุตัวเลขจำนวนขั้นตอนให้ตรงตามรายการข้างต้น
 2. ห้ามตอบว่าทุกผลิตภัณฑ์มี 21 ขั้นตอนเด็ดขาด (มีเพียง ACA เท่านั้นที่มี 21 ขั้นตอน)
 3. ห้ามใช้ภาษาจีนเด็ดขาด`;
   } else if (!isCasualMessage) {
@@ -407,7 +654,7 @@ ${matchedProcessFlow.steps.map(s => `ขั้นตอนที่ ${s.step} (�
       const retrievedSlides = searchSlideKnowledge(effectiveSearchQuery, 3);
       if (retrievedSlides && retrievedSlides.length > 0) {
         retrievedSlidesList = retrievedSlides;
-        dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 669 หน้า]:\n` +
+        dynamicSlideExcerpts = `\n\n[ข้อมูลสไลด์และเกณฑ์มาตรฐานที่ค้นพบจากฐานข้อมูล 674 หน้า]:\n` +
           retrievedSlides.map(s => `เอกสาร: [${s.doc_code}] ${s.doc_name} (หน้า ${s.page_number})\nหัวข้อ: ${s.title}\nเนื้อหาข้อกำหนด:\n${s.snippet}`).join('\n---\n') +
           `\n\n[คำสั่งสำคัญ]: จงตอบเป็นภาษาไทยเท่านั้น และระบุรหัสเอกสารกับเลขหน้ากำกับเสมอ เช่น [${retrievedSlides[0].doc_code} หน้า ${retrievedSlides[0].page_number}] หากเป็นคำถามเกี่ยวกับขั้นตอน ให้แจกแจงเรียงทีละขั้นตอน 1, 2, 3... ให้ครบถ้วนตามสไลด์ ห้ามข้ามขั้นตอนเด็ดขาด`;
       }
@@ -443,34 +690,17 @@ ${matchedProcessFlow.steps.map(s => `ขั้นตอนที่ ${s.step} (�
    - หากโจทย์ระบุเงื่อนไขหรือตัวเลขที่ขัดแย้งกับสไลด์ ให้ฟันธงตอบว่า "เฉลย: ผิด" พร้อมชี้จุดที่ขัดแย้งและอธิบายเกณฑ์จริง
    - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "เฉลย: ถูก" พร้อมสรุปเหตุผลยืนยัน
 6. แยกแยะขอบเขต: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเกณฑ์มาตรฐาน ไม่ดึงเรื่องสถานะเครื่องจักรมาปน และหากถามเรื่องเครื่องจักร ให้ตอบสถานะหรือเรียก Tool ที่เกี่ยวข้อง
-7. การตอบคำถามเรื่องลำดับขั้นตอนและคู่มือฝึกอบรม (Step-by-Step Training Procedures):
-   - หากผู้ใช้ถามเรื่องขั้นตอนการสวมชุดคลีนรูม (Gowning) หรือการถอดชุดคลีนรูม (Degowning) ว่ามีกี่ขั้นตอน หรือต้องใส่อันไหนก่อน-หลัง:
-   - ให้ยึดลำดับตามสไลด์ [TM-00-00-05_1 หน้า 33] ซึ่งระบุลำดับอุปกรณ์ 5 ขั้นตอนหลัก (ห้ามตอบว่าสวมรองเท้า Plant shoes ก่อน เพราะ Plant shoes ไม่ใช่อุปกรณ์ชุดคลีนรูม):
-     ลำดับที่ 1: Hairnet (สวมหมวกคลุมผม) ➔ ต้องสวมเป็นอันดับแรกสุดเสมอ เพื่อเก็บผมและใบหูไม่ให้ร่วงหล่น
-     ลำดับที่ 2: Jumpsuit (สวมชุดหมี) ➔ สวมโดยระวังไม่ให้แขนเสื้อสัมผัสพื้น
-     ลำดับที่ 3: Facemask (สวมหน้ากากอนามัย) ➔ สวมให้กระชับ คลุมจมูกและคาง
-     ลำดับที่ 4: Booties (สวมรองเท้าบูทคลีนรูม) ➔ สวมทับขากางเกง รูดซิปและติดกระดุมให้เรียบร้อย
-     ลำดับที่ 5: Gloves (สวมถุงมือ) ➔ สวม Wrist strap และสวมถุงมือ โดยดึงถุงมือทับแขนใน และแขนเสื้อนอกทับถุงมือ
-   - สำหรับการถอดชุด (Degowning Sequence): เริ่มจาก Booties (ถอดรองเท้า) ➔ Gloves (ถอดถุงมือ) ➔ Facemask (ถอดหน้ากาก) ➔ Jumpsuit (ถอดชุดหมี) ➔ Hairnet (ถอดหมวก)
-8. ลำดับขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จากสไลด์ [TM-00-00-01_1] Product & Process Introduction):
-   โรงงาน Belton แบ่งสายการผลิตออกเป็น 4 ผลิตภัณฑ์หลัก แต่ละผลิตภัณฑ์มีจำนวนขั้นตอนต่างกัน ห้ามจำสับสน:
-   - 1) Coil Winding: มีทั้งหมด 14 ขั้นตอน (หน้า 14-27)
-     1. Winding & Unwire (หน้า 14), 2. Out gassing (หน้า 15), 3. Dip coating (หน้า 16), 4. Baking (หน้า 17), 5. Auto 3 in 1 & UV cure (หน้า 18), 6. Auto Lead wire stripping (หน้า 19), 7. Coil cleaning (หน้า 20), 8. Coil thickness inspection (หน้า 21), 9. Tube cutting (หน้า 22), 10. Tube insert & wire tracking (หน้า 23), 11. Baking (หน้า 24), 12. Coil resistance (หน้า 25), 13. Visual inspection (หน้า 26), 14. OQA & Packing (หน้า 27)
-   - 2) ACA (Actuator Coil Assembly): มีทั้งหมด 21 ขั้นตอน (หน้า 28-49)
-     1. E-block cleaning (หน้า 29), 2. Pre-curing / plasma bobbin (หน้า 30), 3. Laser engraving (หน้า 31), 4. Coil pre-heating (หน้า 32), 5. E-block & Coil dispensing (หน้า 33), 6. Coil & bobbin dispensing (หน้า 34), 7. Epoxy inspection / mending (หน้า 35), 8. 1st curing & unload (หน้า 36), 9. 2nd curing & unload (หน้า 37), 10. DI water cleaning (หน้า 38), 11. Hi-pot & open test (หน้า 39), 12. Combine DVT & Coil height inspection (หน้า 40), 13. Coil height inspection (หน้า 41), 14. Damper install (หน้า 42), 15. Tube length checking (หน้า 43), 16. Slit height checking (หน้า 44), 17. Resonance checking (หน้า 45), 18. Arm height & tweaking (หน้า 46), 19. Visual inspection (หน้า 47), 20. OQA (หน้า 48), 21. Packing (หน้า 49)
-   - 3) FCOF (Flip Chip On Flex): มีทั้งหมด 14 ขั้นตอน (หน้า 50-64)
-     1. Flex Baking (หน้า 51), 2. Solder Paste Printing (หน้า 52), 3. SMT Placement (Chip components) (หน้า 53), 4. SMT Placement (Connector) (หน้า 54), 5. Die Placement (Pre-amp) (หน้า 55), 6. Reflow Soldering (หน้า 56), 7. Underfill Dispensing (หน้า 57), 8. AOI Inspection (หน้า 58), 9. Snap Cure (หน้า 59), 10. Flex Cleaning (หน้า 60), 11. X-Ray Inspection (หน้า 61), 12. QMAX Test (หน้า 62), 13. FMVI / OQA (หน้า 63), 14. Packing (หน้า 64)
-   - 4) APFA (Arm Pivot Flex Assembly / Hook Up): มีทั้งหมด 17 ขั้นตอน (หน้า 65-82)
-     1. Bending (หน้า 66), 2. Soldering ground pin & VCM pad (หน้า 67), 3. Flex bracket install (หน้า 68), 4. Load in carrier (หน้า 69), 5. AQ Cleaning (หน้า 70), 6. Unload from carrier (หน้า 71), 7. DCM attachment (หน้า 72), 8. T-ring insertion (หน้า 73), 9. Pivot Install (หน้า 74), 10. VMI (หน้า 75), 11. Pivot height checking (หน้า 76), 12. Arm height test (หน้า 77), 13. Electrical test (หน้า 78), 14. Tray label attachment (หน้า 79), 15. OQA (หน้า 80), 16. Final scan (หน้า 81), 17. Packing (หน้า 82)
-
-   [กฎเหล็กการตอบจำนวนขั้นตอน]:
-   - ต้องตรวจสอบชื่อผลิตภัณฑ์เสมอ และระบุจำนวนขั้นตอนให้ถูกต้องตรงตามผลิตภัณฑ์นั้น:
-     * หากถาม Coil Winding ➔ มีทั้งหมด 14 ขั้นตอน
-     * หากถาม ACA ➔ มีทั้งหมด 21 ขั้นตอน
-     * หากถาม FCOF ➔ มีทั้งหมด 14 ขั้นตอน
-     * หากถาม APFA ➔ มีทั้งหมด 17 ขั้นตอน
-   - ห้ามเหมาตอบว่ามี 21 ขั้นตอนกับผลิตภัณฑ์อื่นที่ไม่ใช่ ACA โดยเด็ดขาด!
-   - หากเป็นกระบวนการอื่น ให้นับจำนวนขั้นตอนจริงที่มีในสไลด์ก่อนเสมอ แล้วจึงตอบตามจำนวนจริงนั้น
+7. การตอบคำถามเรื่องลำดับขั้นตอนและคู่มือฝึกอบรม:
+   - หากถามขั้นตอนสวมชุดคลีนรูม [TM-00-00-05_1 หน้า 33]: 1. Hairnet ➔ 2. Jumpsuit ➔ 3. Facemask ➔ 4. Booties ➔ 5. Gloves (ห้ามตอบ Plant shoes ก่อนเด็ดขาด)
+   - หากถามการถอดชุด (Degowning Sequence): 1. Booties ➔ 2. Gloves ➔ 3. Facemask ➔ 4. Jumpsuit ➔ 5. Hairnet
+8. จำนวนขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จาก [TM-00-00-01] และ [PI-16-09-0001 Rev. H]):
+   แต่ละผลิตภัณฑ์มีจำนวนขั้นตอนต่างกัน ห้ามจำสับสน:
+   - 1) Coil Winding: 14 ขั้นตอน [TM-00-00-01 หน้า 14-27]
+   - 2) ACA: 21 ขั้นตอน [TM-00-00-01 หน้า 28-49] (มีเพียง ACA เท่านั้นที่มี 21 ขั้นตอน ห้ามเหมาตอบผลิตภัณฑ์อื่นเด็ดขาด)
+   - 3) FCOF: 14 ขั้นตอน [TM-00-00-01 หน้า 50-64]
+   - 4) APFA: 17 ขั้นตอน [TM-00-00-01 หน้า 65-82]
+   - 5) PCBA: แบ่งเป็น 4 กรณีตามบอร์ด [PI-16-09-0001 Rev. H]: Case 2.1 (30 ขั้นตอน), Case 2.2 (28 ขั้นตอน), Case 2.3 (33 ขั้นตอน), Case 2.4 (28 ขั้นตอน)
+   - ให้ยึดรายละเอียดขั้นตอน 1 ถึง N ตาม [ข้อมูลสไลด์และเกณฑ์มาตรฐาน] ที่ค้นพบด้านล่างนี้เสมอ ห้ามแต่งขั้นตอนเองเด็ดขาด
 ${examGroundTruthSnippet}
 ${dynamicSlideExcerpts}`;
 
@@ -785,8 +1015,8 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
     finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
     finalReply = officialPrefix + finalReply;
   } else if (matchedProcessFlow) {
-    const flowPrefix = `กระบวนการผลิต **${matchedProcessFlow.productName}** ตามเอกสาร [${matchedProcessFlow.docCode} ${matchedProcessFlow.pages}] มีทั้งหมด **${matchedProcessFlow.totalSteps} ขั้นตอน** ดังนี้ครับ:\n\n`;
-    finalReply = finalReply.replace(/^(?:กระบวนการผลิต[^\n]*มีทั้งหมด\s*\d+\s*ขั้นตอน[^\n]*\n*)+/i, '').trim();
+    const flowPrefix = getProcessFlowPrefix(matchedProcessFlow, userMessage);
+    finalReply = finalReply.replace(/^(?:กระบวนการผลิต[^\n]*(?:มีทั้งหมด|แบ่งออกเป็น)[^\n]*\n*)+/i, '').trim();
     if (!finalReply.startsWith(flowPrefix)) {
       finalReply = flowPrefix + finalReply;
     }
@@ -832,7 +1062,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
           onToken(officialPrefix);
         }
       } else if (matchedProcessFlow) {
-        officialPrefix = `กระบวนการผลิต **${matchedProcessFlow.productName}** ตามเอกสาร [${matchedProcessFlow.docCode} ${matchedProcessFlow.pages}] มีทั้งหมด **${matchedProcessFlow.totalSteps} ขั้นตอน** ดังนี้ครับ:\n\n`;
+        officialPrefix = getProcessFlowPrefix(matchedProcessFlow, userMessage);
 
         if (typeof onToken === 'function') {
           onToken(officialPrefix);
@@ -866,7 +1096,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
             cleanChunk = cleanChunk.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '');
           }
           if (matchedProcessFlow) {
-            cleanChunk = cleanChunk.replace(/^(?:กระบวนการผลิต[^\n]*มีทั้งหมด\s*\d+\s*ขั้นตอน[^\n]*\n*)+/i, '');
+            cleanChunk = cleanChunk.replace(/^(?:กระบวนการผลิต[^\n]*(?:มีทั้งหมด|แบ่งออกเป็น)[^\n]*\n*)+/i, '');
           }
           isFirstChunk = false;
         }
@@ -1056,4 +1286,4 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
   }
 }
 
-module.exports = { runOrchestrator, runOrchestratorStream };
+module.exports = { runOrchestrator, runOrchestratorStream, prepareContext };

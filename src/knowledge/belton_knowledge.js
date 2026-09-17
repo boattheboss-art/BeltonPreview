@@ -150,6 +150,12 @@ const BELTON_KNOWLEDGE = `
 
 9. APFA PROCESS (Arm Pivot Flex Assembly - ทั้งหมด 17 ขั้นตอน):
    * 1. Bending -> 2. Soldering ground pin & VCM pad -> 3. Flex bracket install -> 4. Load in carrier -> 5. AQ Cleaning -> 6. Unload from carrier -> 7. DCM attachment -> 8. T-ring insertion -> 9. Pivot Install -> 10. VMI -> 11. Pivot height checking -> 12. Arm height test -> 13. Electrical test -> 14. Tray label attachment -> 15. OQA -> 16. Final scan -> 17. Packing (ซีลถุงสุญญากาศ Vacuum Pack)
+
+10. PCBA PROCESS (Printed Circuit Board Assembly - เอกสารทางการ [PI-16-09-0001 Rev. H] แบ่งออกเป็น 4 กรณี):
+   * Case 2.1 (30 ขั้นตอน): บอร์ด 2 ด้าน (Top & Bottom) + มีชิ้นส่วน DSP/Flipchip + ล้าง Microclean (OPN 10 ถึง OPN 300)
+   * Case 2.2 (28 ขั้นตอน): บอร์ด 2 ด้าน (Top & Bottom) + ไม่มีชิ้นส่วน DSP/Flipchip + มี Top fill + ล้าง Microclean (OPN 10 ถึง OPN 280)
+   * Case 2.3 (33 ขั้นตอน): บอร์ด 2 ด้าน (Top & Bottom) + มีชิ้นส่วน DSP/Flipchip + มี Topfill & Underfill 2 ด้าน + ล้าง Microclean (OPN 20 ถึง OPN 350)
+   * Case 2.4 (28 ขั้นตอน): บอร์ด 2 ด้าน (Top & Bottom) + มีชิ้นส่วน PICs (PICs components) + ล้าง Microclean 2 ด้าน (OPN 10 ถึง OPN 340)
 `;
 
 module.exports = { BELTON_KNOWLEDGE };
