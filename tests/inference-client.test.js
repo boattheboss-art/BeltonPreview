@@ -56,10 +56,11 @@ test('vLLM requests enable Qwen thinking and translate tool-check token budgets'
     assert.equal(body.max_tokens, 4096);
     assert.equal(body.chat_template_kwargs.enable_thinking, true);
     assert.equal(body.model, 'Qwen3.6-35B-A3B-AWQ');
+    assert.equal(Object.hasOwn(body, 'stop'), false);
     return Response.json({ choices: [{ message: { role: 'assistant', content: 'ready' }, finish_reason: 'stop' }] });
   };
   const response = await fetchInference('http://unused/api/chat', { body: JSON.stringify({
-    model: 'Qwen3.6-35B-A3B-AWQ', messages: [{ role: 'user', content: 'hello' }], options: { num_predict: 128 }
+    model: 'Qwen3.6-35B-A3B-AWQ', messages: [{ role: 'user', content: 'hello' }], options: { num_predict: 128, stop: ['Assistant:'] }
   }) });
   assert.equal((await response.json()).message.content, 'ready');
 });

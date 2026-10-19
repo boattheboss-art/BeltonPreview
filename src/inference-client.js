@@ -79,7 +79,8 @@ async function fetchInference(url, options) {
     max_tokens: Math.max(4096, settings.num_predict || 4096),
     temperature: settings.temperature,
     top_p: settings.top_p,
-    stop: settings.stop,
+    // Ollama prompt-header stop strings can terminate Qwen reasoning before
+    // an answer is emitted. vLLM applies the model's own end-of-turn tokens.
     // Qwen3.6 needs thinking enabled for reliable native tool calling.
     chat_template_kwargs: { enable_thinking: true }
   };
@@ -96,8 +97,10 @@ async function fetchInference(url, options) {
   const data = await response.json();
   const choice = data.choices?.[0];
   if (!choice?.message) throw new Error('Inference returned no assistant message');
-  if (choice.finish_reason === 'length' && !choice.message.content && !choice.message.tool_calls?.length) {
-    throw new Error('Inference token budget exhausted before an answer was produced');
+  if (!choice.message.content?.trim() && !choice.message.tool_calls?.length) {
+    throw new Error(choice.finish_reason === 'length'
+      ? 'Inference token budget exhausted before an answer was produced'
+      : 'Inference returned an empty answer');
   }
   return Response.json({ message: fromOpenAIMessage(choice.message) });
 }
