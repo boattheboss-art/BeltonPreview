@@ -185,7 +185,7 @@ function init() {
 
   function openLoginModal() {
     if (sessionStorage.getItem('belton_logged_in') === 'true') {
-      window.location.href = '/explorer';
+      window.location.href = window.beltonUrl('/explorer');
       return;
     }
     isLoginOpen = true;
@@ -218,7 +218,7 @@ function init() {
   if (heroLoginBtn) {
     heroLoginBtn.addEventListener('click', () => {
       if (sessionStorage.getItem('belton_logged_in') === 'true') {
-        window.location.href = '/explorer';
+        window.location.href = window.beltonUrl('/explorer');
       } else {
         openLoginModal();
       }

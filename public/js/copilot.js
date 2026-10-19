@@ -391,7 +391,7 @@
         await studioAudioCtx.resume().catch(() => {});
       }
 
-      const res = await fetch('/api/tts', {
+      const res = await fetch(window.beltonUrl('/api/tts'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, voice: selectedVoice })
@@ -486,7 +486,7 @@
     html = html.replace(/\[ACTION:TELEPORT:(\d+)\]/gi, (match, num) => {
       const pNum = parseInt(num, 10);
       const tag = pNum < 10 ? '0' + pNum : pNum;
-      return `<a href="/factory?target=${pNum}" class="teleport-action-badge">
+      return `<a href="${window.beltonUrl('/factory')}?target=${pNum}" class="teleport-action-badge">
         <span><svg style="display:inline-block;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/></svg>สั่งการกล้อง 3D: วาร์ปไปที่เครื่อง ACA-DISP-${tag}</span>
         <span style="font-size:11px;opacity:0.8;">(คลิกเพื่อเปิดดู 3D)</span>
       </a>`;
@@ -758,7 +758,7 @@
     };
 
     try {
-      const response = await fetch('/api/copilot/chat-stream', {
+      const response = await fetch(window.beltonUrl('/api/copilot/chat-stream'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

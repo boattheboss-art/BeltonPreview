@@ -1,0 +1,12 @@
+.git
+.agents
+node_modules
+.env*
+scratch
+raw_assets
+docs
+ai
+data/documents
+*.tar
+*.log
+**/__pycache__

@@ -24,6 +24,7 @@ Thumbs.db
 # Offline AI heavy training weights & streaming data
 ai/data/belton_scada.db
 ai/__pycache__/
+__pycache__/
 *.pt
 
 # IDE / Editor configurations
@@ -35,8 +36,5 @@ scratch/
 belton-web.tar
 belton-web/
 *.tar
-Dockerfile
-docker-compose.yml
-.dockerignore
 
 

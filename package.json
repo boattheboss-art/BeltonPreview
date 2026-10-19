@@ -5,6 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "check": "node scripts/check-syntax.js",
+    "test": "node --test tests/web-paths.test.js",
+    "smoke": "node scripts/smoke-test.js",
     "ollama": "scripts\\start_ollama.bat",
     "tunnel": "scripts\\start_gpu_tunnel.bat",
     "train:ai": "python ai/train_belton_copilot_ai.py"

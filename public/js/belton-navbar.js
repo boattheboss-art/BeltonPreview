@@ -39,7 +39,7 @@
         if (!document.getElementById('logoutConfirmModal')) {
           e.preventDefault();
           sessionStorage.removeItem('belton_logged_in');
-          window.location.href = '/';
+          window.location.href = window.beltonUrl('/');
         }
       });
     });

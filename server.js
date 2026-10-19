@@ -1,12 +1,23 @@
 const express = require('express');
 const path = require('path');
+const { normalizeBasePath, sendPage } = require('./src/web-paths.js');
 const { runOrchestrator, runOrchestratorStream } = require('./src/orchestrator.js');
 const { getMachineTelemetry, getProblematicMachines, getFactorySummary } = require('./src/db/database.js');
 const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
 require('dotenv').config();
 
-const app = express();
+const rootApp = express();
+const app = express.Router();
 const PORT = process.env.PORT || 8080;
+const BASE_PATH = normalizeBasePath(process.env.BASE_PATH || '');
+const publicDir = path.join(__dirname, 'public');
+if (BASE_PATH) {
+    rootApp.use((req, res, next) => {
+        if (req.path === BASE_PATH) return res.redirect(308, BASE_PATH + '/');
+        next();
+    });
+}
+rootApp.use(BASE_PATH || '/', app);
 
 // Detailed Logger Middleware
 app.use(express.json());
@@ -266,7 +277,22 @@ app.get('/api/scada/machines/:id', async (req, res) => {
     }
 });
 
-app.use(express.static(path.join(__dirname, 'public'), {
+app.get('/api/health', async (req, res) => {
+    try {
+        const summary = await getFactorySummary();
+        res.json({ status: 'ok', revision: process.env.APP_REVISION || 'development',
+            basePath: BASE_PATH, machines: summary.total_machines });
+    } catch (err) {
+        res.status(503).json({ status: 'starting' });
+    }
+});
+
+app.get(/^\/(index|explorer|product|manufacturing|factory|copilot)\.html$/, (req, res) => {
+    sendPage(res, publicDir, path.basename(req.path), BASE_PATH);
+});
+
+app.use(express.static(publicDir, {
+    index: false,
     etag: false,
     maxAge: 0,
     setHeaders: (res) => {
@@ -275,27 +301,27 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    sendPage(res, publicDir, 'index.html', BASE_PATH);
 });
 
 app.get('/explorer', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'explorer.html'));
+    sendPage(res, publicDir, 'explorer.html', BASE_PATH);
 });
 
 app.get('/product', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'product.html'));
+    sendPage(res, publicDir, 'product.html', BASE_PATH);
 });
 
 app.get('/manufacturing', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'manufacturing.html'));
+    sendPage(res, publicDir, 'manufacturing.html', BASE_PATH);
 });
 
 app.get('/factory', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'factory.html'));
+    sendPage(res, publicDir, 'factory.html', BASE_PATH);
 });
 
 app.get('/copilot', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'copilot.html'));
+    sendPage(res, publicDir, 'copilot.html', BASE_PATH);
 });
 
 app.get('/api/model-status', (req, res) => {
@@ -323,13 +349,13 @@ app.get('/api/scada/live-status', (req, res) => {
 });
 
 app.get('/lab', (req, res) => {
-    res.redirect('/manufacturing');
+    res.redirect(BASE_PATH + '/manufacturing');
 });
 
 process.on('uncaughtException', (err) => console.error('uncaughtException:', err));
 process.on('unhandledRejection', (err) => console.error('unhandledRejection:', err));
 
-app.listen(PORT, '0.0.0.0', () => {
+rootApp.listen(PORT, '0.0.0.0', () => {
     console.log(`\n======================================================`);
     console.log(`Belton 3D Component Explorer`);
     console.log(`Open in Chrome: http://localhost:${PORT}`);

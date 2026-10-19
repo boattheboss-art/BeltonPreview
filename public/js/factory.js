@@ -364,7 +364,7 @@
     setInterval(async () => {
       if (isReloadingModel) return;
       try {
-        const res = await fetch('/api/model-status');
+        const res = await fetch(window.beltonUrl('/api/model-status'));
         if (!res.ok) return;
         const data = await res.json();
         if (data.exists && data.mtime) {
@@ -704,7 +704,7 @@
 
     async function fetchScadaStatus() {
       try {
-        const res = await fetch('/api/scada/summary');
+        const res = await fetch(window.beltonUrl('/api/scada/summary'));
         if (res.ok) {
           textEl.textContent = 'DB: SQLITE 50/50 LIVE';
           const navaDbText = document.getElementById('navaDbStatusText');
@@ -718,7 +718,7 @@
       } catch (e) {}
 
       try {
-        const res2 = await fetch('/api/scada/live-status');
+        const res2 = await fetch(window.beltonUrl('/api/scada/live-status'));
         if (res2.ok) {
           const data = await res2.json();
           textEl.textContent = `DB: SQLITE 50/50 LIVE`;
@@ -921,7 +921,7 @@
       const textEl = document.getElementById('scadaDbText');
       const dotEl = document.getElementById('scadaDbDot');
       try {
-        const res = await fetch('/api/scada/summary');
+        const res = await fetch(window.beltonUrl('/api/scada/summary'));
         if (res.ok) {
           const data = await res.json();
           if (textEl) textEl.textContent = `DB: SQLITE 50/50 LIVE`;
@@ -1562,7 +1562,7 @@
         copilotContext.lastTopic = null;
         updateStatusBadge();
         appendMessage('bot', ' <b>ล้างประวัติความจำการสนทนาเรียบร้อยครับ!</b><br>ระบบพร้อมเริ่มต้นบริบทใหม่ (0/50 ข้อความ)');
-        fetch('/api/copilot-log', {
+        fetch(window.beltonUrl('/api/copilot-log'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query: text, model: 'Qwen 2.5 1.5B (WebGPU Solo)', response: 'ล้างประวัติความจำการสนทนาเรียบร้อยครับ (0/50)' })
@@ -1707,7 +1707,7 @@
         });
 
         // Live CMD Terminal Logger via /api/copilot-log
-        fetch('/api/copilot-log', {
+        fetch(window.beltonUrl('/api/copilot-log'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1920,7 +1920,7 @@
     }
     if (confirmLogout) {
       confirmLogout.addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = window.beltonUrl('/');
       });
     }
 

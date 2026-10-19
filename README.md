@@ -158,6 +158,15 @@ belton_live_preview/
 
 ---
 
+## ทดสอบบน TH-AIN ผ่าน Jenkins
+
+เว็บทดสอบ: https://th-ain.beltontechnology.com/beltonpreview/
+
+Pipeline: http://192.168.74.72:8084/job/beltonpreview-deploy/
+
+ใช้ agent `TH-AI` และ `Jenkinsfile` จาก GitLab branch `main`
+รายละเอียดและวิธี rollback: [Jenkins deployment](docs/JENKINS_DEPLOYMENT.md)
+
 ## เริ่มต้นใช้งานด่วน (Quick Start)
 
 ### วิธีที่ 1: แบบ 1-Click บน Windows

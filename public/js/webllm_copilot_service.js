@@ -71,7 +71,7 @@
   }
 
   async function streamChat(userQuery, conversationHistory, activeMachineNum, onChunk, onAction) {
-    const res = await fetch('/api/copilot/chat-stream', {
+    const res = await fetch(window.beltonUrl('/api/copilot/chat-stream'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

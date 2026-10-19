@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');
 
-const DB_PATH = path.resolve(__dirname, '../../data/scada.db');
+const DB_PATH = process.env.SQLITE_PATH || path.resolve(__dirname, '../../data/scada.db');
 const JSON_PATH = path.resolve(__dirname, '../../data/belton_slides_database.json');
 
 let inMemorySlides = null;
