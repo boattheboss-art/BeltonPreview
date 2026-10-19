@@ -13,9 +13,9 @@ pipeline {
         APP_NETWORK = 'belton-chatbot_default'
         APP_PUBLIC_URL = 'https://th-ain.beltontechnology.com/beltonpreview/'
         NGINX_CONFIG = '/home/tanupatj/ProjectAI/belton-chatbot/nginx/nginx.conf'
-        // Set Ollama to an existing compatible service before testing AI chat.
-        OLLAMA_BASE_URL = 'http://host.docker.internal:11434'
-        MODEL_NAME = 'qwen2.5:14b'
+        LLM_PROVIDER = 'openai'
+        OPENAI_BASE_URL = 'http://host.docker.internal:8000/v1'
+        MODEL_NAME = 'Qwen3.6-35B-A3B-AWQ'
     }
 
     stages {

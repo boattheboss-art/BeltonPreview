@@ -912,7 +912,7 @@
     function updateStatusBadge() {
       const statusBadge = chatWindow.querySelector('#copilotStatusBadge') || chatWindow.querySelector('.copilot-status');
       if (statusBadge) {
-        statusBadge.innerHTML = `Qwen 2.5:14b (Ollama SCADA Agent)`;
+        statusBadge.innerHTML = `Qwen3.6-35B-A3B-AWQ (vLLM SCADA Agent)`;
         statusBadge.style.color = '#10b981';
       }
     }
@@ -979,7 +979,7 @@
       if (webllmBanner) {
         webllmBanner.classList.remove('is-hidden');
         if (progressBar) progressBar.classList.add('is-loading');
-        if (webllmProgressText) webllmProgressText.textContent = ' กำลังโหลดสมองกล Qwen 2.5 1.5B (WebGPU บน RTX 3050)...';
+        if (webllmProgressText) webllmProgressText.textContent = ' กำลังโหลดสมองกล Qwen3.6-35B-A3B-AWQ (WebGPU บน RTX 3050)...';
       }
       updateStatusBadge();
 
@@ -990,7 +990,7 @@
           return ` โหลด Shard โมเดล 1.5B (${m[1]}/${m[2]})...`;
         }
         if (raw.includes('Start to fetch params') || raw.includes('fetch params')) {
-          return ' กำลังดาวน์โหลดไฟล์โมเดล Qwen 2.5 1.5B...';
+          return ' กำลังดาวน์โหลดไฟล์โมเดล Qwen3.6-35B-A3B-AWQ...';
         }
         if (raw.includes('cache')) {
           return ' กำลังดึงไฟล์แคช 1.5B ในเครื่อง...';
@@ -999,7 +999,7 @@
           return ' กำลังคอมไพล์ Shader 1.5B เข้าสู่ WebGPU...';
         }
         if (raw.includes('Finish') || report.progress === 1) {
-          return ' สมองกล Qwen 2.5 1.5B พร้อมทำงาน!';
+          return ' สมองกล Qwen3.6-35B-A3B-AWQ พร้อมทำงาน!';
         }
         return raw.length > 52 ? raw.slice(0, 50) + '...' : raw;
       }
@@ -1018,13 +1018,13 @@
 
         if (webllmBanner) {
           if (progressBar) progressBar.classList.remove('is-loading');
-          if (webllmProgressText) webllmProgressText.textContent = ' สมองกล Qwen 2.5 1.5B พร้อมทำงาน!';
+          if (webllmProgressText) webllmProgressText.textContent = ' สมองกล Qwen3.6-35B-A3B-AWQ พร้อมทำงาน!';
           setTimeout(() => {
             webllmBanner.classList.add('is-hidden');
           }, 2500);
         }
         updateStatusBadge();
-        console.log(' Belton Standalone WebLLM (Qwen 2.5 1.5B) is active 100%!');
+        console.log(' Belton Standalone WebLLM (Qwen3.6-35B-A3B-AWQ) is active 100%!');
       } catch (err) {
         console.warn('WebLLM init error:', err);
         if (webllmBanner) webllmBanner.classList.add('is-hidden');
@@ -1032,9 +1032,9 @@
       }
     }
 
-    // Standalone Qwen 2.5 1.5B Architecture (Edge NN decommissioned)
+    // Standalone Qwen3.6-35B-A3B-AWQ Architecture (Edge NN decommissioned)
     updateStatusBadge();
-    console.log(' [AI Copilot] Running 100% Standalone Qwen 2.5 1.5B WebGPU Engine (All 12 Domains Unified)');
+    console.log(' [AI Copilot] Running 100% Standalone Qwen3.6-35B-A3B-AWQ WebGPU Engine (All 12 Domains Unified)');
 
     // Pre-warm WebLLM immediately in background so it downloads/caches before user opens chat
     setTimeout(() => {
@@ -1565,7 +1565,7 @@
         fetch(window.beltonUrl('/api/copilot-log'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: text, model: 'Qwen 2.5 1.5B (WebGPU Solo)', response: 'ล้างประวัติความจำการสนทนาเรียบร้อยครับ (0/50)' })
+          body: JSON.stringify({ query: text, model: 'Qwen3.6-35B-A3B-AWQ (WebGPU Solo)', response: 'ล้างประวัติความจำการสนทนาเรียบร้อยครับ (0/50)' })
         }).catch(() => {});
         return;
       }
@@ -1614,7 +1614,7 @@
         }
       }
 
-      // 100% Pure Standalone Qwen 2.5 WebGPU Execution (Zero Fallback)
+      // 100% Pure Standalone Qwen3.6-35B-A3B-AWQ WebGPU Execution (Zero Fallback)
       const msgDiv = document.createElement('div');
       msgDiv.className = 'copilot-msg bot';
       const bubbleDiv = document.createElement('div');
@@ -1631,14 +1631,14 @@
       if (!window.BeltonWebLLM || !window.BeltonWebLLM.isModelReady()) {
         const hasGPU = await (window.BeltonWebLLM ? window.BeltonWebLLM.checkWebGPUSupport() : Promise.resolve(false));
         if (!hasGPU) {
-          contentSpan.innerHTML = ` <b>ไม่สามารถเรียกใช้งาน WebGPU บนเบราว์เซอร์ได้</b><br><br>กรุณาตรวจสอบว่าเปิดใช้งาน Hardware Acceleration ในเบราว์เซอร์แล้ว (Settings > System > Use graphics acceleration when available) และใช้เบราว์เซอร์ที่รองรับ WebGPU เช่น Google Chrome หรือ Microsoft Edge เพื่อให้โมเดล Qwen 2.5 ประมวลผลบนการ์ดจอ RTX 3050 ครับ`;
+          contentSpan.innerHTML = ` <b>ไม่สามารถเรียกใช้งาน WebGPU บนเบราว์เซอร์ได้</b><br><br>กรุณาตรวจสอบว่าเปิดใช้งาน Hardware Acceleration ในเบราว์เซอร์แล้ว (Settings > System > Use graphics acceleration when available) และใช้เบราว์เซอร์ที่รองรับ WebGPU เช่น Google Chrome หรือ Microsoft Edge เพื่อให้โมเดล Qwen3.6-35B-A3B-AWQ ประมวลผลผ่าน vLLM บน TH-AI ครับ`;
           if (cursorSpan && cursorSpan.parentNode) cursorSpan.parentNode.removeChild(cursorSpan);
           updateStatusBadge();
           return;
         }
 
         contentSpan.innerHTML = `
-          <div style="font-size:13px;font-weight:600;color:#8b5cf6;margin-bottom:6px;"> กำลังเชื่อมต่อสมองกล Qwen 2.5 (WebGPU บน RTX 3050)...</div>
+          <div style="font-size:13px;font-weight:600;color:#8b5cf6;margin-bottom:6px;"> กำลังเชื่อมต่อสมองกล Qwen3.6-35B-A3B-AWQ (WebGPU บน RTX 3050)...</div>
           <div id="qwenInlineStatus" style="font-size:12px;color:#94a3b8;margin-bottom:8px;">กำลังดาวน์โหลดและคอมไพล์ Shader เข้าสู่การ์ดจอ...</div>
           <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;width:100%;border:1px solid rgba(139,92,246,0.25);">
             <div id="qwenInlineBar" style="width:0%;height:100%;background:linear-gradient(90deg,#8b5cf6,#06b6d4);transition:width 0.2s;"></div>
@@ -1660,14 +1660,14 @@
           updateStatusBadge();
         } catch (initErr) {
           console.error("WebLLM Init failed:", initErr);
-          contentSpan.innerHTML = ` <b>เกิดข้อผิดพลาดในการโหลดโมเดล Qwen 2.5:</b><br><code style="font-size:11px;color:#ef4444;">${initErr.message || initErr}</code><br><br>กรุณาลองรีเฟรชหน้าเว็บใหม่ครับ`;
+          contentSpan.innerHTML = ` <b>เกิดข้อผิดพลาดในการโหลดโมเดล Qwen3.6-35B-A3B-AWQ:</b><br><code style="font-size:11px;color:#ef4444;">${initErr.message || initErr}</code><br><br>กรุณาลองรีเฟรชหน้าเว็บใหม่ครับ`;
           if (cursorSpan && cursorSpan.parentNode) cursorSpan.parentNode.removeChild(cursorSpan);
           updateStatusBadge();
           return;
         }
       }
 
-      // Stream response with 100% Pure Qwen 2.5 WebGPU
+      // Stream response with 100% Pure Qwen3.6-35B-A3B-AWQ WebGPU
       let fullStreamText = "";
       let triggeredAction = null;
 
@@ -1721,7 +1721,7 @@
 
         updateStatusBadge();
       } catch (streamErr) {
-        console.error("Qwen 2.5 stream error:", streamErr);
+        console.error("Qwen3.6-35B-A3B-AWQ stream error:", streamErr);
         if (cursorSpan && cursorSpan.parentNode) {
           cursorSpan.parentNode.removeChild(cursorSpan);
         }

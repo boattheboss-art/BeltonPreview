@@ -42,10 +42,14 @@ reload; failure restores the original file. Other applications remain running.
 ## AI and simulation
 
 SCADA uses the existing 50-machine demonstration dataset. The Python live
-telemetry simulator is not started by this web deployment. Ollama is configured
-as `http://host.docker.internal:11434` with `qwen2.5:14b`; this model must already
-exist on that service before AI chat can work. The pipeline does not download
-models or change existing GPU workloads. Edge TTS requires outbound connectivity.
+telemetry simulator is not started by this web deployment. Copilot uses the
+existing vLLM service at `http://host.docker.internal:8000/v1`, model
+`Qwen3.6-35B-A3B-AWQ`, with `LLM_PROVIDER=openai`. An adapter converts messages,
+native tool calls and streaming into the orchestrator's existing contract.
+Qwen thinking stays enabled; only answer tokens are sent to the browser.
+The pipeline does not download models or change existing GPU workloads.
+For local Ollama development, omit `LLM_PROVIDER` and use `OLLAMA_BASE_URL`.
+Edge TTS requires outbound connectivity.
 
 ## Recovery
 

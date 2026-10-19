@@ -4,7 +4,8 @@ set -euo pipefail
 : "${APP_BASE_PATH:=/beltonpreview}" "${APP_NETWORK:=belton-chatbot_default}"
 : "${APP_PUBLIC_URL:=https://th-ain.beltontechnology.com/beltonpreview/}"
 : "${NGINX_CONFIG:=/home/tanupatj/ProjectAI/belton-chatbot/nginx/nginx.conf}"
-: "${OLLAMA_BASE_URL:=http://host.docker.internal:11434}" "${MODEL_NAME:=qwen2.5:14b}"
+: "${LLM_PROVIDER:=openai}" "${OPENAI_BASE_URL:=http://host.docker.internal:8000/v1}"
+: "${MODEL_NAME:=Qwen3.6-35B-A3B-AWQ}"
 revision=$(git rev-parse HEAD)
 image="beltonpreview:$revision"
 candidate="beltonpreview-check-${revision:0:12}"
@@ -48,7 +49,7 @@ run_app() {
         --add-host host.docker.internal:host-gateway \
         --mount source=beltonpreview-data,target=/app/runtime \
         -e "BASE_PATH=$APP_BASE_PATH" -e "APP_REVISION=$revision" \
-        -e "OLLAMA_BASE_URL=$OLLAMA_BASE_URL" -e "MODEL_NAME=$MODEL_NAME" \
+        -e "LLM_PROVIDER=$LLM_PROVIDER" -e "OPENAI_BASE_URL=$OPENAI_BASE_URL" -e "MODEL_NAME=$MODEL_NAME" \
         -e NUM_GPU=26 -e NUM_CTX=6144 "$image"
 }
 

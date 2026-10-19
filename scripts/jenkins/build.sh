@@ -7,4 +7,4 @@ for script in scripts/jenkins/*.sh scripts/container-entrypoint.sh; do bash -n "
 python3 -m unittest discover -s tests -p 'test_*.py'
 docker build --label "org.opencontainers.image.revision=$revision" -t "$image" .
 docker run --rm --entrypoint node "$image" scripts/check-syntax.js
-docker run --rm --entrypoint node "$image" --test tests/web-paths.test.js
+docker run --rm --entrypoint npm "$image" test

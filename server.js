@@ -281,7 +281,9 @@ app.get('/api/health', async (req, res) => {
     try {
         const summary = await getFactorySummary();
         res.json({ status: 'ok', revision: process.env.APP_REVISION || 'development',
-            basePath: BASE_PATH, machines: summary.total_machines });
+            basePath: BASE_PATH, machines: summary.total_machines,
+            model: process.env.MODEL_NAME || 'qwen2.5:14b',
+            provider: process.env.LLM_PROVIDER || 'ollama' });
     } catch (err) {
         res.status(503).json({ status: 'starting' });
     }

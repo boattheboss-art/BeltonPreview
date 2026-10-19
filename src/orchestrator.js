@@ -1,4 +1,5 @@
 const { toolsDefinition } = require('./tools/schemas.js');
+const { fetchInference } = require('./inference-client.js');
 const { executeTool } = require('./tools/handlers.js');
 const { searchSlideKnowledge, searchExamQuestion } = require('./knowledge/slide_knowledge_db.js');
 require('dotenv').config();
@@ -12,7 +13,7 @@ async function fetchWithRetry(url, options, maxRetries = 2, delayMs = 600) {
   let lastError;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const res = await fetch(url, options);
+      const res = await fetchInference(url, options);
       return res;
     } catch (err) {
       lastError = err;
@@ -767,7 +768,7 @@ function formatThoughtMetadata({ startTime, retrievedSlidesList, toolsUsed, matc
 
   return {
     durationMs,
-    model: `${MODEL_NAME.includes('14b') ? 'Qwen 2.5:14b' : MODEL_NAME} (Local NVIDIA RTX 3050 GPU)`,
+    model: `${MODEL_NAME} (${process.env.LLM_PROVIDER === 'openai' ? 'vLLM' : 'Ollama'})`,
     sources,
     examMatch: matchedExam ? {
       docCode: matchedExam.doc_code,
