@@ -13,7 +13,7 @@ COPY --chown=node:node package.json server.js ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node public ./public
 COPY --chown=node:node data/scada.db data/belton_slides_database.json data/seagate_exam_questions.json ./data/
-COPY --chown=node:node scripts/check-syntax.js scripts/smoke-test.js scripts/container-entrypoint.sh ./scripts/
+COPY --chown=node:node scripts/check-syntax.js scripts/smoke-test.js scripts/wait-for-release.js scripts/container-entrypoint.sh ./scripts/
 COPY --chown=node:node tests ./tests
 RUN mkdir /app/runtime && chown node:node /app/runtime
 USER node

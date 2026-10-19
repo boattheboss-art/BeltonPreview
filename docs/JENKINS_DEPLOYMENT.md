@@ -37,7 +37,9 @@ nginx config: `/home/tanupatj/ProjectAI/belton-chatbot/nginx/nginx.conf`.
 The managed block has `BEGIN BELTONPREVIEW` / `END BELTONPREVIEW` markers.
 Before modifying it, the script writes and verifies a dated backup. Writes keep
 the existing inode because nginx bind-mounts the file. `nginx -t` must pass before
-reload; failure restores the original file. Other applications remain running.
+reload; failure restores the original file. The pipeline waits until HTTPS serves
+the expected revision because an nginx reload can briefly retain old workers.
+Other applications remain running.
 
 ## AI and simulation
 

@@ -10,6 +10,6 @@ function scan(dir) {
     else if (file.endsWith('.js')) files.push(file);
   }
 }
-['src', 'public/js', 'tests'].forEach(scan);
+['src', 'public/js', 'scripts', 'tests'].forEach(scan);
 for (const file of files) execFileSync(process.execPath, ['--check', file], { stdio: 'inherit' });
 console.log(`JavaScript syntax passed: ${files.length} files`);

@@ -72,6 +72,7 @@ actual=$(docker inspect --format '{{.Image}}' beltonpreview)
 [[ "$actual" == "$expected" ]] || { echo 'Running image does not match built image' >&2; exit 1; }
 
 python3 scripts/jenkins/configure-proxy.py "$NGINX_CONFIG"
+docker exec -e "EXPECTED_REVISION=$revision" beltonpreview node scripts/wait-for-release.js "$APP_PUBLIC_URL"
 docker exec -e "EXPECTED_REVISION=$revision" beltonpreview node scripts/smoke-test.js "$APP_PUBLIC_URL"
 success=true
 echo "Verified deployment $revision ($actual) at $APP_PUBLIC_URL"
