@@ -1,12 +1,13 @@
 {
-  "name": "belton-blender-live-sync",
+  "name": "belton-digital-twin-scada",
   "version": "1.0.0",
-  "description": "Real-time Blender to WebGL glTF Sync Server for Belton Technology",
+  "description": "BELTON Industrial 3D Cleanroom Digital Twin, Real-Time SCADA Fleet & Local AI Copilot",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "gpu": "gpu.bat",
-    "tunnel": "gpu.bat"
+    "ollama": "scripts\\start_ollama.bat",
+    "tunnel": "scripts\\start_gpu_tunnel.bat",
+    "train:ai": "python ai/train_belton_copilot_ai.py"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

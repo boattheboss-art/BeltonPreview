@@ -1,104 +1,157 @@
-# BELTON — PROJECT HANDOVER & AI CONTEXT CONTINUITY
-**Date Updated:** September 16, 2026  
-**Conversation ID:** `34f9f303-44c4-4328-998e-ce6d834be561`  
-**Project Directory:** `c:\Users\BOAT\Videos\เลขา\belton_live_preview`  
-**Git Repository:** `https://github.com/boattheboss-art/BeltonPreview.git`  
-**Render Hosting:** `https://beltonpreview.onrender.com`  
+# คู่มือส่งมอบงานและสถาปัตยกรรมระบบ (BELTON Project Handover Guide)
+
+**ชื่อโปรเจกต์:** BELTON Industrial 3D Digital Twin, SCADA Fleet & Local AI Copilot  
+**สถานะโปรเจกต์:** พร้อมส่งมอบงาน (Production & Handover Ready)  
+**Git Repository:** `https://github.com/boattheboss-art/BeltonPreview.git`
 
 ---
 
-## 📌 สรุปบริบทสำหรับ AI ที่เข้ามารับช่วงต่อ (Context for AI)
+## 1. ภาพรวมสำหรับการรับมอบงาน (Executive Summary for Handover)
 
-> **คำสั่งสำหรับ AI:**  
-> โปรเจกต์นี้คือ **BELTON Live Preview** เป็นเว็บแอปพลิเคชัน Node.js / Express แสดงผล 3D Interactive, Industrial Digital Twin, SCADA Fleet Telemetry, และวิศวกร AI Copilot (Local GPU)  
-> ทุกครั้งที่เข้ามาทำงานต่อ **ต้องรักษาวินัยความสะอาดของไฟล์ตามกฎเหล็กด้านล่างนี้อย่างเคร่งครัด 100%**
+เอกสารฉบับนี้จัดทำขึ้นเพื่อส่งมอบงานพัฒนาโปรเจกต์ **BELTON Live Preview** ให้แก่ทีมวิศวกรและนักพัฒนาซอฟต์แวร์ของบริษัท เพื่อใช้ในการดูแลรักษา ปรับปรุงข้อมูล และพัฒนาต่อยอดได้อย่างต่อเนื่องทันที
 
----
-
-## ⚠️ กฎเหล็กการพัฒนาและรักษาความเป็นระเบียบของไฟล์ (Permanent Rule: Zero-Junk Discipline)
-
-1. **ห้ามสร้างไฟล์ขยะทิ้งไว้ใน Root Directory เด็ดขาด (Zero Junk in Root)**:
-   - ห้ามเซฟภาพสกรีนช็อต `.png`, ภาพเทสต์มุมกล้อง, ไฟล์ข้อความสุ่ม (`test.txt`, `temp.txt`), หรือ log files ใน Root
-   - หากจำเป็นต้องสร้างไฟล์ทดสอบเพื่อ Verify ผล ให้ทดสอบเสร็จแล้ว **ลบทิ้งทันที** ภายใน Turn เดียวกัน
-2. **การจัดวางไฟล์ให้อยู่ในโฟลเดอร์ที่ถูกต้องเสมอ (Strict Modular Placement)**:
-   - ไฟล์ Backend Logic ➔ `src/` (แยกย่อยตาม `src/db/`, `src/knowledge/`, `src/tools/`)
-   - ไฟล์ข้อมูล Database / JSON Master ➔ `data/`
-   - สคริปต์สกัดข้อมูลหรือ Automation ➔ `scripts/`
-   - ไฟล์หน้าเว็บและ Asset แสดงผล ➔ `public/` (แยกย่อย `public/js/`, `public/models/`, `public/assets/`, `public/frames/`)
-   - สคริปต์เทรนโมเดล AI ออฟไลน์ ➔ `ai/`
-3. **ตรวจสอบความสะอาดก่อนส่งมอบงานทุกครั้ง (Self-Auditing before Completion)**:
-   - ก่อนสรุปงานให้ผู้ใช้ ตรวจสอบ `git status` เสมอ ต้องไม่มีไฟล์ขยะตกค้าง และโครงสร้างโฟลเดอร์ต้องพร้อมสำหรับนำไป Deploy ทันที
+โปรเจกต์นี้เป็นแพลตฟอร์มเว็บแอปพลิเคชันแบบครบวงจรที่รวม 3 ระบบหลักเข้าด้วยกัน:
+1. **3D Interactive Visualization & Cleanroom Digital Twin**: จำลองโรงงานคลีนรูม Class 100 และชิ้นส่วนผลิตภัณฑ์ด้วย Three.js โดยไม่ต้องพึ่งพาซอฟต์แวร์ภายนอกบนเครื่องผู้ใช้งาน
+2. **Real-Time SCADA Fleet Monitoring**: ระบบติดตามพารามิเตอร์เครื่องจักรหยอดกาวอัตโนมัติ (Asymtek Dispenser) จำนวน 50 เครื่อง พร้อมฐานข้อมูล SQLite / PostgreSQL
+3. **Local AI Copilot & Engineering RAG**: ผู้ช่วยวิศวกร AI ที่ทำงานร่วมกับ Ollama (Local GPU) ค้นหาข้อมูลจากสไลด์ฝึกอบรมวิศวกรรมและข้อสอบมาตรฐานของบริษัทด้วยความเร็วระดับเสี้ยววินาที พร้อมระบบอ่านออกเสียงภาษาไทย (Neural TTS)
 
 ---
 
-## 🏗️ โครงสร้างหน้าเว็บและระบบหลัก (5 Core Routes)
+## 2. การจัดระเบียบโฟลเดอร์และหน้าที่ของไฟล์สำคัญ (Directory Organization)
 
-### 1. หน้าแรก (Home / Landing Page)
-* **Route:** `/` ➔ ไฟล์: `public/index.html`, `public/styles.css`, `public/js/main.js`, `public/js/robot3d.js`
-* **ธีม:** ขาว/เงิน Monochrome หรูหรา สะอาดตา (Spline 3D Scene + หุ่นยนต์ 3D + Bento Grid)
-* **ระบบ Access Terminal (Login Modal):**
-  * **Username:** `admin` | **Password:** `60632`
-
-### 2. หน้า 3D Model Explorer
-* **Route:** `/explorer` ➔ ไฟล์: `public/explorer.html`
-* **ระบบ:** Three.js HDD Actuator Coil Model แบบแยกชิ้นส่วนได้ (Explode View) พร้อมระบบหมุนดูรอบทิศทาง 360 องศา
-
-### 3. หน้าสินค้า (Product Scrollytelling Showcase)
-* **Route:** `/product` ➔ ไฟล์: `public/product.html`, `public/product.css`, `public/js/product.js`
-* **ระบบ Scrollytelling 240 เฟรม:** รองรับ 4 หมวดหมู่ (APFA, ACA, FCOF, COIL) พร้อมระบบ Smooth Center-Glide Zoom บนการ์ดเนื้อหา
-
-### 4. หน้านำเสนอกระบวนการผลิต (Manufacturing Process Flow)
-* **Route:** `/manufacturing` ➔ ไฟล์: `public/manufacturing.html`, `public/manufacturing.css`, `public/js/manufacturing.js`
-* **ระบบ:** Interactive Engineering Flowchart แสดงขั้นตอนการผลิต Coil Winding, ACA, FCOF, และ APFA
-
-### 5. หน้า 3D Cleanroom Digital Twin & AI SCADA Fleet
-* **Route:** `/factory` ➔ ไฟล์: `public/factory.html`, `public/factory.css`, `public/js/factory.js`
-* **ระบบ 3D Cleanroom Three.js:** จำลองโรงงานคลีนรูม Belton Class 100 แบบเต็มสเกล พร้อมโหมดเดินสำรวจ First-Person, Bird-Eye View, และระบบวาร์ปกล้อง
-* **ระบบ Real-time SCADA Fleet:** ติดตามข้อมูลเครื่องจักร Asymtek Dispenser 50 เครื่อง (Yield, Cpk, CDA Pressure, Preheat Temp, Mass mg, Needle Wear)
-* **ระบบ Belton AI Copilot:** วิศวกร AI ตอบคำถามผ่าน Ollama Qwen 2.5:3b (Local GPU) เชื่อมต่อ Function Calling ดึงสเปกเครื่องจักร และ RAG ค้นหาสไลด์ฝึกอบรมวิศวกรรม 273 หน้าแบบเสี้ยววินาที
-
----
-
-## 📁 โครงสร้างไฟล์ปัจจุบัน (Clean Production Tree)
+โครงสร้างโปรเจกต์ได้รับการจัดระเบียบแยกตามหน้าที่การทำงาน (Modular Architecture) ดังนี้:
 
 ```text
 belton_live_preview/
-├── ClickToRun.bat                # 1-Click Launcher รันเซิร์ฟเวอร์อัตโนมัติบน Windows
-├── DEPLOYMENT_GUIDE.md           # คู่มือขึ้นระบบ Production สำหรับทีม IT / DevOps
-├── README.md                     # เอกสารสถาปัตยกรรมระบบ ภาพรวมเทคโนโลยี และ API Reference
-├── PROJECT_HANDOVER.md           # ไฟล์สรุปบริบทและกฎเหล็กการทำงาน (ไฟล์นี้)
-├── package.json                  # รายการ Dependencies ของ Node.js
-├── package-lock.json             # Lockfile ระบุเวอร์ชันแพ็กเกจที่แน่นอน
-├── server.js                     # Express Server หลัก (5 Core Routes, SCADA REST APIs, AI Proxy)
-├── .env                          # Local Environment Variables
-├── .env.example                  # Production Environment Template
-├── .gitignore                    # กฎการละเว้นไฟล์ขยะและ logs
+├── ClickToRun.bat                # ไฟล์หลักสำหรับดับเบิลคลิกเปิดระบบบน Windows ทันที
+├── server.js                     # จุดเริ่มต้นของ Backend Server (Express, Routes, APIs, TTS)
+├── package.json                  # กำหนดรายการไลบรารีและคำสั่ง npm scripts
+├── .env.example                  # ตัวอย่างการตั้งค่าตัวแปรสภาพแวดล้อม (คัดลอกเป็น .env เพื่อใช้งาน)
 │
-├── src/                          # Backend Core Logic
-│   ├── db/database.js            # SQLite / PostgreSQL Dual Engine พร้อม Auto-seeder
-│   ├── knowledge/                # องค์ความรู้วิศวกรรม และระบบค้นหาสไลด์ความเร็วสูง <1ms
-│   ├── tools/                    # Function Calling ของ AI Copilot (5 เครื่องมือ)
-│   └── orchestrator.js           # สมองกล AI ควบคุม RAG, กรองคำตอบ และเชื่อมต่อ Ollama
+├── src/                          # โค้ดส่วนประมวลผลฝั่งเซิร์ฟเวอร์ (Backend Core)
+│   ├── orchestrator.js           # ตัวควบคุมหลักของ AI Copilot (จัดการ Prompt, RAG, Tool Calls, Streaming)
+│   ├── db/
+│   │   └── database.js           # ระบบจัดการฐานข้อมูลรองรับทั้ง SQLite และ PostgreSQL
+│   ├── knowledge/
+│   │   ├── belton_knowledge.js   # ข้อมูลมาตรฐานคลีนรูมและพารามิเตอร์วิศวกรรม
+│   │   └── slide_knowledge_db.js # เครื่องมือค้นหาสไลด์ฝึกอบรมและข้อสอบ (RAG Search Engine)
+│   └── tools/
+│       ├── schemas.js            # โครงสร้างคำสั่ง Function Calling สำหรับ AI
+│       └── handlers.js           # ฟังก์ชันดึงข้อมูลเครื่องจักรและสั่งการมุมกล้อง 3D
 │
-├── data/                         # แหล่งจัดเก็บข้อมูลหลัก
-│   ├── belton_slides_database.json # ฐานข้อมูลสไลด์ฝึกอบรม 273 หน้า (JSON Master)
-│   └── scada.db                  # SQLite Database (เครื่องจักร SCADA 50 เครื่อง + สไลด์ FTS5)
+├── public/                       # โค้ดและสื่อแสดงผลฝั่งหน้าเว็บทั้งหมด (Frontend)
+│   ├── index.html                # หน้าแรก (Landing Page)
+│   ├── explorer.html             # หน้าสำรวจชิ้นส่วน 3 มิติ (3D Component Explorer)
+│   ├── product.html              # หน้านำเสนอผลิตภัณฑ์ 4 หมวดหมู่ (Product Scrollytelling)
+│   ├── manufacturing.html        # หน้าแผนผังกระบวนการผลิต (Manufacturing Process Flow)
+│   ├── factory.html              # หน้าโรงงาน 3D Digital Twin + แผงควบคุม SCADA + AI Copilot
+│   ├── copilot.html              # หน้าสนทนา AI Copilot แบบเต็มหน้าจอ
+│   ├── css/belton-navbar.css     # สไตล์ของแถบเมนูนำทางส่วนกลาง
+│   ├── js/                       # โค้ด JavaScript ควบคุมการทำงานของแต่ละหน้า
+│   ├── models/                   # ไฟล์โมเดล 3D (.glb) ที่พร้อมแสดงผลบนเว็บเบราว์เซอร์
+│   └── frames/ (และ frames_b..d) # ชุดภาพอนิเมชันสำหรับหน้า Product
 │
-├── scripts/                      # สคริปต์อำนวยความสะดวก
-│   └── extract_slides_to_db.py   # สคริปต์สกัดสไลด์ PDF เข้าฐานข้อมูล
+├── data/                         # ข้อมูลฐานข้อมูลและไฟล์ต้นฉบับเอกสารความรู้
+│   ├── scada.db                  # ฐานข้อมูล SQLite หลักของระบบ
+│   ├── belton_slides_database.json # ข้อมูลสไลด์ฝึกอบรมในรูปแบบ JSON (ใช้สำหรับ Auto-seed)
+│   ├── seagate_exam_questions.json # ข้อมูลคลังข้อสอบมาตรฐานในรูปแบบ JSON
+│   └── documents/                # ไฟล์เอกสาร PDF ต้นฉบับอ้างอิง
 │
-├── ai/                           # AI / ML Training & Offline Pipelines
-└── public/                       # Frontend Web Application (HTML, CSS, JS, Models, Frames)              
+├── ai/                           # โค้ดส่วนการเทรนโมเดล AI และการจำลองข้อมูลเครื่องจักร
+│   ├── models/                   # ไฟล์โมเดลที่ผ่านการเทรนแล้ว (.pt, .json)
+│   ├── data/                     # ข้อมูลสกัดสำหรับเทรนและไฟล์สถานะจำลอง SCADA
+│   └── scripts/                  # สคริปต์ Python สำหรับสร้างและสตรีมข้อมูลจำลอง
+│
+├── scripts/                      # สคริปต์อรรถประโยชน์สำหรับผู้ดูแลระบบ
+│   ├── start_ollama.bat          # สคริปต์เปิด Ollama Engine
+│   ├── start_gpu_tunnel.bat      # สคริปต์เชื่อมต่อ Local GPU ออกสู่เซิร์ฟเวอร์ภายนอกผ่าน Cloudflare
+│   ├── train_ai.bat              # สคริปต์สั่งรันไปป์ไลน์เทรน AI
+│   ├── extract_slides_to_db.py   # สคริปต์สกัดเนื้อหาจากสไลด์เข้าฐานข้อมูล
+│   ├── enrich_cleanroom_slides.js# สคริปต์เพิ่มความละเอียดข้อมูลขั้นตอนการแต่งกายคลีนรูม
+│   ├── ingest_pcba_slides.py     # สคริปต์นำเข้าข้อมูลกระบวนการผลิต PCBA
+│   └── ingest_exam_questions.py  # สคริปต์นำเข้าข้อมูลข้อสอบเข้าฐานข้อมูล
+│
+├── raw_assets/                   # ไฟล์ต้นฉบับสำหรับงานออกแบบ 3 มิติ
+│   └── belton_factory_cleanroom_full.blend # ไฟล์ Blender ต้นฉบับของโรงงานคลีนรูม
+│
+└── docs/                         # เอกสารคู่มือและรายงานทั้งหมดของโปรเจกต์
 ```
 
 ---
 
-## ⚙️ คำสั่งรันระบบ (Commands)
+## 3. รายละเอียดหน้าเว็บทั้ง 6 ส่วน (Web Routes & Frontend Modules)
 
+1. **หน้าแรก (`/`)**
+   - **ไฟล์หลัก:** [`public/index.html`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/index.html), [`public/styles.css`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/styles.css), [`public/js/main.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/js/main.js)
+   - **การทำงาน:** หน้าต้อนรับ แสดงภาพรวมเทคโนโลยี หุ่นยนต์ 3 มิติ และระบบยืนยันตัวตนก่อนเข้าถึงส่วนปฏิบัติการ
+2. **หน้าสำรวจโมเดล 3 มิติ (`/explorer`)**
+   - **ไฟล์หลัก:** [`public/explorer.html`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/explorer.html)
+   - **การทำงาน:** แสดงโมเดล `public/models/coil.glb` สามารถหมุนดูได้ 360 องศา และสั่งแยกชิ้นส่วน (Exploded View)
+3. **หน้าผลิตภัณฑ์ (`/product`)**
+   - **ไฟล์หลัก:** [`public/product.html`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/product.html), [`public/product.css`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/product.css), [`public/js/product.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/js/product.js)
+   - **การทำงาน:** แสดงรายละเอียดผลิตภัณฑ์ 4 หมวด (APFA, ACA, FCOF, COIL) ด้วยเทคนิค Scrollytelling 240 เฟรมต่อหมวด
+4. **หน้ากระบวนการผลิต (`/manufacturing`)**
+   - **ไฟล์หลัก:** [`public/manufacturing.html`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/manufacturing.html), [`public/manufacturing.css`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/manufacturing.css), [`public/js/manufacturing.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/js/manufacturing.js)
+   - **การทำงาน:** แผนผังขั้นตอนการผลิตเชิงโต้ตอบ แสดงรายละเอียดแต่ละสถานีงานและมาตรฐานการควบคุมคุณภาพ
+5. **หน้าโรงงานจำลองและระบบ SCADA (`/factory`)**
+   - **ไฟล์หลัก:** [`public/factory.html`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/factory.html), [`public/factory.css`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/factory.css), [`public/js/factory.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/js/factory.js)
+   - **การทำงาน:** แสดงโมเดลคลีนรูม 3 มิติ (`public/models/belton_factory_cleanroom_full.glb`) เชื่อมต่อกับข้อมูลเครื่องจักร ACA-DISP-01 ถึง 50 พร้อมหน้าต่างผู้ช่วย AI Copilot
+6. **หน้าผู้ช่วยวิศวกร AI เต็มรูปแบบ (`/copilot`)**
+   - **ไฟล์หลัก:** [`public/copilot.html`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/copilot.html), [`public/copilot.css`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/copilot.css), [`public/js/copilot.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/js/copilot.js)
+   - **การทำงาน:** หน้าอินเทอร์เฟซสนทนากับ AI แบบเต็มหน้าจอ รองรับการตอบกลับแบบ Streaming (SSE), แสดงภาพสไลด์อ้างอิง และอ่านออกเสียงภาษาไทย
+
+---
+
+## 4. คู่มือการดูแลรักษาและพัฒนาต่อยอดสำหรับทีมบริษัท (Maintenance & Extension Guide)
+
+### 4.1 การแก้ไขโมเดล 3 มิติของโรงงาน
+1. เปิดไฟล์ต้นฉบับที่ [`raw_assets/belton_factory_cleanroom_full.blend`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/raw_assets/belton_factory_cleanroom_full.blend) ด้วยโปรแกรม Blender
+2. เมื่อปรับปรุงโมเดลเสร็จสิ้น ให้ทำการ Export เป็นรูปแบบ **glTF 2.0 (`.glb`)**
+3. บันทึกทับไฟล์ที่ [`public/models/belton_factory_cleanroom_full.glb`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/models/belton_factory_cleanroom_full.glb)
+4. รีเฟรชหน้าเว็บ `/factory` โมเดลใหม่จะแสดงผลทันที
+
+### 4.2 การเพิ่มหรืออัปเดตฐานข้อมูลความรู้ของ AI (RAG Knowledge Base)
+- ข้อมูลสไลด์ฝึกอบรมถูกจัดเก็บไว้ที่ [`data/belton_slides_database.json`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/data/belton_slides_database.json) และในตาราง `slide_pages` ของ [`data/scada.db`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/data/scada.db)
+- ข้อมูลข้อสอบมาตรฐานถูกจัดเก็บไว้ที่ [`data/seagate_exam_questions.json`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/data/seagate_exam_questions.json)
+- หากต้องการสกัดข้อมูลจากเอกสารชุดใหม่ สามารถดูตัวอย่างและรันสคริปต์ในโฟลเดอร์ `scripts/` ได้แก่:
+  - [`scripts/extract_slides_to_db.py`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/scripts/extract_slides_to_db.py)
+  - [`scripts/ingest_pcba_slides.py`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/scripts/ingest_pcba_slides.py)
+  - [`scripts/enrich_cleanroom_slides.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/scripts/enrich_cleanroom_slides.js)
+  - [`scripts/ingest_exam_questions.py`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/scripts/ingest_exam_questions.py)
+
+### 4.3 การเชื่อมโยงข้อมูลเครื่องจักร SCADA จริงของโรงงาน
+- ปัจจุบันระบบอ่านข้อมูลผ่านฟังก์ชันใน [`src/db/database.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/src/db/database.js)
+- หากต้องการเชื่อมต่อกับฐานข้อมูล PostgreSQL ของโรงงาน ให้กำหนดค่า `DATABASE_URL` ในไฟล์ `.env` ระบบจะสลับจากการใช้ SQLite ไปใช้ PostgreSQL อัตโนมัติโดยไม่ต้องแก้โค้ดส่วนอื่น
+
+### 4.4 การตั้งค่าโมเดล AI (Ollama)
+- ตั้งค่า URL และชื่อโมเดลได้ที่ไฟล์ `.env`:
+  ```env
+  OLLAMA_BASE_URL=http://127.0.0.1:11434
+  MODEL_NAME=qwen2.5:14b
+  ```
+- หากเครื่องเซิร์ฟเวอร์มี VRAM จำกัด (เช่น 4GB - 6GB) สามารถเปลี่ยนค่า `MODEL_NAME` เป็น `qwen2.5:3b` หรือ `qwen2.5:7b` ได้ทันที
+
+---
+
+## 5. คำสั่งการใช้งานและรหัสผ่าน (Quick Reference)
+
+### คำสั่งรันระบบ
 ```bash
-# รันเซิร์ฟเวอร์
+# เริ่มการทำงานของเว็บเซิร์ฟเวอร์ (Port 8080)
 npm start
 
-# หรือดับเบิ้ลคลิกไฟล์ ClickToRun.bat บน Windows
+# เปิดบริการ Ollama Local AI
+npm run ollama
+
+# เปิด Cloudflare Tunnel สำหรับเชื่อม GPU ออกภายนอก
+npm run tunnel
+
+# รันไปป์ไลน์เทรนโมเดล AI
+npm run train:ai
 ```
-* เปิดเบราว์เซอร์ที่: **`http://localhost:8080`**
+
+### ข้อมูลการเข้าสู่ระบบเริ่มต้น
+- **URL:** `http://localhost:8080`
+- **Username:** `admin`
+- **Password:** `60632`
+  *(สามารถแก้ไขรหัสผ่านและสิทธิ์การเข้าถึงได้ที่ไฟล์ [`public/js/belton-navbar.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/js/belton-navbar.js) และ [`public/js/main.js`](file:///c:/Users/BOAT/Videos/เลขา/belton_live_preview/public/js/main.js))*

@@ -1,8 +1,9 @@
 @echo off
-title Belton Blender Live Sync
-echo =========================================================
-echo    Starting Blender Web Live Sync Server...
-echo =========================================================
+cd /d "%~dp0"
+title BELTON Industrial 3D Digital Twin and AI SCADA Server
+echo ====================================================================
+echo    BELTON INDUSTRIAL 3D DIGITAL TWIN ^& AI SCADA SERVER
+echo ====================================================================
 echo.
 
 :: 1. Check if Node.js is installed
@@ -16,7 +17,7 @@ if %errorlevel% neq 0 (
     echo Once installed, double-click this ClickToRun.bat file again.
     echo.
     pause
-    exit
+    exit /b 1
 )
 
 :: 2. Check if node_modules folder exists, if not run npm install
@@ -27,14 +28,15 @@ if not exist node_modules (
     if %errorlevel% neq 0 (
         echo [ERROR] npm install failed! Please check your internet connection.
         pause
-        exit
+        exit /b 1
     )
     echo [SUCCESS] Dependencies installed successfully!
     echo.
 )
 
 :: 3. Open the web browser
-echo [INFO] Opening Google Chrome / Default Browser...
+echo [INFO] Opening Web Application at http://localhost:8080 ...
+echo [INFO] Default Login  ^|  Username: admin  ^|  Password: 60632
 start http://localhost:8080
 echo.
 
