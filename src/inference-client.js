@@ -1,4 +1,5 @@
 // Adapt the orchestrator's Ollama message contract to the existing vLLM service.
+const { toolsDefinition } = require('./tools/schemas.js');
 function toOpenAIMessages(messages) {
   let pending = [];
   return messages.map((message, index) => {
@@ -14,6 +15,7 @@ function toOpenAIMessages(messages) {
         }
       }));
       pending = result.tool_calls.map(call => call.id);
+      if (message.reasoning_content !== undefined) result.reasoning_content = message.reasoning_content;
     }
     if (message.role === 'tool') {
       const id = pending.shift();
@@ -27,7 +29,11 @@ function toOpenAIMessages(messages) {
 function fromOpenAIMessage(message) {
   return {
     role: 'assistant', content: message.content || '',
-    ...(message.tool_calls?.length ? { tool_calls: message.tool_calls.map(call => ({
+    ...(message.tool_calls?.length ? {
+      // Keep tool-turn context for Qwen's chat template. The orchestrator never
+      // includes this field in its public reply or browser metadata.
+      reasoning_content: message.reasoning_content || message.reasoning || '',
+      tool_calls: message.tool_calls.map(call => ({
       ...call, function: {
         name: call.function.name,
         arguments: typeof call.function.arguments === 'string'
@@ -87,6 +93,11 @@ async function fetchInference(url, options) {
   if (input.tools?.length) {
     payload.tools = input.tools;
     payload.tool_choice = 'auto';
+  } else if (input.messages.some(message => message.role === 'tool')) {
+    // Qwen requires a consistent tool-aware template when consuming results.
+    // This final turn must synthesize an answer instead of calling another tool.
+    payload.tools = toolsDefinition;
+    payload.tool_choice = 'none';
   }
   const response = await fetch(base + '/chat/completions', {
     method: 'POST', headers, body: JSON.stringify(payload),

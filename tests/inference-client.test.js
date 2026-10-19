@@ -18,13 +18,15 @@ test('tool results retain their matching call IDs across both providers', () => 
   assert.throws(() => toOpenAIMessages([{ role: 'tool', content: '{}' }]));
 });
 
-test('native tool arguments become objects and reasoning stays out of answers', () => {
+test('native tool arguments become objects and tool reasoning stays internal', () => {
   const result = fromOpenAIMessage({ content: null, reasoning_content: 'private reasoning', tool_calls: [
     { id: 'call_1', type: 'function', function: { name: 'get_machine_telemetry', arguments: '{"machine_num":27}' } }
   ] });
   assert.equal(result.content, '');
   assert.deepEqual(result.tool_calls[0].function.arguments, { machine_num: 27 });
-  assert.equal(result.reasoning_content, undefined);
+  assert.equal(result.reasoning_content, 'private reasoning');
+  assert.equal(toOpenAIMessages([result])[0].reasoning_content, 'private reasoning');
+  assert.ok(!result.content.includes('private reasoning'));
 });
 
 test('SSE handles split UTF-8 packets and emits only answer tokens', async () => {
@@ -63,4 +65,33 @@ test('vLLM requests enable Qwen thinking and translate tool-check token budgets'
     model: 'Qwen3.6-35B-A3B-AWQ', messages: [{ role: 'user', content: 'hello' }], options: { num_predict: 128, stop: ['Assistant:'] }
   }) });
   assert.equal((await response.json()).message.content, 'ready');
+});
+
+test('Qwen final answer retains tool context and disables additional calls', async context => {
+  const originalProvider = process.env.LLM_PROVIDER;
+  const originalFetch = global.fetch;
+  context.after(() => {
+    global.fetch = originalFetch;
+    if (originalProvider === undefined) delete process.env.LLM_PROVIDER;
+    else process.env.LLM_PROVIDER = originalProvider;
+  });
+  process.env.LLM_PROVIDER = 'openai';
+  global.fetch = async (url, options) => {
+    const body = JSON.parse(options.body);
+    assert.equal(body.tools.length, 5);
+    assert.equal(body.tool_choice, 'none');
+    assert.equal(body.messages[1].reasoning_content, 'internal tool context');
+    assert.equal(body.messages[2].tool_call_id, body.messages[1].tool_calls[0].id);
+    return Response.json({ choices: [{ message: { content: 'machine 27 is on hold' }, finish_reason: 'stop' }] });
+  };
+  const response = await fetchInference('http://unused/api/chat', { body: JSON.stringify({
+    model: 'Qwen3.6-35B-A3B-AWQ', messages: [
+      { role: 'user', content: 'machine 27' },
+      fromOpenAIMessage({ content: null, reasoning_content: 'internal tool context', tool_calls: [
+        { id: 'call_27', function: { name: 'get_machine_telemetry', arguments: '{"machine_num":27}' } }
+      ] }),
+      { role: 'tool', content: '{"status":"MAINTENANCE_HOLD"}' }
+    ]
+  }) });
+  assert.equal((await response.json()).message.content, 'machine 27 is on hold');
 });
