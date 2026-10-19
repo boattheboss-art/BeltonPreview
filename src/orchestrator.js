@@ -847,12 +847,13 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
       retrievedSlidesList,
       toolsUsed,
       matchedExam,
+      matchedProcessFlow,
       messages,
       toolsToProvide
     } = ctx;
     let triggeredAction = null;
 
-    console.log(`[Orchestrator] Query: "${userMessage}" -> Calling Ollama (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
+    console.log(`[Orchestrator] Query: "${userMessage}" -> Calling inference (${MODEL_NAME}, tools: ${toolsToProvide ? 'enabled' : 'direct RAG'})...`);
 
     const firstRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
@@ -994,7 +995,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
     });
   }
 
-  console.log(`[Orchestrator] ${toolsUsed.length} tool(s) executed. Synthesizing final answer with Qwen 2.5...`);
+  console.log(`[Orchestrator] ${toolsUsed.length} tool(s) executed. Synthesizing final answer with ${MODEL_NAME}...`);
 
   const finalRes = await fetchWithRetry(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
