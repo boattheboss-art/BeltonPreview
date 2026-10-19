@@ -19,7 +19,7 @@ OUTPUT_FILE = os.path.join(DATA_DIR, "belton_knowledge_bank.json")
 
 def print_banner():
     print("=" * 68)
-    print("🚀 BELTON TECHNOLOGY - QWEN 2.5 1.5B KNOWLEDGE BANK COMPILER")
+    print(" BELTON TECHNOLOGY - QWEN 2.5 1.5B KNOWLEDGE BANK COMPILER")
     print("   Domain-Specific Knowledge & Autonomous 3D Action Engine")
     print("=" * 68)
 
@@ -414,7 +414,7 @@ def main():
     time.sleep(0.3)
     total_domains = len(KNOWLEDGE_DOMAINS)
     
-    print(f"\n📂 Compiling {total_domains} Industrial Knowledge Domains into unified knowledge bank...")
+    print(f"\n Compiling {total_domains} Industrial Knowledge Domains into unified knowledge bank...")
     for i, domain in enumerate(KNOWLEDGE_DOMAINS, 1):
         time.sleep(0.08)
         progress_bar(i, total_domains, prefix="Processing Domain")
@@ -435,11 +435,11 @@ def main():
     file_size_kb = os.path.getsize(OUTPUT_FILE) / 1024.0
     
     print("-" * 68)
-    print(f"✅ Successfully compiled Belton Knowledge Bank!")
-    print(f"📦 Output Target : {OUTPUT_FILE}")
-    print(f"📊 Total Domains : {total_domains} Manufacturing & SCADA Modules")
-    print(f"📏 Bank Size     : {file_size_kb:.2f} KB")
-    print(f"🧠 Context Window: Optimized for Qwen 2.5 1.5B (32k token capacity)")
+    print(f" Successfully compiled Belton Knowledge Bank!")
+    print(f" Output Target : {OUTPUT_FILE}")
+    print(f" Total Domains : {total_domains} Manufacturing & SCADA Modules")
+    print(f" Bank Size     : {file_size_kb:.2f} KB")
+    print(f" Context Window: Optimized for Qwen 2.5 1.5B (32k token capacity)")
     print("=" * 68)
 
 if __name__ == "__main__":

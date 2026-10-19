@@ -30,3 +30,13 @@ ai/__pycache__/
 .vscode/
 .idea/
 scratch/
+
+# Docker files and image archives
+belton-web.tar
+belton-web/
+*.tar
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+

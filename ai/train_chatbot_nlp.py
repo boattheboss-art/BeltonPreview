@@ -343,7 +343,7 @@ for epoch in range(1, 46):
         bar = "█" * filled + "░" * (bar_len - filled)
         print(f"  Epoch [{epoch:02d}/45] |{bar}| Loss: {total_loss/total:.4f} | Accuracy: {acc:5.1f}% | lr: {scheduler.get_last_lr()[0]:.5f}")
 
-print(f"\n✅ Training Finished! Final Measured Accuracy: {acc:.2f}%")
+print(f"\n Training Finished! Final Measured Accuracy: {acc:.2f}%")
 
 model.eval()
 weights_export = {
@@ -376,11 +376,11 @@ pt_model_path = os.path.join(MODELS_DIR, "chatbot_copilot_model.pt")
 with open(pt_model_path, "wb") as f:
     torch.save({"model_state_dict": model.state_dict(), "vocab": VOCAB, "intents": INTENTS}, f)
 
-print(f"📦 Saved Updated Weights: {public_json_path} ({os.path.getsize(public_json_path)/1024:.1f} KB)")
+print(f" Saved Updated Weights: {public_json_path} ({os.path.getsize(public_json_path)/1024:.1f} KB)")
 
 # Benchmark
 print("\n" + "=" * 78)
-print("  🔍 REAL-TIME BENCHMARK TEST")
+print("   REAL-TIME BENCHMARK TEST")
 print("=" * 78)
 test_qs = [
     "อาการเครื่องที่ควรเฝ้าระวังละมีกี่เครื่อง",

@@ -9,21 +9,21 @@ const SLIDE_DATA = [
   {
     page_number: 1,
     title: "ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence Master)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 คู่มือมาตรฐานขั้นตอนการสวมชุด Cleanroom (Gowning Sequence) ตามสไลด์ TM-00-00-05_1 หน้า 33 และ TM-00-00-05_3:
 ลำดับการสวมใส่อุปกรณ์ชุดคลีนรูม 5 ขั้นตอนหลัก (Core Gowning Sequence):
-ลำดับที่ 1: Hairnet (สวมหมวกคลุมผม) ➔ ต้องสวมเป็นอันดับแรกสุดเสมอ เพื่อเก็บผมและใบหูทั้ง 2 ข้างให้มิดชิด ป้องกันเส้นผมร่วงหล่น
-ลำดับที่ 2: Jumpsuit (สวมชุดหมี) ➔ สวมชุดหมีโดยระวังไม่ให้แขนเสื้อสัมผัสกับพื้น (ติดบัตรพนักงานที่อกซ้าย รูดซิปและติดกระดุมคอให้เรียบร้อย)
-ลำดับที่ 3: Facemask (สวมหน้ากากอนามัย) ➔ สวมหน้ากากให้กระชับใบหน้า คลุมทั้งจมูกและคาง
-ลำดับที่ 4: Booties (สวมรองเท้าบูทคลีนรูม) ➔ สวมรองเท้าบูททับขากางเกง รูดซิปและติดกระดุมให้เรียบร้อย
-ลำดับที่ 5: Gloves (สวมถุงมือ) ➔ สวม Wrist strap และสวมถุงมือ ดึงแขนเสื้อนอกทับถุงมือ ติดกระดุมแขน 3 เม็ด และส่องกระจกตรวจความเรียบร้อยก่อนเข้าห้องคลีนรูม
+ลำดับที่ 1: Hairnet (สวมหมวกคลุมผม)  ต้องสวมเป็นอันดับแรกสุดเสมอ เพื่อเก็บผมและใบหูทั้ง 2 ข้างให้มิดชิด ป้องกันเส้นผมร่วงหล่น
+ลำดับที่ 2: Jumpsuit (สวมชุดหมี)  สวมชุดหมีโดยระวังไม่ให้แขนเสื้อสัมผัสกับพื้น (ติดบัตรพนักงานที่อกซ้าย รูดซิปและติดกระดุมคอให้เรียบร้อย)
+ลำดับที่ 3: Facemask (สวมหน้ากากอนามัย)  สวมหน้ากากให้กระชับใบหน้า คลุมทั้งจมูกและคาง
+ลำดับที่ 4: Booties (สวมรองเท้าบูทคลีนรูม)  สวมรองเท้าบูททับขากางเกง รูดซิปและติดกระดุมให้เรียบร้อย
+ลำดับที่ 5: Gloves (สวมถุงมือ)  สวม Wrist strap และสวมถุงมือ ดึงแขนเสื้อนอกทับถุงมือ ติดกระดุมแขน 3 เม็ด และส่องกระจกตรวจความเรียบร้อยก่อนเข้าห้องคลีนรูม
 
 (หมายเหตุ: การสวมชุดคลีนรูมต้องเริ่มจาก Hairnet เป็นอันดับแรกเสมอ ห้ามตอบว่าสวมรองเท้า Plant shoes ก่อน เพราะ Plant shoes เป็นเพียงรองเท้าเดินเข้าห้องเปลี่ยนชุด ไม่ใช่อุปกรณ์ชุดคลีนรูม)`
   },
   {
     page_number: 2,
     title: "ขั้นตอนที่ 1: สวมรองเท้า Plant shoes (ข้อปฏิบัติเข้าห้องคลีนรูม Class 8)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ข้อปฏิบัติในการเข้าห้องคลีนรูม Class 8 (ขั้นตอนการสวมชุด Cleanroom)
 ขั้นตอนที่ 1 (ลำดับที่ 1): สวมรองเท้า Plant shoes
 - หยิบรองเท้า Plant shoes ออกจากตู้ และสวมให้เรียบร้อย
@@ -33,7 +33,7 @@ const SLIDE_DATA = [
   {
     page_number: 3,
     title: "ขั้นตอนที่ 2: สวม Hair net (หมวกคลุมผม)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 2 (ลำดับที่ 2): สวม Hair net (หมวกคลุมผม)
 - หยิบ Hair net ออกจากกระเป๋า
@@ -43,7 +43,7 @@ const SLIDE_DATA = [
   {
     page_number: 4,
     title: "ขั้นตอนที่ 3: สวม Jumpsuit (ชุดหมีคลีนรูม)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 3 (ลำดับที่ 3): สวมชุด Jumpsuit (ชุดหมี)
 - สวมชุด Jumpsuit ให้เรียบร้อย
@@ -53,7 +53,7 @@ const SLIDE_DATA = [
   {
     page_number: 5,
     title: "ขั้นตอนที่ 4: สวม Face mask (หน้ากากอนามัยคลีนรูม)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 4 (ลำดับที่ 4): สวม Face mask (หน้ากากอนามัย)
 - สวม Face mask ให้กระชับใบหน้า คลุมทั้งจมูกและคางอย่างมิดชิด
@@ -62,7 +62,7 @@ const SLIDE_DATA = [
   {
     page_number: 6,
     title: "ขั้นตอนที่ 5: ติดบัตรพนักงานบนชุด Jumpsuit",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 5 (ลำดับที่ 5): ติดบัตรพนักงาน (Employee ID Card)
 - นำบัตรพนักงานมาติดที่บริเวณหน้าอกด้านซ้าย หรือแขนเสื้อด้านซ้ายของชุด Jumpsuit ให้เห็นชัดเจน
@@ -71,7 +71,7 @@ const SLIDE_DATA = [
   {
     page_number: 7,
     title: "ขั้นตอนที่ 6: รูดซิปและติดกระดุมคอ Jumpsuit",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 6 (ลำดับที่ 6): รูดซิป และติดกระดุมคอของชุด Jumpsuit
 - รูดซิปชุด Jumpsuit ขึ้นจนสุด และติดกระดุมที่คอให้เรียบร้อยมิดชิด
@@ -80,7 +80,7 @@ const SLIDE_DATA = [
   {
     page_number: 8,
     title: "ขั้นตอนที่ 7: สวม Booties (รองเท้าบูทคลีนรูม)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 7 (ลำดับที่ 7): สวม Booties (รองเท้าบูทคลีนรูม)
 - สวมรองเท้า Booties ทับขากางเกง Jumpsuit
@@ -90,7 +90,7 @@ const SLIDE_DATA = [
   {
     page_number: 9,
     title: "ขั้นตอนที่ 8: สวม Wrist strap และสวมถุงมือ (Gloves)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 8 (ลำดับที่ 8): สวม Wrist strap และสวมถุงมือ (Gloves)
 - สวม Wrist strap ให้แนบสนิทกับผิวข้อมือ
@@ -100,7 +100,7 @@ const SLIDE_DATA = [
   {
     page_number: 10,
     title: "ขั้นตอนที่ 9: ติดกระดุมที่แขนชุด Jumpsuit ทั้ง 3 เม็ด",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 9 (ลำดับที่ 9): ติดกระดุมที่แขนชุด Jumpsuit
 - ติดกระดุมที่แขนเสื้อชุด Jumpsuit ทั้ง 3 เม็ดให้เรียบร้อยทั้งสองข้าง (ซ้ายและขวา) เพื่อป้องกันสิ่งปนเปื้อนหลุดรอด
@@ -109,7 +109,7 @@ const SLIDE_DATA = [
   {
     page_number: 11,
     title: "ขั้นตอนที่ 10: ตรวจดูความเรียบร้อยที่กระจกก่อนเข้าห้องคลีนรูม",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการสวมชุด Cleanroom (Gowning Sequence)
 ขั้นตอนที่ 10 (ลำดับที่ 10): ตรวจดูความเรียบร้อยที่กระจกเงา
 - ส่องกระจกเงาตรวจสอบความเรียบร้อยตั้งแต่ศีรษะจรดเท้า (หมวกคลุมผมมิดชิด, หน้ากากปิดสนิท, ซิปและกระดุมติดครบ, รองเท้าบูทเรียบร้อย) ก่อนเดินผ่านเข้าสู่ห้องคลีนรูม
@@ -118,21 +118,21 @@ const SLIDE_DATA = [
   {
     page_number: 12,
     title: "ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence Master)",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 คู่มือมาตรฐานขั้นตอนการถอดชุด Cleanroom (Degowning Sequence) ตามสไลด์ TM-00-00-05_1 หน้า 33 และ TM-00-00-05_3:
 สรุปลำดับอุปกรณ์หลัก 5 ขั้นตอน (Core Degowning Sequence):
-1. Booties (ถอดรองเท้าบูท) ➔ ถอดรองเท้าบูทออกเป็นลำดับแรก ประกบพื้นรองเท้าชนกัน และม้วนเก็บใส่กระเป๋าชุดด้านนอก
-2. Gloves (ถอดถุงมือ) ➔ ปลดกระดุมแขนเสื้อ และถอดถุงมือออก
-3. Facemask (ถอดหน้ากากอนามัย) ➔ ถอดหน้ากากอนามัยออก และเก็บลงในช่องชุด Jumpsuit ด้านใน
-4. Jumpsuit (ถอดชุดหมี) ➔ รูดซิป ปลดกระดุมคอ ย้ายบัตรพนักงาน และถอดชุด Jumpsuit โดยระวังไม่ให้สัมผัสพื้น
-5. Hairnet (ถอดหมวกคลุมผม) ➔ ถอด Hair net ออก ม้วนและเก็บใส่กระเป๋าชุด
+1. Booties (ถอดรองเท้าบูท)  ถอดรองเท้าบูทออกเป็นลำดับแรก ประกบพื้นรองเท้าชนกัน และม้วนเก็บใส่กระเป๋าชุดด้านนอก
+2. Gloves (ถอดถุงมือ)  ปลดกระดุมแขนเสื้อ และถอดถุงมือออก
+3. Facemask (ถอดหน้ากากอนามัย)  ถอดหน้ากากอนามัยออก และเก็บลงในช่องชุด Jumpsuit ด้านใน
+4. Jumpsuit (ถอดชุดหมี)  รูดซิป ปลดกระดุมคอ ย้ายบัตรพนักงาน และถอดชุด Jumpsuit โดยระวังไม่ให้สัมผัสพื้น
+5. Hairnet (ถอดหมวกคลุมผม)  ถอด Hair net ออก ม้วนและเก็บใส่กระเป๋าชุด
 
 (หลังจากถอดชุดคลีนรูมเสร็จ ให้สวมรองเท้า Plant shoes และนำกระเป๋าชุดไปเก็บในตู้ล็อกเกอร์ ห้ามนำ Plant shoes ใส่ไว้ใน Booties แล้วเก็บเข้าตู้เด็ดขาด)`
   },
   {
     page_number: 13,
     title: "ขั้นตอนการถอดชุด ข้อ 1: ถอด Booties ออกให้เรียบร้อย",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 1 (ลำดับที่ 1 ในการถอด): ถอด Booties (รองเท้าบูทคลีนรูม) ออกให้เรียบร้อย
 - ปลดกระดุม รูดซิป และถอดรองเท้า Booties ออกเป็นลำดับแรก
@@ -141,7 +141,7 @@ const SLIDE_DATA = [
   {
     page_number: 14,
     title: "ขั้นตอนการถอดชุด ข้อ 2: ประกบพื้น Booties ทั้ง 2 ข้างเข้าด้วยกัน",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 2 (ลำดับที่ 2 ในการถอด): ประกบพื้น Booties ทั้ง 2 ข้างเข้าด้วยกัน
 - นำพื้นรองเท้า Booties ทั้งสองข้างมาประกบหันหน้าชนกัน เพื่อไม่ให้สิ่งสกปรกที่พื้นรองเท้าสัมผัสส่วนอื่น
@@ -150,7 +150,7 @@ const SLIDE_DATA = [
   {
     page_number: 15,
     title: "ขั้นตอนการถอดชุด ข้อ 3: ม้วน Booties เก็บใส่ถุง Jumpsuit ด้านนอก",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 3 (ลำดับที่ 3 ในการถอด): ม้วน Booties เก็บใส่ถุง Jumpsuit ด้านนอก
 - ม้วน Booties ให้เรียบร้อย และเก็บใส่ในกระเป๋า/ช่องถุงชุด Jumpsuit ด้านนอกให้เรียบร้อย
@@ -159,7 +159,7 @@ const SLIDE_DATA = [
   {
     page_number: 16,
     title: "ขั้นตอนการถอดชุด ข้อ 4: ปลดกระดุมแขนเสื้อ ถอดถุงมือให้เรียบร้อย",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 4 (ลำดับที่ 4 ในการถอด): ปลดกระดุมแขนเสื้อ ถอดถุงมือ
 - ปลดกระดุมที่แขนเสื้อ Jumpsuit ทั้งสองข้าง และถอดถุงมือ (Gloves) ออกให้เรียบร้อย
@@ -168,7 +168,7 @@ const SLIDE_DATA = [
   {
     page_number: 17,
     title: "ขั้นตอนการถอดชุด ข้อ 5: รูดซิป ปลดกระดุมคอ Jumpsuit และย้ายบัตรพนักงาน",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 5 (ลำดับที่ 5 ในการถอด): รูดซิป ปลดกระดุมคอ และย้ายบัตรพนักงาน
 - ปลดกระดุมคอ รูดซิปชุด Jumpsuit ลง
@@ -178,7 +178,7 @@ const SLIDE_DATA = [
   {
     page_number: 18,
     title: "ขั้นตอนการถอดชุด ข้อ 6: ถอด Face mask เก็บลงในถุง Jumpsuit ด้านใน",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 6 (ลำดับที่ 6 ในการถอด): ถอด Face mask
 - ปลดและถอด Face mask (หน้ากากอนามัย) ออก
@@ -188,7 +188,7 @@ const SLIDE_DATA = [
   {
     page_number: 19,
     title: "ขั้นตอนการถอดชุด ข้อ 7: ถอดชุด Jumpsuit โดยไม่ให้สัมผัสพื้น",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 7 (ลำดับที่ 7 ในการถอด): ถอดชุด Jumpsuit
 - ถอดชุด Jumpsuit ออกอย่างระมัดระวัง โดยระวังไม่ให้ชุดสัมผัสกับพื้น
@@ -198,7 +198,7 @@ const SLIDE_DATA = [
   {
     page_number: 20,
     title: "ขั้นตอนการถอดชุด ข้อ 8: ถอด Hair net ออก",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 8 (ลำดับที่ 8 ในการถอด): ถอด Hair net (หมวกคลุมผม)
 - ถอด Hair net ออกจากศีรษะ
@@ -207,7 +207,7 @@ const SLIDE_DATA = [
   {
     page_number: 21,
     title: "ขั้นตอนการถอดชุด ข้อ 9: ม้วน Hair net และเก็บใส่กระเป๋าชุด",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 9 (ลำดับที่ 9 ในการถอด): ม้วน Hair net และเก็บใส่กระเป๋าชุด
 - ม้วนและพับเก็บ Hair net ใส่ลงในกระเป๋าชุดคลีนรูมให้เรียบร้อย
@@ -216,7 +216,7 @@ const SLIDE_DATA = [
   {
     page_number: 22,
     title: "ขั้นตอนการถอดชุด ข้อ 10: สวมรองเท้า Plant shoes และเก็บชุดในตู้ล็อกเกอร์",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ขั้นตอนการถอดชุด Cleanroom (Degowning Sequence)
 ข้อ 10 (ลำดับที่ 10 ในการถอด): สวม Plant shoes และเก็บชุดในล็อกเกอร์
 - สวมรองเท้า Plant shoes
@@ -226,14 +226,14 @@ const SLIDE_DATA = [
   {
     page_number: 23,
     title: "ข้อควรระวังสำคัญ: Incorrect method ห้ามเก็บ Plant shoes ใน Booties เข้าตู้",
-    content: `© 2016, Belton Technology Group. All rights reserved.
+    content: ` 2016, Belton Technology Group. All rights reserved.
 ข้อปฏิบัติและข้อห้ามเกี่ยวกับชุดคลีนรูม (Discipline & Caution)
 Plant shoes in the booties keep in locker : incorrect method (วิธีที่ไม่ถูกต้องและเป็นข้อห้ามเด็ดขาด)
 - ห้ามนำรองเท้า Plant shoes ใส่ไว้ด้านในของรองเท้า Booties แล้วนำไปเก็บในตู้ล็อกเกอร์โดยเด็ดขาด เพราะจะทำให้สิ่งสกปรกและฝุ่นละอองจาก Plant shoes ปนเปื้อนเข้าไปใน Booties คลีนรูม`
   }
 ];
 
-console.log('🔄 [Slide Enrichment] Starting database update for TM-00-00-05_3...');
+console.log(' [Slide Enrichment] Starting database update for TM-00-00-05_3...');
 
 // 1. Update JSON database
 const jsonRaw = fs.readFileSync(JSON_PATH, 'utf8');
@@ -262,7 +262,7 @@ for (const item of SLIDE_DATA) {
 }
 
 fs.writeFileSync(JSON_PATH, JSON.stringify(jsonData, null, 2), 'utf8');
-console.log(`✅ [JSON DB] Successfully updated ${updatedJsonCount} slides in ${JSON_PATH}`);
+console.log(` [JSON DB] Successfully updated ${updatedJsonCount} slides in ${JSON_PATH}`);
 
 // 2. Update SQLite database
 const db = new Database(DB_PATH);
@@ -299,7 +299,7 @@ for (const item of SLIDE_DATA) {
 }
 
 // Rebuild FTS5 table
-console.log('🔄 [FTS5] Rebuilding Virtual Table slides_fts...');
+console.log(' [FTS5] Rebuilding Virtual Table slides_fts...');
 db.exec(`
   DROP TABLE IF EXISTS slides_fts;
   CREATE VIRTUAL TABLE slides_fts USING fts5(
@@ -315,5 +315,5 @@ db.exec(`
   SELECT id, doc_code, doc_name, page_number, title, content FROM slide_pages;
 `);
 
-console.log(`✅ [SQLite DB] Successfully updated ${updatedDbCount} slides & rebuilt FTS5 index in ${DB_PATH}`);
+console.log(` [SQLite DB] Successfully updated ${updatedDbCount} slides & rebuilt FTS5 index in ${DB_PATH}`);
 db.close();

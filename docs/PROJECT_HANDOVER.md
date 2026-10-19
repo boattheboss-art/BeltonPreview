@@ -88,7 +88,7 @@ belton_live_preview/
 │   └── extract_slides_to_db.py   # สคริปต์สกัดสไลด์ PDF เข้าฐานข้อมูล
 │
 ├── ai/                           # AI / ML Training & Offline Pipelines
-└── public/                       # Frontend Web Application (HTML, CSS, JS, Models, Frames)
+└── public/                       # Frontend Web Application (HTML, CSS, JS, Models, Frames)              
 ```
 
 ---

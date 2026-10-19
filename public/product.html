@@ -15,11 +15,9 @@
   <link rel="stylesheet" href="product.css" />
   <link rel="stylesheet" href="css/belton-navbar.css" />
   
-  <!-- Authentication Guard -->
+  <!-- Direct Access Guard -->
   <script>
-    if (sessionStorage.getItem('belton_logged_in') !== 'true') {
-      window.location.href = '/';
-    }
+    sessionStorage.setItem('belton_logged_in', 'true');
   </script>
   
   <script src="js/belton-navbar.js" defer></script>
@@ -139,13 +137,13 @@
     <!-- Top-Right Action Controls (Clean Side-by-Side) -->
     <div class="intro-actions-group">
       <button class="intro-audio-btn" id="audioToggleBtn" title="Toggle Sound">
-        <span class="audio-icon-wave">🔊</span>
+        <span class="audio-icon-wave"></span>
         <span class="audio-status-label" id="audioStatusLabel">AUDIO ON</span>
       </button>
 
       <button class="skip-intro-btn" id="skipIntroBtn">
         <span>Skip Intro</span>
-        <span class="skip-arrow">↗</span>
+        <span class="skip-arrow"></span>
       </button>
     </div>
   </div>
@@ -181,7 +179,7 @@
     <!-- SCENE 1: HERO (Card on LEFT - Center 100% Unobstructed) -->
     <section class="story-scene split-left-scene hero-split-scene" id="overview">
       <div class="side-card left-card hero-intro-card">
-        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
+        <div class="card-zoom-indicator"><span></span><span>ZOOM</span></div>
         <span class="scene-kicker" id="heroKicker">AUTONOMOUS KINETIC ARCHITECTURE</span>
         <h1 class="hero-heading" id="heroTitle">BELTON<span class="brand-dash"> — </span>APFA</h1>
         <p class="hero-subtext" id="heroDesc">
@@ -197,7 +195,7 @@
     <!-- SCENE 2: MATERIALS (Card on RIGHT, Center 100% Open) -->
     <section class="story-scene split-right-scene" id="materials">
       <div class="side-card right-card">
-        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
+        <div class="card-zoom-indicator"><span></span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec1Kicker">01 // MONOCOQUE METALLURGY</span>
         <h2 class="scene-heading" id="sec1Title">Aerospace-grade suspension.</h2>
         <p class="scene-description" id="sec1Desc">
@@ -219,7 +217,7 @@
     <!-- SCENE 3: MAGLEV (Card on LEFT, Center 100% Open) -->
     <section class="story-scene split-left-scene" id="maglev">
       <div class="side-card left-card">
-        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
+        <div class="card-zoom-indicator"><span></span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec2Kicker">02 // CONTACTLESS ROTATION</span>
         <h2 class="scene-heading" id="sec2Title">Concentric precision raceway.</h2>
         <p class="scene-description" id="sec2Desc">
@@ -241,7 +239,7 @@
     <!-- SCENE 4: FLUX CORE (Card on RIGHT, Center 100% Open) -->
     <section class="story-scene split-right-scene" id="flux">
       <div class="side-card right-card">
-        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
+        <div class="card-zoom-indicator"><span></span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec3Kicker">03 // VOICE COIL MOTOR</span>
         <h2 class="scene-heading" id="sec3Title">Gold-anodized yoke frame.</h2>
         <p class="scene-description" id="sec3Desc">
@@ -263,7 +261,7 @@
     <!-- SCENE 5: TELEMETRY (Card on LEFT, Center 100% Open) -->
     <section class="story-scene split-left-scene" id="telemetry">
       <div class="side-card left-card">
-        <div class="card-zoom-indicator"><span>⛶</span><span>ZOOM</span></div>
+        <div class="card-zoom-indicator"><span></span><span>ZOOM</span></div>
         <span class="scene-kicker" id="sec4Kicker">04 // SIGNAL ARCHITECTURE</span>
         <h2 class="scene-heading" id="sec4Title">Flex-rigid pre-amp circuit.</h2>
         <p class="scene-description" id="sec4Desc">

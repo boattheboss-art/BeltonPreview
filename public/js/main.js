@@ -325,7 +325,7 @@ function init() {
       } else {
         // Error: Invalid credentials
         if (loginErrorMsg) {
-          loginErrorMsg.textContent = '❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง (Invalid Username or Password)';
+          loginErrorMsg.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
           loginErrorMsg.style.display = 'block';
         }
         soundEngine.playUiClick();

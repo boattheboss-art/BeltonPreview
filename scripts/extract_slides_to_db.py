@@ -247,7 +247,7 @@ def extract_title(content, default_doc_name, page_num):
     return f"{default_doc_name} - Slide {page_num}"
 
 def main():
-    print(f"🚀 [Belton & Seagate Knowledge Ingestion Engine]")
+    print(f" [Belton & Seagate Knowledge Ingestion Engine]")
     print(f"   Target JSON Database: {OUTPUT_JSON}")
     print(f"   Target SQLite DB:     {DB_PATH}")
 
@@ -259,10 +259,10 @@ def main():
     for doc in SLIDE_FILES:
         filepath = doc["filepath"]
         if not os.path.exists(filepath):
-            print(f"⚠️ Warning: File not found: {filepath}")
+            print(f" Warning: File not found: {filepath}")
             continue
 
-        print(f"\n📄 Processing [{doc['doc_code']}]: {doc['filename']}")
+        print(f"\n Processing [{doc['doc_code']}]: {doc['filename']}")
         reader = PdfReader(filepath)
         page_count = len(reader.pages)
         print(f"   Found {page_count} pages.")
@@ -303,7 +303,7 @@ def main():
             total_chars += char_count
 
     print(f"\n=======================================================")
-    print(f"📊 Extraction Summary:")
+    print(f" Extraction Summary:")
     print(f"   Total Documents Processed: {total_docs}")
     print(f"   Total Pages Ingested:      {total_pages}")
     print(f"   Total Text Characters:     {total_chars:,}")
@@ -313,10 +313,10 @@ def main():
     os.makedirs(os.path.dirname(OUTPUT_JSON), exist_ok=True)
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
         json.dump(all_pages, f, ensure_ascii=False, indent=2)
-    print(f"💾 Saved JSON slide database to: {OUTPUT_JSON}")
+    print(f" Saved JSON slide database to: {OUTPUT_JSON}")
 
     # 2. Ingest into SQLite (scada.db)
-    print(f"🗄️ Ingesting into SQLite Database: {DB_PATH}")
+    print(f" Ingesting into SQLite Database: {DB_PATH}")
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -368,7 +368,7 @@ def main():
     conn.commit()
 
     # Verify search on FTS5 across both Belton & Seagate domains
-    print("\n🔍 Verifying SQLite FTS5 multi-domain search...")
+    print("\n Verifying SQLite FTS5 multi-domain search...")
     test_queries = [
         "FCOF",
         "Cleanroom",
@@ -390,12 +390,12 @@ def main():
         row = cursor.fetchone()
         if row:
             snippet = row[3].replace('\n', ' ')
-            print(f"   ✅ '{q}': [{row[0]} P.{row[1]}] {row[2][:35]}... -> \"{snippet[:45]}...\"")
+            print(f"    '{q}': [{row[0]} P.{row[1]}] {row[2][:35]}... -> \"{snippet[:45]}...\"")
         else:
-            print(f"   ⚠️ '{q}': No match found")
+            print(f"    '{q}': No match found")
 
     conn.close()
-    print("\n🎉 [Complete] Belton & Seagate slides successfully 100% ingested into Database!")
+    print("\n [Complete] Belton & Seagate slides successfully 100% ingested into Database!")
 
 if __name__ == "__main__":
     main()

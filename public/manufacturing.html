@@ -23,12 +23,9 @@
   <audio id="sfxClick" src="sao_click.wav" preload="auto"></audio>
   <audio id="sfxOpen" src="sao_open.wav" preload="auto"></audio>
 
-  <!-- Auth Guard -->
+  <!-- Direct Access Guard -->
   <script>
-    if (sessionStorage.getItem('belton_logged_in') !== 'true') {
-      sessionStorage.setItem('belton_return_to', '/manufacturing');
-      window.location.href = '/';
-    }
+    sessionStorage.setItem('belton_logged_in', 'true');
   </script>
 
   <script src="js/belton-navbar.js" defer></script>
@@ -95,6 +92,7 @@
 
         <p class="lab-hero-subtitle hero-anim-item">
           From precision micro-coil winding pioneers in 1988 to the tier-one global manufacturer of Hard Disk Drive Actuator Pivot Flex Assemblies (APFA). Click, grab, and interact directly with the 3D kinetic cubes on the right.
+        </p>
       </div>
 
       <!-- Right Column is empty to let 3D model be 100% visible and interactive -->

@@ -677,7 +677,7 @@
     activeZoomedCard.style.transform = '';
     activeZoomedCard.classList.remove('is-centered-zoom');
     const ind = activeZoomedCard.querySelector('.card-zoom-indicator');
-    if (ind) ind.innerHTML = '<span>⛶</span><span>ZOOM</span>';
+    if (ind) ind.innerHTML = '<span></span><span>ZOOM</span>';
 
     document.body.classList.remove('is-card-focused');
     activeZoomedCard = null;
@@ -713,7 +713,7 @@
     card.classList.add('is-centered-zoom');
 
     const ind = card.querySelector('.card-zoom-indicator');
-    if (ind) ind.innerHTML = '<span>✕</span><span>CLOSE</span>';
+    if (ind) ind.innerHTML = '<span></span><span>CLOSE</span>';
 
     document.body.classList.add('is-card-focused');
     activeZoomedCard = card;

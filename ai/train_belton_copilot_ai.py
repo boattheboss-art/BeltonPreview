@@ -1,6 +1,6 @@
 """
 ====================================================================
-🚀 BELTON TECHNOLOGY - INDUSTRIAL & CASUAL AI COPILOT TRAINER (v5.5)
+ BELTON TECHNOLOGY - INDUSTRIAL & CASUAL AI COPILOT TRAINER (v5.5)
    Real-Time Neural Engine, SCADA Telemetry & Conversational Brain
 ====================================================================
 """
@@ -343,13 +343,13 @@ if torch.cuda.is_available():
     device = torch.device('cuda')
     gpu_name = torch.cuda.get_device_name(0)
     vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-    hardware_info = f"🚀 NVIDIA CUDA GPU ACCELERATED ({gpu_name} - {vram_gb:.1f} GB VRAM)"
+    hardware_info = f" NVIDIA CUDA GPU ACCELERATED ({gpu_name} - {vram_gb:.1f} GB VRAM)"
     torch.backends.cudnn.benchmark = True
 else:
     num_threads = os.cpu_count() or 8
     torch.set_num_threads(num_threads)
     device = torch.device('cpu')
-    hardware_info = f"⚡ High-Speed Neural Core ({num_threads} CPU Multi-Threads Active)"
+    hardware_info = f" High-Speed Neural Core ({num_threads} CPU Multi-Threads Active)"
 
 model = BeltonCopilotBrain(len(VOCAB), len(INTENTS)).to(device)
 intent_criterion = nn.CrossEntropyLoss()
@@ -408,12 +408,12 @@ def train_model():
         time.sleep(0.04)
 
     duration = time.time() - start_time
-    print(f"\n\n✨ [TRAINING COMPLETE] Time Elapsed: {duration:.2f} seconds")
-    print(f"🏆 Final Convergence Loss: {epoch_loss:.4f} | Final Accuracy: {epoch_acc:.2f}%")
+    print(f"\n\n [TRAINING COMPLETE] Time Elapsed: {duration:.2f} seconds")
+    print(f" Final Convergence Loss: {epoch_loss:.4f} | Final Accuracy: {epoch_acc:.2f}%")
     print("--------------------------------------------------------------------")
 
     # 6. Automated Validation Suite (Industrial SCADA + Conversational Chitchat)
-    print("\n🧪 [VALIDATION SUITE] Running Real-World Benchmark Queries:")
+    print("\n [VALIDATION SUITE] Running Real-World Benchmark Queries:")
     model.eval()
 
     test_cases = [
@@ -445,18 +445,18 @@ def train_model():
                 pred_target = int(raw_num)
 
             is_pass = (pred_intent == expected_intent) and (expected_target == 0 or pred_target == expected_target)
-            status_tag = "✅ PASS" if is_pass else "❌ FAIL"
+            status_tag = " PASS" if is_pass else " FAIL"
             if not is_pass:
                 all_pass = False
 
             target_info = f" (Target: #{pred_target})" if pred_target > 0 else ""
-            print(f"  {status_tag} | \"{query}\" ➔ Intent: {INTENTS[pred_intent]}{target_info}")
+            print(f"  {status_tag} | \"{query}\"  Intent: {INTENTS[pred_intent]}{target_info}")
 
     print("--------------------------------------------------------------------")
     if all_pass:
-        print("🎉 ALL 14 BENCHMARK CASES (SCADA + CHITCHAT) PASSED WITH 100% ACCURACY!")
+        print(" ALL 14 BENCHMARK CASES (SCADA + CHITCHAT) PASSED WITH 100% ACCURACY!")
     else:
-        print("⚠️ Some test cases require attention.")
+        print(" Some test cases require attention.")
 
     # 7. Export Model Weights to Public JSON for Browser Copilot
     weights_dict = {
@@ -494,8 +494,8 @@ def train_model():
     os.makedirs(os.path.dirname(out_pt), exist_ok=True)
     torch.save(model.state_dict(), out_pt)
 
-    print(f"📦 Model weights successfully exported to: {os.path.relpath(out_json, BASE_DIR)}")
-    print(f"💾 PyTorch checkpoint saved to: {os.path.relpath(out_pt, BASE_DIR)}")
+    print(f" Model weights successfully exported to: {os.path.relpath(out_json, BASE_DIR)}")
+    print(f" PyTorch checkpoint saved to: {os.path.relpath(out_pt, BASE_DIR)}")
     print("====================================================================\n")
 
 if __name__ == "__main__":

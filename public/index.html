@@ -67,32 +67,24 @@
   <header id="siteHeader" class="site-header">
     <nav class="nav-container" aria-label="Main Navigation">
       <a href="/" class="nav-logo" aria-label="BELTON AI Home">
-        <img src="belton_logo.png" alt="BELTON AI Logo" style="height: 28px; width: 28px; border-radius: 50%; object-fit: contain; margin-right: 8px; vertical-align: middle;">
+        <img src="belton_logo.png" alt="BELTON AI Logo" style="height: 32px; width: 32px; border-radius: 50%; object-fit: contain; margin-right: 10px; vertical-align: middle;">
         <span class="nav-logo-text">BELTON AI</span>
       </a>
 
-      <ul id="navLinks" class="nav-links">
-        <li><a href="/" class="nav-link nav-link-highlight active" data-nav="home">HOME</a></li>
-        <li><a href="/explorer" class="nav-link nav-link-highlight" id="nav3dModelLink" data-nav="explorer">
-          <span>3D MODEL</span>
-        </a></li>
-        <li><a href="/product" class="nav-link nav-link-highlight" id="navProductLink" data-nav="product">
-          <span>PRODUCT</span>
-        </a></li>
-        <li><a href="/manufacturing" class="nav-link nav-link-highlight" id="navMfgLink" data-nav="manufacturing">
-          <span>LEGACY & LAB</span>
-        </a></li>
-        <li><a href="/factory" class="nav-link nav-link-highlight" id="navFactoryLink" data-nav="factory">
-          <span>DIGITAL TWIN</span>
-        </a></li>
-        <li><a href="/copilot" class="nav-link nav-link-highlight" id="navCopilotLink" data-nav="copilot" style="background:linear-gradient(90deg,#4285F4,#9B72CB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">
-          <span>BELTON AI</span>
-        </a></li>
-      </ul>
+     <ul id="navLinks" class="nav-links" style="display: flex; flex-wrap: nowrap; white-space: nowrap; gap: 8px; list-style: none; margin: 0; padding: 0;">
+  <li><a href="/" class="nav-link nav-link-highlight active" data-nav="home">HOME</a></li>
+  <li><a href="/explorer" class="nav-link nav-link-highlight" id="nav3dModelLink" data-nav="explorer"><span>3D MODEL AR</span></a></li>
+  <li><a href="/product" class="nav-link nav-link-highlight" id="navProductLink" data-nav="product"><span>PRODUCT</span></a></li>
+  <li><a href="/manufacturing" class="nav-link nav-link-highlight" id="navMfgLink" data-nav="manufacturing"><span>History of BELTON</span></a></li>
+  <li><a href="/factory" class="nav-link nav-link-highlight" id="navFactoryLink" data-nav="factory"><span>Simulation room</span></a></li>
+  <li><a href="/copilot" class="nav-link nav-link-highlight nav-ai-pill" id="navCopilotLink" data-nav="copilot">
+    <span>BELTON AI</span>
+  </a></li>
+</ul>
 
       <div class="nav-actions">
         <button id="audioToggleBtn" class="audio-toggle-pill" aria-label="Toggle Audio" title="Sound Effects">
-          <span style="font-family: var(--font-mono, monospace); font-size: 0.72rem; letter-spacing: 1px;">AUDIO</span>
+          <span style="font-family: var(--font-mono, monospace); font-size: 0.8rem; letter-spacing: 1.2px; font-weight: 600;">AUDIO</span>
         </button>
         <button id="navGetStartedBtn" class="btn-get-started">LOGIN</button>
       </div>
@@ -113,9 +105,8 @@
 
       <!-- Hero Subtitle & Single Login CTA -->
       <div id="heroOverlayContent" class="hero-overlay-content">
-        <p class="hero-subtitle">Intelligent Automation for the Next Generation.</p>
+        <p class="hero-subtitle">Rajamangala University of Technology Thanyaburi</p>
         <div class="hero-cta-group">
-          <button id="heroLoginBtn" class="btn-pill-cyan">Login</button>
         </div>
       </div>
     </main>
@@ -125,36 +116,31 @@
   <div id="loginModal" class="modal access-terminal-modal" aria-hidden="true" role="dialog">
     <div id="modalBackdrop" class="modal-backdrop"></div>
     <div class="modal-container access-terminal-card">
-      <button id="modalCloseBtn" class="modal-close-btn" aria-label="Close terminal">✕</button>
+      <button id="modalCloseBtn" class="modal-close-btn" aria-label="Close terminal"></button>
 
-      <div id="loginFormContainer">
-        <div class="terminal-header-line">
-          <span class="modal-badge">// ACCESS CONTROL</span>
-          <span class="terminal-status-dot"></span>
-        </div>
-        <h2 class="modal-title">Access Terminal</h2>
+        <h2 class="modal-title">LOGIN</h2>
 
         <form id="cyberLoginForm" class="login-form">
           <div id="loginErrorMsg" class="login-error-msg" style="display: none;"></div>
 
           <div class="form-field">
-            <label for="loginUsername" class="form-label">EMAIL / ACCESS KEY (ชื่อผู้ใช้)</label>
+            <label for="loginUsername" class="form-label">USERNAME</label>
             <input type="text" id="loginUsername" class="form-input" placeholder="User" autocomplete="username" required />
           </div>
 
           <div class="form-field">
-            <label for="loginPassword" class="form-label">PASSWORD (รหัสผ่าน)</label>
+            <label for="loginPassword" class="form-label">PASSWORD</label>
             <input type="password" id="loginPassword" class="form-input" placeholder="password" autocomplete="current-password" required />
           </div>
 
           <button type="submit" class="btn-initialize-session" style="width: 100%; margin-top: 0.9rem;">
-            INITIALIZE SESSION
+           CONFIRM
           </button>
         </form>
       </div>
 
       <div id="authSuccessCard" class="auth-success-card">
-        <div class="auth-icon">✓</div>
+        <div class="auth-icon"></div>
         <h3 style="color: #ffffff; font-size: 1.3rem; letter-spacing: 1px;">ACCESS GRANTED</h3>
         <p id="authWelcomeMsg" style="color: #4ade80; font-size: 0.88rem; margin-top: 0.4rem;">Identity authenticated. Initializing workspace...</p>
         <button type="button" id="authSuccessCloseBtn" class="btn-initialize-session" style="margin-top: 1.2rem; width: 100%;">

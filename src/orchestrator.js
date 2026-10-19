@@ -691,8 +691,8 @@ ${matchedProcessFlow.steps.map(s => `ขั้นตอนที่ ${s.step} (�
    - หากโจทย์ระบุถูกต้องตรงกับสไลด์ทุกประการ ให้ตอบว่า "เฉลย: ถูก" พร้อมสรุปเหตุผลยืนยัน
 6. แยกแยะขอบเขต: หากถามเรื่องสเปก/ของเสีย/ข้อสอบ ให้ตอบเกณฑ์มาตรฐาน ไม่ดึงเรื่องสถานะเครื่องจักรมาปน และหากถามเรื่องเครื่องจักร ให้ตอบสถานะหรือเรียก Tool ที่เกี่ยวข้อง
 7. การตอบคำถามเรื่องลำดับขั้นตอนและคู่มือฝึกอบรม:
-   - หากถามขั้นตอนสวมชุดคลีนรูม [TM-00-00-05_1 หน้า 33]: 1. Hairnet ➔ 2. Jumpsuit ➔ 3. Facemask ➔ 4. Booties ➔ 5. Gloves (ห้ามตอบ Plant shoes ก่อนเด็ดขาด)
-   - หากถามการถอดชุด (Degowning Sequence): 1. Booties ➔ 2. Gloves ➔ 3. Facemask ➔ 4. Jumpsuit ➔ 5. Hairnet
+   - หากถามขั้นตอนสวมชุดคลีนรูม [TM-00-00-05_1 หน้า 33]: 1. Hairnet  2. Jumpsuit  3. Facemask  4. Booties  5. Gloves (ห้ามตอบ Plant shoes ก่อนเด็ดขาด)
+   - หากถามการถอดชุด (Degowning Sequence): 1. Booties  2. Gloves  3. Facemask  4. Jumpsuit  5. Hairnet
 8. จำนวนขั้นตอนกระบวนการผลิต (Manufacturing Process Flows จาก [TM-00-00-01] และ [PI-16-09-0001 Rev. H]):
    แต่ละผลิตภัณฑ์มีจำนวนขั้นตอนต่างกัน ห้ามจำสับสน:
    - 1) Coil Winding: 14 ขั้นตอน [TM-00-00-01 หน้า 14-27]
@@ -958,7 +958,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
           ? `**เฉลย: ถูก** (ข้อความในโจทย์ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`
           : `**เฉลย: ผิด** (ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`;
 
-        finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
+        finalReply = finalReply.replace(/^(?:[]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
         finalReply = officialPrefix + finalReply;
       }
       return buildResult(finalReply);
@@ -1026,7 +1026,7 @@ async function runOrchestrator(userMessage, conversationHistory = []) {
       ? `**เฉลย: ถูก** (ข้อความในโจทย์ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`
       : `**เฉลย: ผิด** (ข้อความในโจทย์ไม่ถูกต้องตามมาตรฐาน [${matchedExam.doc_code} ข้อ ${matchedExam.question_number}])\n\n`;
 
-    finalReply = finalReply.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
+    finalReply = finalReply.replace(/^(?:[]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '').trim();
     finalReply = officialPrefix + finalReply;
   } else if (matchedProcessFlow) {
     const flowPrefix = getProcessFlowPrefix(matchedProcessFlow, userMessage);
@@ -1124,7 +1124,7 @@ async function runOrchestratorStream(userMessage, conversationHistory = [], call
         let cleanChunk = chunk.replace(/[\u2e80-\u2eff\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/g, '');
         if (isFirstChunk && (matchedExam || matchedProcessFlow)) {
           if (matchedExam) {
-            cleanChunk = cleanChunk.replace(/^(?:[❌✅]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '');
+            cleanChunk = cleanChunk.replace(/^(?:[]?\s*(?:เฉลย\s*:?\s*)?(?:ถูก|ผิด)(?:\s*\([^)]*\))?[^\n]*\n*)+/i, '');
           }
           if (matchedProcessFlow) {
             cleanChunk = cleanChunk.replace(/^(?:กระบวนการผลิต[^\n]*(?:มีทั้งหมด|แบ่งออกเป็น)[^\n]*\n*)+/i, '');

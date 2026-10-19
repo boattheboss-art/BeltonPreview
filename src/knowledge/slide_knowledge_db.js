@@ -21,7 +21,7 @@ function loadAllSlides(forceReload = false) {
       try {
         inMemorySlides = JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
       } catch (err) {
-        console.warn('⚠️ [SlideKnowledgeDB] Could not parse JSON slides:', err.message);
+        console.warn('[SlideKnowledgeDB] Could not parse JSON slides:', err.message);
       }
     }
     if (!inMemorySlides) {
@@ -279,7 +279,7 @@ function loadAllExamQuestions(forceReload = false) {
       inMemoryExamQuestions = JSON.parse(fs.readFileSync(examPath, 'utf8'));
       return inMemoryExamQuestions;
     } catch (e) {
-      console.warn('⚠️ [Exam DB] Failed to load exam questions:', e.message);
+      console.warn('[Exam DB] Failed to load exam questions:', e.message);
     }
   }
   return [];

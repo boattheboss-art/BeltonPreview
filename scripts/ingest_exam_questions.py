@@ -12,13 +12,13 @@ OUTPUT_JSON = os.path.join(os.path.dirname(__file__), "..", "data", "seagate_exa
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "scada.db")
 
 def main():
-    print("🚀 [Seagate Master Exam Ingestion Engine]")
+    print(" [Seagate Master Exam Ingestion Engine]")
     print(f"   Source GS File: {GS_PATH}")
     print(f"   Output JSON:    {OUTPUT_JSON}")
     print(f"   Database:       {DB_PATH}")
 
     if not os.path.exists(GS_PATH):
-        print(f"❌ Error: File not found: {GS_PATH}")
+        print(f" Error: File not found: {GS_PATH}")
         return
 
     with open(GS_PATH, "r", encoding="utf-8") as f:
@@ -31,7 +31,7 @@ def main():
 
     for tab, exam_id, title, product, q_block in matches:
         q_pairs = re.findall(r'\[\s*"(\d+)\.\s+([^"]+)",\s*"(ถูก|ผิด)"\s*\]', q_block)
-        print(f"  📑 [{exam_id}] {product} ({tab}): {len(q_pairs)} questions")
+        print(f"   [{exam_id}] {product} ({tab}): {len(q_pairs)} questions")
         for q_num, q_text, ans in q_pairs:
             cleaned_text = q_text.strip()
             all_questions.append({
@@ -44,13 +44,13 @@ def main():
                 "correct_answer": ans
             })
 
-    print(f"\n📊 Total Master Exam Questions Ingested: {len(all_questions)}")
+    print(f"\n Total Master Exam Questions Ingested: {len(all_questions)}")
 
     # 1. Save to JSON
     os.makedirs(os.path.dirname(OUTPUT_JSON), exist_ok=True)
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
         json.dump(all_questions, f, ensure_ascii=False, indent=2)
-    print(f"💾 Saved JSON Exam Database: {OUTPUT_JSON}")
+    print(f" Saved JSON Exam Database: {OUTPUT_JSON}")
 
     # 2. Ingest into SQLite
     conn = sqlite3.connect(DB_PATH)
@@ -98,10 +98,10 @@ def main():
         """, (q_id, q["doc_code"], q["product"], q["question_number"], q["full_question"], q["correct_answer"]))
 
     conn.commit()
-    print("🗄️ Ingested 180 questions into SQLite (exam_questions + exam_questions_fts)")
+    print(" Ingested 180 questions into SQLite (exam_questions + exam_questions_fts)")
 
     # 3. Verification search
-    print("\n🔍 Verifying Exam Search:")
+    print("\n Verifying Exam Search:")
     test_q = "Misalignment Damper Arm"
     cursor.execute("""
         SELECT question_id, doc_code, question_number, full_question, correct_answer
@@ -111,13 +111,13 @@ def main():
     """, (test_q,))
     row = cursor.fetchone()
     if row:
-        print(f"  ✅ Matched Q#{row[2]} [{row[1]}]: Answer={row[4]}")
+        print(f"   Matched Q#{row[2]} [{row[1]}]: Answer={row[4]}")
         print(f"     Question: {row[3][:100]}...")
     else:
-        print("  ⚠️ No match found for verification")
+        print("   No match found for verification")
 
     conn.close()
-    print("\n🎉 Master Exam Ingestion Complete 100%!")
+    print("\n Master Exam Ingestion Complete 100%!")
 
 if __name__ == "__main__":
     main()

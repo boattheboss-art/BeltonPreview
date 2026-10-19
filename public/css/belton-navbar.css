@@ -35,11 +35,11 @@
   transform: translateX(-50%);
   z-index: 9999;
   width: calc(100% - 48px);
-  max-width: 1240px;
+  max-width: 1400px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px 8px 18px;
+  padding: 10px 22px;
   background: var(--bnav-bg);
   backdrop-filter: var(--bnav-blur);
   -webkit-backdrop-filter: var(--bnav-blur);
@@ -68,20 +68,20 @@
 .belton-nav-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   color: var(--bnav-text-main);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", sans-serif;
   font-weight: 700;
   letter-spacing: 0.12em;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   white-space: nowrap;
   user-select: none;
 }
 
 .belton-nav-brand img {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: contain;
   display: block;
@@ -93,12 +93,12 @@
 }
 
 .belton-nav-brand .brand-badge {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   color: #94a3b8;
   background: rgba(255, 255, 255, 0.06);
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 99px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   text-transform: uppercase;
@@ -108,7 +108,7 @@
 .belton-nav-links {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -118,11 +118,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 16px;
+  padding: 8px 18px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--bnav-text-muted);
   text-decoration: none;
   text-transform: uppercase;
@@ -164,18 +164,18 @@
 .belton-nav-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .belton-nav-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 7px 18px;
+  padding: 8px 20px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
-  font-size: 0.76rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: 999px;
   cursor: pointer;

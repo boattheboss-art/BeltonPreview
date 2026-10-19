@@ -2,7 +2,7 @@ const { queryDB } = require('../db/database.js');
 const { searchSlideKnowledge } = require('../knowledge/slide_knowledge_db.js');
 
 async function executeTool(name, args) {
-  console.log(`⚡ [Tool Execution] Executing "${name}" with args:`, JSON.stringify(args));
+  console.log(`[Tool Execution] Executing "${name}" with args:`, JSON.stringify(args));
 
   switch (name) {
     case 'get_machine_telemetry': {

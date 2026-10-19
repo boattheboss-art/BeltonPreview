@@ -1286,7 +1286,7 @@
     <div id="part-labels-container"></div>
 
     <!-- Gesture Status Badge -->
-    <div class="gesture-badge" id="gesture-badge">✦ X-RAY MODE</div>
+    <div class="gesture-badge" id="gesture-badge"> X-RAY MODE</div>
 
     <!-- 3-Second Hold Countdown Hologram Overlay -->
     <div id="countdown-overlay" class="countdown-overlay">
@@ -1296,7 +1296,7 @@
                 <circle class="countdown-bar" id="countdown-progress" cx="60" cy="60" r="52"></circle>
             </svg>
             <div class="countdown-number" id="countdown-num">3</div>
-            <div class="countdown-icon" id="countdown-icon">🤏</div>
+            <div class="countdown-icon" id="countdown-icon"></div>
         </div>
         <div class="countdown-label" id="countdown-label">แตะนิ้วค้างไว้ 3 วินาที เพื่อรวมร่าง</div>
     </div>
@@ -1331,7 +1331,7 @@
         </div>
         <div class="hud-canvas-wrap">
             <canvas id="skeleton-canvas" width="190" height="180"></canvas>
-            <div id="hud-standby-msg" class="hud-standby">🖐️ นำมือเข้ากล้อง</div>
+            <div id="hud-standby-msg" class="hud-standby"> นำมือเข้ากล้อง</div>
         </div>
     </div>
 
@@ -1398,9 +1398,9 @@
             </div>
             <div class="hint-box">
                 <div class="hint-title">โหมดกล้อง AR (ใช้มือเดี่ยว) :</div>
-                <div class="hint-item"><span>🤏</span> <span><b>จีบนิ้วชี้-โป้งค้าง 3 วิ :</b> รวมร่างโมเดล (ล็อกไว้)</span></div>
-                <div class="hint-item"><span>🖐️</span> <span><b>แบมือค้าง 3 วิ :</b> แยกร่างโมเดล (ล็อกไว้)</span></div>
-                <div class="hint-item"><span>👋</span> <span><b>ขยับมือ :</b> หมุน/เลื่อนโมเดลตามมือ</span></div>
+                <div class="hint-item"><span></span> <span><b>จีบนิ้วชี้-โป้งค้าง 3 วิ :</b> รวมร่างโมเดล (ล็อกไว้)</span></div>
+                <div class="hint-item"><span></span> <span><b>แบมือค้าง 3 วิ :</b> แยกร่างโมเดล (ล็อกไว้)</span></div>
+                <div class="hint-item"><span></span> <span><b>ขยับมือ :</b> หมุน/เลื่อนโมเดลตามมือ</span></div>
             </div>
         </div>
     </div>
@@ -1410,16 +1410,16 @@
         <div class="bottom-dock">
             <div class="dock-active-pill" id="dock-pill"></div>
             <button class="dock-item active" onclick="selectComp(0, event)" id="dock-0">
-                <span class="dock-icon">💽</span><span class="dock-label">Hard Disk</span>
+                <span class="dock-icon"></span><span class="dock-label">Hard Disk</span>
             </button>
             <button class="dock-item" onclick="selectComp(1, event)" id="dock-1">
-                <span class="dock-icon">🗄️</span><span class="dock-label">Capacity</span>
+                <span class="dock-icon"></span><span class="dock-label">Capacity</span>
             </button>
             <button class="dock-item" onclick="selectComp(2, event)" id="dock-2">
-                <span class="dock-icon">⚡</span><span class="dock-label">Resistor</span>
+                <span class="dock-icon"></span><span class="dock-label">Resistor</span>
             </button>
             <button class="dock-item" onclick="selectComp(3, event)" id="dock-3">
-                <span class="dock-icon">🔲</span><span class="dock-label">IC Chip</span>
+                <span class="dock-icon"></span><span class="dock-label">IC Chip</span>
             </button>
         </div>
     </div>
@@ -1930,7 +1930,7 @@
             
             if (appMode === 'NORMAL') {
                 if (videoEl) videoEl.style.opacity = '0';
-                if (btn) { btn.innerHTML = "✋ โหมดกล้อง AR"; btn.className = "tool-btn"; }
+                if (btn) { btn.innerHTML = " โหมดกล้อง AR"; btn.className = "tool-btn"; }
                 if (arSubBtn) arSubBtn.style.display = "none";
                 if (sliderUI) sliderUI.style.display = "block";
                 if (handHud) handHud.classList.add('hidden');
@@ -1963,8 +1963,8 @@
             } else {
                 if (videoEl) videoEl.style.opacity = '0';
                 try { startCamera(); } catch(e) {}
-                if (btn) { btn.innerHTML = "🖥️ โหมดเมาส์"; btn.className = "tool-btn active-ar"; }
-                if (arSubBtn) { arSubBtn.innerHTML = (arSubMode === '360') ? "🔄 AR: 360°" : "🔒 AR: ล็อกมุมมอง"; arSubBtn.style.display = "inline-flex"; }
+                if (btn) { btn.innerHTML = " โหมดเมาส์"; btn.className = "tool-btn active-ar"; }
+                if (arSubBtn) { arSubBtn.innerHTML = (arSubMode === '360') ? " AR: 360°" : " AR: ล็อกมุมมอง"; arSubBtn.style.display = "inline-flex"; }
                 if (sliderUI) sliderUI.style.display = "none";
                 if (handHud) handHud.classList.remove('hidden');
                 
@@ -1999,13 +1999,13 @@
             const btn = document.getElementById('btn-ar-submode');
             if (btn) {
                 if (arSubMode === '360') {
-                    btn.innerHTML = '🔄 AR: 360°';
+                    btn.innerHTML = ' AR: 360°';
                     btn.classList.remove('lock-active');
-                    updateBadge('🔄 โหมด AR: หมุน 360° อิสระ', '');
+                    updateBadge(' โหมด AR: หมุน 360° อิสระ', '');
                 } else {
-                    btn.innerHTML = '🔒 AR: ล็อกมุมมอง';
+                    btn.innerHTML = ' AR: ล็อกมุมมอง';
                     btn.classList.add('lock-active');
-                    updateBadge('🔒 โหมด AR: ล็อกมุมมอง (ขยับตามมือ)', '');
+                    updateBadge(' โหมด AR: ล็อกมุมมอง (ขยับตามมือ)', '');
                 }
             }
             playSound('switch');
@@ -2125,7 +2125,7 @@
         const PART_LABELS_DATA = [
             {
                 id: 'arm-blade',
-                icon: '⚙️',
+                icon: '',
                 title: 'ใบมีดแขนอ่าน',
                 material: 'สแตนเลส',
                 func: 'อ่าน/เขียนข้อมูลบนจาน',
@@ -2134,7 +2134,7 @@
             },
             {
                 id: 'pivot',
-                icon: '🔩',
+                icon: '',
                 title: 'แกนหมุนลูกปืน',
                 material: 'เหล็กกล้า',
                 func: 'จุดหมุนศูนย์กลาง',
@@ -2143,7 +2143,7 @@
             },
             {
                 id: 'vcm',
-                icon: '🧲',
+                icon: '',
                 title: 'แม่เหล็ก VCM',
                 material: 'นีโอไดเมียม',
                 func: 'ขับเคลื่อนแม่เหล็กไฟฟ้า',
@@ -2152,7 +2152,7 @@
             },
             {
                 id: 'fpc',
-                icon: '🔌',
+                icon: '',
                 title: 'สายแพ FPC',
                 material: 'ทองแดง / PI',
                 func: 'ส่งสัญญาณไปบอร์ด',
@@ -2161,7 +2161,7 @@
             },
             {
                 id: 'pcb',
-                icon: '🟩',
+                icon: '',
                 title: 'แผ่นวงจร PCB',
                 material: 'FR-4',
                 func: 'ประมวลผลสัญญาณ',
@@ -2746,14 +2746,14 @@
             }
 
             if (mode === 'ASSEMBLE') {
-                iconEl.innerText = '🔒';
+                iconEl.innerText = '';
                 labelEl.innerText = `จีบค้างไว้ ${currentSec} วินาที เพื่อล็อกสถานะรวมร่าง...`;
                 if (bar) {
                     bar.style.stroke = '#10b981';
                     bar.style.filter = 'drop-shadow(0 0 10px #10b981)';
                 }
             } else {
-                iconEl.innerText = '🔒';
+                iconEl.innerText = '';
                 labelEl.innerText = `แบมือค้างไว้ ${currentSec} วินาที เพื่อล็อกสถานะแยกร่าง...`;
                 if (bar) {
                     bar.style.stroke = '#00f0ff';
@@ -2813,8 +2813,8 @@
 
                     if (newState !== gestureState) {
                         gestureState = newState;
-                        if (gestureState === 'EXPLODED') { updateBadge('💥 แยกร่าง (EXPLODED)', 'explode'); playSound('on'); }
-                        else { updateBadge('✊ รวมร่าง (ASSEMBLED)', ''); playSound('off'); }
+                        if (gestureState === 'EXPLODED') { updateBadge(' แยกร่าง (EXPLODED)', 'explode'); playSound('on'); }
+                        else { updateBadge(' รวมร่าง (ASSEMBLED)', ''); playSound('off'); }
                     }
                     explodeLerpTarget = (gestureState === 'EXPLODED') ? 1 : 0;
                 } else {
@@ -2855,7 +2855,7 @@
                                 lockedState = 'NORMAL';
                                 holdCountdownMode = null;
                                 updateHoldCountdown(null);
-                                updateBadge('🔒 ล็อกสถานะรวมร่างแล้ว', 'assembled');
+                                updateBadge(' ล็อกสถานะรวมร่างแล้ว', 'assembled');
                                 playSound('cute-assemble');
                             }
                         } else {
@@ -2893,7 +2893,7 @@
                                 lockedState = 'EXPLODED';
                                 holdCountdownMode = null;
                                 updateHoldCountdown(null);
-                                updateBadge('🔒 ล็อกสถานะแยกร่างค้างไว้แล้ว', 'explode');
+                                updateBadge(' ล็อกสถานะแยกร่างค้างไว้แล้ว', 'explode');
                                 playSound('cute-explode');
                             }
                         } else {
@@ -2948,7 +2948,7 @@
                     if (hudBadge) {
                         const pinchDist = hands[0] ? Math.hypot(hands[0][8].x - hands[0][4].x, hands[0][8].y - hands[0][4].y) : 1;
                         const isPinching = pinchDist < 0.08;
-                        hudBadge.innerText = isPinching ? '🤏 จีบนิ้ว (PINCH)' : '🖐️ แบมือ (OPEN)';
+                        hudBadge.innerText = isPinching ? ' จีบนิ้ว (PINCH)' : ' แบมือ (OPEN)';
                         hudBadge.style.color = isPinching ? '#10b981' : '#00f0ff';
                     }
 

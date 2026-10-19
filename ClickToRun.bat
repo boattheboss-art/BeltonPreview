@@ -1,7 +1,7 @@
 @echo off
 title Belton Blender Live Sync
 echo =========================================================
-echo   🚀 Starting Blender Web Live Sync Server...
+echo    Starting Blender Web Live Sync Server...
 echo =========================================================
 echo.
 

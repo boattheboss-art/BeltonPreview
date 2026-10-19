@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const { runOrchestrator, runOrchestratorStream } = require('./src/orchestrator.js');
 const { getMachineTelemetry, getProblematicMachines, getFactorySummary } = require('./src/db/database.js');
+const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
 require('dotenv').config();
 
 const app = express();
@@ -23,15 +24,15 @@ app.post('/api/copilot-log', (req, res) => {
     const { query, model, response, action, targetNum } = req.body || {};
     const time = new Date().toLocaleTimeString('th-TH');
     console.log(`\n======================================================`);
-    console.log(`🤖 [COPILOT CMD LOG - ${time}]`);
-    console.log(`👤 User Query : "${query || ''}"`);
-    console.log(`🧠 Model      : ${model || 'Qwen 2.5 1.5B (WebGPU)'}`);
+    console.log(`[COPILOT CMD LOG - ${time}]`);
+    console.log(`User Query : "${query || ''}"`);
+    console.log(`Model      : ${model || 'Qwen 2.5 1.5B (WebGPU)'}`);
     if (action) {
-        console.log(`🎯 3D Action  : ${action} (Target: ACA-DISP-${targetNum < 10 ? '0' + targetNum : targetNum})`);
+        console.log(`3D Action  : ${action} (Target: ACA-DISP-${targetNum < 10 ? '0' + targetNum : targetNum})`);
     }
     if (response) {
         const preview = (response || '').replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim().slice(0, 140);
-        console.log(`💬 Response   : ${preview}...`);
+        console.log(`Response   : ${preview}...`);
     }
     console.log(`======================================================\n`);
     res.json({ status: 'ok' });
@@ -130,6 +131,122 @@ app.post('/api/copilot/chat-stream', async (req, res) => {
     }
 });
 
+// Text sanitizer and Phonetic mapping for natural Thai speech delivery
+function cleanTextForSpeech(text) {
+    if (!text) return '';
+    let s = text
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .replace(/\[ACTION:[^\]]+\]/gi, '')
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/\*([^*]+)\*/g, '$1')
+        .replace(/__([^_]+)__/g, '$1')
+        .replace(/^#+\s*/gm, '')
+        .replace(/^[-*•]\s*/gm, '')
+        .replace(/^\d+\.\s*/gm, '')
+        .replace(/https?:\/\/\S+/g, '')
+        .replace(/<[^>]*>/g, '');
+
+    // 1. Belton Machine Naming
+    s = s.replace(/(?:เครื่อง\s*)?ACA-DISP-0?(\d+)/gi, (m, num) => `เครื่อง เอซีเอ ดิสเพนเซอร์ เบอร์ ${parseInt(num, 10)}`);
+    s = s.replace(/\bACA\b/gi, 'เอซีเอ');
+    s = s.replace(/\bDISP\b/gi, 'ดิสเพนเซอร์');
+
+    // 2. Relative Humidity & Percentages
+    s = s.replace(/(\d+)\s*(?:%\s*)?RH\b/gi, '$1 เปอร์เซ็นต์ความชื้นสัมพัทธ์');
+    s = s.replace(/(\d+)\s*%/g, '$1 เปอร์เซ็นต์');
+
+    // 3. Cleanroom & Facility Specifications
+    s = s.replace(/Cleanroom\s+Class\s+(\d+)/gi, 'คลีนรูม คลาส $1');
+    s = s.replace(/Class\s+(\d+)\s+Cleanroom/gi, 'คลีนรูม คลาส $1');
+    s = s.replace(/\bCleanroom\b/gi, 'คลีนรูม');
+    s = s.replace(/\bClass\s+(\d+)/gi, 'คลาส $1');
+    s = s.replace(/Nava\s*Nakorn/gi, 'นวนคร');
+    s = s.replace(/\bBelton\b/gi, 'เบลตัน');
+
+    // 4. Industry & Process Acronyms
+    s = s.replace(/(?:ระบบ\s*)?SCADA\b/gi, 'ระบบ สะกาด้า');
+    s = s.replace(/\bHDD\b/gi, 'ฮาร์ดดิสก์');
+    s = s.replace(/\bHDA\b/gi, 'เอชดีเอ');
+    s = s.replace(/\bVCM\b/gi, 'วีซีเอ็ม');
+    s = s.replace(/\bSOP\b/gi, 'เอสโอพี');
+    s = s.replace(/\bESD\b/gi, 'อีเอสดี');
+    s = s.replace(/\bOEE\b/gi, 'โออีอี');
+    s = s.replace(/\bSmock\b/gi, 'ชุดสม็อค');
+    s = s.replace(/\bBooties\b/gi, 'รองเท้าบูทตี้');
+    s = s.replace(/\bSticky\s*Mat\b/gi, 'แผ่นกาวดักฝุ่น');
+    s = s.replace(/\bAir\s*Shower\b/gi, 'แอร์ชาวเวอร์');
+    s = s.replace(/\bPass\s*Box\b/gi, 'พาสบ็อกซ์');
+    s = s.replace(/\bFFU\b/gi, 'เอฟเอฟยู');
+    s = s.replace(/\bHEPA\b/gi, 'เฮป้าฟิลเตอร์');
+    s = s.replace(/\bULPA\b/gi, 'อัลป้าฟิลเตอร์');
+    s = s.replace(/\bDI\s*Water\b/gi, 'น้ำบริสุทธิ์ดีไอ');
+    s = s.replace(/\bIPA\b/gi, 'แอลกอฮอล์ไอพีเอ');
+
+    // 5. Units of Measurement
+    s = s.replace(/(\d+)\s*°\s*C/g, '$1 องศาเซลเซียส');
+    s = s.replace(/(\d+(?:\.\d+)?)\s*µm/gi, '$1 ไมครอน');
+    s = s.replace(/(\d+(?:\.\d+)?)\s*um/gi, '$1 ไมครอน');
+    s = s.replace(/(\d+(?:\.\d+)?)\s*mm/gi, '$1 มิลลิเมตร');
+    s = s.replace(/(\d+)\s*RPM/gi, '$1 รอบต่อนาที');
+
+    // 6. Conversational Prosody Pauses
+    s = s.replace(/([.?!])\s+/g, '$1, ');
+    s = s.replace(/[:]/g, ' คือ ');
+
+    return s.replace(/\s+/g, ' ').trim();
+}
+
+// Neural TTS Endpoint (Edge-TTS Thai Voice with Phonetic Dictionary)
+app.post('/api/tts', async (req, res) => {
+    try {
+        const { text, voice = 'th-TH-PremwadeeNeural' } = req.body || {};
+        const cleaned = cleanTextForSpeech(text);
+        if (!cleaned) {
+            return res.status(400).json({ error: 'Text is empty or invalid for speech' });
+        }
+
+        const speechText = cleaned.length > 1200 
+            ? cleaned.slice(0, 1200) + ' และอื่นๆ ตามรายละเอียดบนหน้าจอครับ' 
+            : cleaned;
+
+        const tts = new MsEdgeTTS();
+        await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+        
+        // Natural vocal delivery: remove artificial negative pitch and sluggish speed drag
+        const prosody = {
+            pitch: '+0Hz',
+            rate: '+0%',
+            volume: '+0%'
+        };
+
+        const { audioStream } = tts.toStream(speechText, prosody);
+
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Cache-Control', 'no-cache, no-store');
+
+        audioStream.pipe(res);
+
+        audioStream.on('error', (err) => {
+            console.error('[TTS Stream Error]:', err.message);
+            if (!res.headersSent) {
+                res.status(500).json({ error: err.message });
+            }
+            try { tts.close(); } catch (e) {}
+        });
+
+        res.on('close', () => {
+            try { tts.close(); } catch (e) {}
+        });
+    } catch (err) {
+        console.error('[TTS Endpoint Error]:', err.message);
+        if (!res.headersSent) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+});
+
 // Direct SCADA Database endpoints
 app.get('/api/scada/summary', async (req, res) => {
     try {
@@ -214,8 +331,8 @@ process.on('unhandledRejection', (err) => console.error('unhandledRejection:', e
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`\n======================================================`);
-    console.log(`🚀 Belton 3D Component Explorer`);
-    console.log(`💻 Open in Chrome: http://localhost:${PORT}`);
-    console.log(`🖐️ แบมือ = ดูปกติ  |  ✌️ ชู 2 นิ้ว = แยกร่าง`);
+    console.log(`Belton 3D Component Explorer`);
+    console.log(`Open in Chrome: http://localhost:${PORT}`);
+    console.log(`Open Hand = View Normal  |  Peace Sign = Exploded View`);
     console.log(`======================================================\n`);
 });

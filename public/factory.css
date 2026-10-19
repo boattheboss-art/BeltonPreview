@@ -3188,6 +3188,14 @@ input:checked + .toggle-slider:before {
   font-weight: 800 !important;
 }
 
+.apple-nav-segmented .nav-item.nav-gemini:hover,
+.nav-item.nav-gemini:hover {
+  background: linear-gradient(90deg, #93c5fd, #ffffff) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 8px rgba(155, 114, 203, 0.7));
+}
+
 /* Gemini Top-Down Dropdown Modal */
 .gemini-dropdown-modal {
   position: fixed;

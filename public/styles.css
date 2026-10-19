@@ -315,11 +315,11 @@ body.fade-step-bg #bgBeltonText {
 
 .site-header {
   position: fixed;
-  top: 1.5rem;
+  top: 1.25rem;
   left: 50%;
   transform: translateX(-50%) translateZ(0);
-  width: 92%;
-  max-width: 1280px;
+  width: 95%;
+  max-width: 1440px;
   z-index: 50;
   pointer-events: auto;
   opacity: 0;
@@ -337,45 +337,51 @@ body.fade-step-bg #bgBeltonText {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(10, 15, 29, 0.78);
+  background: rgba(10, 15, 29, 0.82);
   backdrop-filter: blur(32px) saturate(190%);
   -webkit-backdrop-filter: blur(32px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
-  padding: 0.6rem 1.4rem;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), 0 20px 40px -15px rgba(0, 0, 0, 0.65);
+  padding: 0.75rem 1.8rem;
+  min-height: 64px;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), 0 20px 48px -15px rgba(0, 0, 0, 0.75);
   transition: all 0.4s var(--ease-spring);
+  box-sizing: border-box;
 }
 
 body.is-logged-in .nav-container {
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), 0 20px 48px rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 0 20px 52px rgba(0, 0, 0, 0.88);
 }
 
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   text-decoration: none;
   color: #ffffff;
   font-weight: 800;
-  letter-spacing: 0.18em;
-  font-size: 1.05rem;
-  padding: 0.2rem 0.6rem;
+  letter-spacing: 0.16em;
+  font-size: 1.15rem;
+  padding: 0.3rem 0.7rem;
   border-radius: 999px;
+  white-space: nowrap;
+  user-select: none;
   text-shadow: 0 0 16px var(--white-glow);
 }
 
 .nav-logo-icon {
   color: var(--white-pure);
-  font-size: 1.15rem;
+  font-size: 1.25rem;
 }
 
 .nav-links {
   display: none;
   align-items: center;
-  gap: 1.8rem;
+  gap: 10px;
   list-style: none;
+  margin: 0;
+  padding: 0;
   opacity: 0;
   transform: translateY(-10px) scale(0.95);
   transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -388,8 +394,8 @@ body.is-logged-in .nav-links {
 }
 
 .nav-pulse-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #10b981;
   box-shadow: 0 0 8px #10b981;
@@ -406,50 +412,86 @@ body.is-logged-in .nav-links {
   align-items: center;
   gap: 8px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.72) !important;
+  color: rgba(255, 255, 255, 0.78) !important;
   text-decoration: none;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 7px 16px;
+  padding: 8px 18px;
   border-radius: 999px;
   border: 1px solid transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: none;
+  white-space: nowrap;
 }
 
 .nav-link.active {
   color: #ffffff !important;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.14) !important;
-  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
   border-radius: 999px !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
   transform: none !important;
 }
 
 .nav-link:hover, 
 .nav-link-highlight:hover {
   color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.32) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.36) !important;
   border-radius: 999px !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.16), inset 0 0 8px rgba(255, 255, 255, 0.06) !important;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.2), inset 0 0 8px rgba(255, 255, 255, 0.08) !important;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
   transform: translateY(-1px) !important;
 }
 
 .nav-link-highlight {
   /* Inherits from .nav-link with same clean transparent base */
   background: transparent;
-  color: rgba(255, 255, 255, 0.72) !important;
+  color: rgba(255, 255, 255, 0.78) !important;
   box-shadow: none;
+}
+
+/* Special BELTON AI Pill Nav Link - Never disappears on hover */
+.nav-link.nav-ai-pill,
+#navCopilotLink {
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.18), rgba(155, 114, 203, 0.24)) !important;
+  border: 1px solid rgba(155, 114, 203, 0.5) !important;
+  box-shadow: 0 0 14px rgba(155, 114, 203, 0.25) !important;
+  padding: 8px 20px !important;
+}
+
+.nav-link.nav-ai-pill span,
+#navCopilotLink span {
+  background: linear-gradient(90deg, #60a5fa, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  display: inline-block;
+  transition: all 0.24s ease;
+}
+
+.nav-link.nav-ai-pill:hover,
+#navCopilotLink:hover {
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.35), rgba(155, 114, 203, 0.45)) !important;
+  border: 1px solid rgba(196, 181, 253, 0.75) !important;
+  box-shadow: 0 0 20px rgba(155, 114, 203, 0.55), inset 0 0 8px rgba(66, 133, 244, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.nav-link.nav-ai-pill:hover span,
+#navCopilotLink:hover span {
+  background: linear-gradient(90deg, #93c5fd, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(196, 181, 253, 0.9));
 }
 
 /* Hide the redundant center button when logged in so 3D robot is 100% visible */
@@ -458,24 +500,27 @@ body.is-logged-in .hero-cta-group {
   display: none !important;
 }
 
-
-
 .btn-logout-state {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   color: #ffffff !important;
+  padding: 0.65rem 1.6rem !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
 }
 
 .btn-logout-state:hover {
-  background: rgba(244, 63, 94, 0.25) !important;
-  border-color: rgba(244, 63, 94, 0.5) !important;
+  background: rgba(244, 63, 94, 0.28) !important;
+  border-color: rgba(244, 63, 94, 0.6) !important;
   color: #f43f5e !important;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.35) !important;
 }
 
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.9rem;
 }
 
 .btn-get-started {
@@ -483,11 +528,11 @@ body.is-logged-in .hero-cta-group {
   color: #000000;
   border: none;
   border-radius: 999px;
-  padding: 0.55rem 1.4rem;
+  padding: 0.65rem 1.6rem;
   font-family: var(--font-sans);
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.25s ease;
   box-shadow: 0 0 20px var(--white-glow);
@@ -500,15 +545,28 @@ body.is-logged-in .hero-cta-group {
 }
 
 .audio-toggle-pill {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  padding: 0.5rem 0.8rem;
+  padding: 0.6rem 1.1rem;
   color: var(--text-dim);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.audio-toggle-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.audio-toggle-pill.is-active {
+  border-color: var(--white-pure);
+  color: var(--white-bright);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .audio-toggle-pill.is-active {

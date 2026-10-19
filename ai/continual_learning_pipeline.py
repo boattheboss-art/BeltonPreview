@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AI_DIR = os.path.join(BASE_DIR, "ai")
 
 print("=" * 78)
-print("  🚀 BELTON AI COPILOT - CONTINUAL SELF-IMPROVEMENT PIPELINE")
+print("   BELTON AI COPILOT - CONTINUAL SELF-IMPROVEMENT PIPELINE")
 print("=" * 78)
 
 # Step 1: Refresh SQLite SCADA Telemetry Profiles
@@ -39,6 +39,6 @@ print("\n[Step 3/3] Training PyTorch Edge Neural Network with Cumulative Knowled
 subprocess.run([sys.executable, os.path.join(AI_DIR, "train_chatbot_nlp.py")], check=True)
 
 print("\n" + "=" * 78)
-print("  ✅ SELF-IMPROVEMENT PIPELINE COMPLETED SUCCESSFULLY!")
+print("   SELF-IMPROVEMENT PIPELINE COMPLETED SUCCESSFULLY!")
 print("  The AI is now smarter with the latest Database Telemetry & User Interactions.")
 print("=" * 78)

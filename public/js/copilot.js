@@ -11,12 +11,102 @@
   const input = document.getElementById('chatInput');
   const btnSubmit = document.getElementById('btnSubmit');
   const btnClear = document.getElementById('btnClearChat');
+  const btnVoiceToggle = document.getElementById('btnVoiceToggle');
+  const btnMic = document.getElementById('btnMic');
+  const voiceStatusPill = document.getElementById('voiceStatusPill');
+  const btnLaunchVoiceMode = document.getElementById('btnLaunchVoiceMode');
+  const voiceModeOverlay = document.getElementById('voiceModeOverlay');
+  const btnExitVoiceMode = document.getElementById('btnExitVoiceMode');
+  const voiceOrbCanvas = document.getElementById('voiceOrbCanvas');
+  const voiceOrbWrapper = document.getElementById('voiceOrbWrapper');
+  const voiceOrbAura = document.getElementById('voiceOrbAura');
+  const voiceOrbStatus = document.getElementById('voiceOrbStatus');
+  const voiceCaptionUser = document.getElementById('voiceCaptionUser');
+  const voiceCaptionBot = document.getElementById('voiceCaptionBot');
+  const btnVoiceModeMicToggle = document.getElementById('btnVoiceModeMicToggle');
+  const btnVoiceModeInterrupt = document.getElementById('btnVoiceModeInterrupt');
+  const btnVoiceGenderToggle = document.getElementById('btnVoiceGenderToggle');
+  const voiceGenderLabel = document.getElementById('voiceGenderLabel');
   const cards = document.querySelectorAll('.suggestion-card');
 
   let dialogueHistory = [];
   let isThinking = false;
   let currentAbortController = null;
   let activeStopHandler = null;
+
+  // Voice State (Default ON with Natural Crisp Thai Premwadee Voice)
+  let isVoiceEnabled = localStorage.getItem('belton_voice_enabled') !== 'false';
+  let selectedVoice = localStorage.getItem('belton_selected_voice') || 'th-TH-PremwadeeNeural';
+  let currentAudio = null;
+  let currentAudioBlobUrl = null;
+  let currentIndicator = null;
+  let isListening = false;
+  let recognition = null;
+  let isInVoiceMode = false;
+  let voiceOrbState = 'idle'; // 'listening' | 'thinking' | 'speaking'
+  let voiceOrbAnimId = null;
+  let voiceOrbStartTime = performance.now();
+
+  // Studio Vocal Audio Pipeline (Web Audio API for Weight and Broadcast Warmth)
+  let studioAudioCtx = null;
+  let studioAudioPlayer = null;
+  let studioSourceNode = null;
+  let studioWarmthFilter = null;
+  let studioClarityFilter = null;
+  let studioCompressor = null;
+  let studioAnalyser = null;
+  let studioDataArray = null;
+
+  function initStudioAudioPipeline() {
+    if (studioAudioPlayer) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        studioAudioPlayer = new Audio();
+        return;
+      }
+      studioAudioCtx = new AudioContextClass();
+
+      // Clean High-pass Filter: Cut sub-bass rumble below 80 Hz without muffling vocal tone
+      studioWarmthFilter = studioAudioCtx.createBiquadFilter();
+      studioWarmthFilter.type = 'highpass';
+      studioWarmthFilter.frequency.value = 80;
+
+      // Peaking Filter: Enhance vocal clarity and Thai consonant articulation (+1.5 dB at 3.5 kHz)
+      studioClarityFilter = studioAudioCtx.createBiquadFilter();
+      studioClarityFilter.type = 'peaking';
+      studioClarityFilter.frequency.value = 3500;
+      studioClarityFilter.Q.value = 0.9;
+      studioClarityFilter.gain.value = 1.5;
+
+      // Studio Dynamics Compressor: Gentle transparent leveling without pumping or crushing syllables
+      studioCompressor = studioAudioCtx.createDynamicsCompressor();
+      studioCompressor.threshold.value = -12;
+      studioCompressor.knee.value = 10;
+      studioCompressor.ratio.value = 2.0;
+      studioCompressor.attack.value = 0.01;
+      studioCompressor.release.value = 0.20;
+
+      // Real-time Audio Analyser for organic Voice Orb pulsation
+      studioAnalyser = studioAudioCtx.createAnalyser();
+      studioAnalyser.fftSize = 64;
+      studioDataArray = new Uint8Array(studioAnalyser.frequencyBinCount);
+
+      // Connect Web Audio Graph
+      studioWarmthFilter.connect(studioClarityFilter);
+      studioClarityFilter.connect(studioCompressor);
+      studioCompressor.connect(studioAnalyser);
+      studioAnalyser.connect(studioAudioCtx.destination);
+
+      studioAudioPlayer = new Audio();
+      studioAudioPlayer.crossOrigin = 'anonymous';
+      studioSourceNode = studioAudioCtx.createMediaElementSource(studioAudioPlayer);
+      studioSourceNode.connect(studioWarmthFilter);
+    } catch (e) {
+      console.warn('[Studio Vocal Audio Init]:', e);
+      if (!studioAudioPlayer) studioAudioPlayer = new Audio();
+    }
+  }
 
   const SVG_SEND = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`;
   const SVG_STOP = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2.5" ry="2.5"/></svg>`;
@@ -40,10 +130,347 @@
     }
   }
 
+  function stopSpeaking() {
+    if (studioAudioPlayer) {
+      try {
+        studioAudioPlayer.pause();
+        studioAudioPlayer.currentTime = 0;
+      } catch (e) {}
+    }
+    if (currentAudio && currentAudio !== studioAudioPlayer) {
+      try {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      } catch (e) {}
+    }
+    if (currentAudioBlobUrl) {
+      try { URL.revokeObjectURL(currentAudioBlobUrl); } catch (e) {}
+      currentAudioBlobUrl = null;
+    }
+    currentAudio = null;
+    if (currentIndicator && currentIndicator.parentNode) {
+      currentIndicator.parentNode.removeChild(currentIndicator);
+      currentIndicator = null;
+    }
+    if (isInVoiceMode && voiceOrbState === 'speaking') {
+      setVoiceOrbState('idle');
+    }
+  }
+
   function stopCurrentGeneration() {
+    stopSpeaking();
     if (typeof activeStopHandler === 'function') {
       activeStopHandler();
       activeStopHandler = null;
+    }
+    if (isInVoiceMode) {
+      setVoiceOrbState('idle', 'หยุดการตอบแล้ว (แตะวงกลมเพื่อพูดคุยต่อ)');
+    }
+  }
+
+  function updateVoiceToggleUI() {
+    if (!btnVoiceToggle) return;
+    const iconOn = btnVoiceToggle.querySelector('.icon-voice-on');
+    const iconOff = btnVoiceToggle.querySelector('.icon-voice-off');
+
+    if (isVoiceEnabled) {
+      btnVoiceToggle.classList.add('active');
+      btnVoiceToggle.classList.remove('muted');
+      btnVoiceToggle.title = 'เปิดเสียงตอบกลับอยู่ (คลิกเพื่อปิดเสียง)';
+      if (iconOn) iconOn.style.display = 'block';
+      if (iconOff) iconOff.style.display = 'none';
+    } else {
+      btnVoiceToggle.classList.remove('active');
+      btnVoiceToggle.classList.add('muted');
+      btnVoiceToggle.title = 'ปิดเสียงตอบกลับอยู่ (คลิกเพื่อเปิดเสียง)';
+      if (iconOn) iconOn.style.display = 'none';
+      if (iconOff) iconOff.style.display = 'block';
+    }
+  }
+
+  // =========================================================================
+  // INTERACTIVE FLUID VOICE ORB ANIMATOR (ChatGPT Voice Mode)
+  // =========================================================================
+  function setVoiceOrbState(newState, customStatus) {
+    voiceOrbState = newState;
+    if (voiceOrbAura) {
+      if (newState === 'listening') {
+        voiceOrbAura.style.background = 'radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(14, 165, 233, 0.15) 50%, transparent 75%)';
+        if (voiceOrbStatus) voiceOrbStatus.textContent = customStatus || 'กำลังรับฟังเสียง... (พูดคุยได้เลยครับ)';
+        if (btnVoiceModeInterrupt) btnVoiceModeInterrupt.style.display = 'none';
+        if (btnVoiceModeMicToggle) btnVoiceModeMicToggle.classList.add('is-active');
+      } else if (newState === 'thinking') {
+        voiceOrbAura.style.background = 'radial-gradient(circle, rgba(192, 132, 252, 0.4) 0%, rgba(99, 102, 241, 0.2) 50%, transparent 75%)';
+        if (voiceOrbStatus) voiceOrbStatus.textContent = customStatus || 'กำลังคิดวิเคราะห์และค้นหาข้อมูล...';
+        if (btnVoiceModeInterrupt) btnVoiceModeInterrupt.style.display = 'none';
+      } else if (newState === 'speaking') {
+        voiceOrbAura.style.background = 'radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, rgba(168, 85, 247, 0.25) 50%, transparent 75%)';
+        if (voiceOrbStatus) voiceOrbStatus.textContent = customStatus || 'กำลังตอบ... (แตะวงกลมเพื่อพูดแทรก)';
+        if (btnVoiceModeInterrupt) btnVoiceModeInterrupt.style.display = 'inline-flex';
+      } else {
+        voiceOrbAura.style.background = 'radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%)';
+        if (voiceOrbStatus) voiceOrbStatus.textContent = customStatus || 'แตะที่วงกลมเพื่อเริ่มพูด';
+        if (btnVoiceModeInterrupt) btnVoiceModeInterrupt.style.display = 'none';
+        if (btnVoiceModeMicToggle) btnVoiceModeMicToggle.classList.remove('is-active');
+      }
+    }
+  }
+
+  function startVoiceOrbAnimation() {
+    if (!voiceOrbCanvas) return;
+    const ctx = voiceOrbCanvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const width = 380;
+    const height = 380;
+    voiceOrbCanvas.width = width * dpr;
+    voiceOrbCanvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    function render(timestamp) {
+      if (!isInVoiceMode) return;
+      const t = (timestamp - voiceOrbStartTime) / 1000;
+      ctx.clearRect(0, 0, width, height);
+
+      let baseRadius = 105;
+      let numPoints = 64;
+      let amp1 = 5;
+      let amp2 = 3;
+      let speed = 2.0;
+
+      if (voiceOrbState === 'listening') {
+        baseRadius = 102 + Math.sin(t * 2.2) * 5;
+        amp1 = 5 + Math.sin(t * 4) * 2;
+        amp2 = 3;
+        speed = 1.8;
+      } else if (voiceOrbState === 'thinking') {
+        baseRadius = 96;
+        amp1 = 12 + Math.sin(t * 3.5) * 4;
+        amp2 = 7;
+        speed = 4.2;
+      } else if (voiceOrbState === 'speaking') {
+        let soundBoost = 1.0;
+        if (studioAnalyser && studioDataArray) {
+          studioAnalyser.getByteFrequencyData(studioDataArray);
+          let sum = 0;
+          for (let k = 0; k < studioDataArray.length; k++) sum += studioDataArray[k];
+          const avg = sum / studioDataArray.length;
+          soundBoost = Math.max(0.6, Math.min(2.2, avg / 28));
+        }
+        baseRadius = 114 + Math.sin(t * 8) * (8 * soundBoost);
+        amp1 = (16 + Math.cos(t * 6) * 6) * soundBoost;
+        amp2 = 10 * soundBoost;
+        speed = 6.5;
+      }
+
+      // 1. Draw outer soft glow ring
+      ctx.save();
+      ctx.beginPath();
+      for (let i = 0; i <= numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        const wave = Math.sin(angle * 3 + t * speed) * amp1 + Math.cos(angle * 5 - t * (speed * 0.7)) * amp2;
+        const r = (baseRadius + 14) + wave;
+        const x = centerX + Math.cos(angle) * r;
+        const y = centerY + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = voiceOrbState === 'thinking' 
+        ? 'rgba(192, 132, 252, 0.12)' 
+        : 'rgba(56, 189, 248, 0.12)';
+      ctx.fill();
+      ctx.restore();
+
+      // 2. Draw middle fluid body with gradient
+      ctx.save();
+      ctx.beginPath();
+      for (let i = 0; i <= numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        const wave = Math.sin(angle * 4 + t * speed) * amp1 + Math.cos(angle * 6 - t * (speed * 0.8)) * amp2;
+        const r = baseRadius + wave;
+        const x = centerX + Math.cos(angle) * r;
+        const y = centerY + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(centerX - baseRadius, centerY - baseRadius, centerX + baseRadius, centerY + baseRadius);
+      if (voiceOrbState === 'thinking') {
+        grad.addColorStop(0, '#c084fc');
+        grad.addColorStop(0.5, '#6366f1');
+        grad.addColorStop(1, '#38bdf8');
+      } else if (voiceOrbState === 'speaking') {
+        grad.addColorStop(0, '#38bdf8');
+        grad.addColorStop(0.4, '#818cf8');
+        grad.addColorStop(1, '#f472b6');
+      } else {
+        grad.addColorStop(0, '#38bdf8');
+        grad.addColorStop(0.6, '#0ea5e9');
+        grad.addColorStop(1, '#6366f1');
+      }
+      ctx.fillStyle = grad;
+      ctx.shadowColor = voiceOrbState === 'thinking' ? '#c084fc' : '#38bdf8';
+      ctx.shadowBlur = 24;
+      ctx.fill();
+      ctx.restore();
+
+      // 3. Draw inner luminous core highlight
+      ctx.save();
+      ctx.beginPath();
+      const coreR = baseRadius * 0.55 + Math.sin(t * (speed * 0.9)) * 3;
+      ctx.arc(centerX, centerY, coreR, 0, Math.PI * 2);
+      const coreGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, coreR);
+      coreGrad.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
+      coreGrad.addColorStop(0.4, 'rgba(255, 255, 255, 0.25)');
+      coreGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = coreGrad;
+      ctx.fill();
+      ctx.restore();
+
+      voiceOrbAnimId = requestAnimationFrame(render);
+    }
+
+    voiceOrbStartTime = performance.now();
+    if (voiceOrbAnimId) cancelAnimationFrame(voiceOrbAnimId);
+    voiceOrbAnimId = requestAnimationFrame(render);
+  }
+
+  function startVoiceModeListening() {
+    if (!recognition) return;
+    if (isListening) return;
+    setVoiceOrbState('listening');
+    try {
+      recognition.start();
+    } catch (e) {
+      console.warn('Voice Mode Recognition Start:', e);
+    }
+  }
+
+  function openVoiceMode() {
+    isInVoiceMode = true;
+    initStudioAudioPipeline();
+    if (studioAudioCtx && studioAudioCtx.state === 'suspended') {
+      studioAudioCtx.resume().catch(() => {});
+    }
+    if (voiceModeOverlay) {
+      voiceModeOverlay.style.display = 'flex';
+    }
+    startVoiceOrbAnimation();
+    setVoiceOrbState('listening');
+    if (voiceCaptionUser) voiceCaptionUser.textContent = '';
+    if (voiceCaptionBot) voiceCaptionBot.textContent = 'ยินดีต้อนรับสู่ระบบเสียง Belton AI สามารถพูดคุยสอบถามได้เลยครับ';
+    startVoiceModeListening();
+  }
+
+  function closeVoiceMode() {
+    isInVoiceMode = false;
+    stopSpeaking();
+    if (recognition && isListening) {
+      try { recognition.stop(); } catch(e) {}
+    }
+    if (voiceOrbAnimId) {
+      cancelAnimationFrame(voiceOrbAnimId);
+      voiceOrbAnimId = null;
+    }
+    if (voiceModeOverlay) {
+      voiceModeOverlay.style.display = 'none';
+    }
+  }
+
+  async function speakResponse(text, rowEl) {
+    if (!isVoiceEnabled || !text) return;
+    stopSpeaking();
+
+    try {
+      initStudioAudioPipeline();
+      if (studioAudioCtx && studioAudioCtx.state === 'suspended') {
+        await studioAudioCtx.resume().catch(() => {});
+      }
+
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voice: selectedVoice })
+      });
+
+      if (!res.ok) return;
+
+      const blob = await res.blob();
+      if (currentAudioBlobUrl) {
+        try { URL.revokeObjectURL(currentAudioBlobUrl); } catch (e) {}
+      }
+      currentAudioBlobUrl = URL.createObjectURL(blob);
+
+      const audio = studioAudioPlayer || new Audio();
+      currentAudio = audio;
+      audio.src = currentAudioBlobUrl;
+
+      const indicator = document.createElement('span');
+      indicator.className = 'speaking-indicator';
+      indicator.innerHTML = '<span class="speaking-bar"></span><span class="speaking-bar"></span><span class="speaking-bar"></span><span style="margin-left:4px;">กำลังอ่านออกเสียง</span>';
+      currentIndicator = indicator;
+
+      const contentEl = rowEl ? rowEl.querySelector('.bot-content') : null;
+      if (contentEl) {
+        contentEl.appendChild(indicator);
+      }
+
+      if (isInVoiceMode) {
+        setVoiceOrbState('speaking');
+      }
+
+      audio.onended = () => {
+        if (indicator.parentNode) indicator.parentNode.removeChild(indicator);
+        currentIndicator = null;
+        if (currentAudioBlobUrl) {
+          try { URL.revokeObjectURL(currentAudioBlobUrl); } catch (e) {}
+          currentAudioBlobUrl = null;
+        }
+        if (currentAudio === audio) currentAudio = null;
+
+        // Hands-free continuous loop in Voice Mode!
+        if (isInVoiceMode) {
+          setTimeout(() => {
+            if (isInVoiceMode && !isThinking) {
+              if (voiceCaptionUser) voiceCaptionUser.textContent = '';
+              startVoiceModeListening();
+            }
+          }, 400);
+        }
+      };
+
+      audio.onerror = () => {
+        if (indicator.parentNode) indicator.parentNode.removeChild(indicator);
+        currentIndicator = null;
+        if (currentAudioBlobUrl) {
+          try { URL.revokeObjectURL(currentAudioBlobUrl); } catch (e) {}
+          currentAudioBlobUrl = null;
+        }
+        if (currentAudio === audio) currentAudio = null;
+
+        if (isInVoiceMode) {
+          setTimeout(() => {
+            if (isInVoiceMode && !isThinking) {
+              startVoiceModeListening();
+            }
+          }, 400);
+        }
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.warn('[Audio Playback Error]:', err);
+      if (currentIndicator && currentIndicator.parentNode) {
+        currentIndicator.parentNode.removeChild(currentIndicator);
+        currentIndicator = null;
+      }
+      if (isInVoiceMode) {
+        setVoiceOrbState('idle');
+      }
     }
   }
 
@@ -226,6 +653,7 @@
   // Send message to Backend
   async function sendMessage(text) {
     if (!text || !text.trim()) return;
+    stopSpeaking();
     if (isThinking) {
       stopCurrentGeneration();
       return;
@@ -347,12 +775,9 @@
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let sseBuffer = '';
-      let charQueue = [];
-      displayedText = '';
+      let accumulatedText = '';
       let isStreamFinished = false;
       let actionData = null;
-      let hasStartedTyping = false;
-      typeInterval = null;
 
       function renderMetadata(meta) {
         if (!meta) return;
@@ -425,10 +850,7 @@
         thoughtDropdown.appendChild(gpuSec);
       }
 
-      function startTypingEngine() {
-        if (hasStartedTyping) return;
-        hasStartedTyping = true;
-
+      function finalizeAndDisplayResponse(fullText) {
         // Stop thinking tickers
         clearInterval(timerInterval);
         clearInterval(stepInterval);
@@ -446,44 +868,41 @@
         rowEl.classList.remove('is-thinking');
         thoughtBox.classList.remove('is-open');
 
-        // Show text container & blinking cursor
-        textEl.style.display = 'inline';
-        cursorEl.style.display = 'inline-block';
-
-        // Adaptive high-frequency typing loop (character-by-character flow)
-        typeInterval = setInterval(() => {
-          if (charQueue.length > 0) {
-            // Pop 1 character per 16ms tick (~60 cps), adaptive burst if queue grows
-            const popCount = charQueue.length > 50 ? 4 : (charQueue.length > 20 ? 2 : 1);
-            const popped = charQueue.splice(0, popCount).join('');
-            displayedText += popped;
-            textEl.innerHTML = formatMarkdown(displayedText);
-            scrollToBottom();
-          } else if (isStreamFinished) {
-            clearInterval(typeInterval);
-            let finalFull = displayedText;
-            if (actionData && actionData.type === 'teleport' && actionData.targetNum) {
-              if (!finalFull.includes('[ACTION:TELEPORT:')) {
-                finalFull += `\n\n[ACTION:TELEPORT:${actionData.targetNum}]`;
-              }
-            }
-            textEl.innerHTML = formatMarkdown(finalFull);
-            if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
-            dialogueHistory.push({ role: 'assistant', content: finalFull });
-            isThinking = false;
-            activeStopHandler = null;
-            setButtonState(false);
-            scrollToBottom();
+        let finalFull = fullText || '';
+        if (actionData && actionData.type === 'teleport' && actionData.targetNum) {
+          if (!finalFull.includes('[ACTION:TELEPORT:')) {
+            finalFull += `\n\n[ACTION:TELEPORT:${actionData.targetNum}]`;
           }
-        }, 16);
+        }
+
+        // Render full response instantly (no typewriter lag!)
+        textEl.style.display = 'block';
+        textEl.innerHTML = formatMarkdown(finalFull);
+        if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
+
+        dialogueHistory.push({ role: 'assistant', content: finalFull });
+        isThinking = false;
+        activeStopHandler = null;
+        setButtonState(false);
+        scrollToBottom();
+
+        // Update Voice Mode Captions
+        if (isInVoiceMode && voiceCaptionBot) {
+          voiceCaptionBot.innerHTML = formatMarkdown(finalFull);
+        }
+
+        // Start speaking audio response immediately in sync
+        speakResponse(finalFull, rowEl);
       }
 
       // Read SSE stream chunks
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
-          isStreamFinished = true;
-          startTypingEngine();
+          if (!isStreamFinished) {
+            isStreamFinished = true;
+            finalizeAndDisplayResponse(accumulatedText);
+          }
           break;
         }
 
@@ -513,8 +932,7 @@
               renderMetadata(parsed);
             } else if (eventType === 'token') {
               if (parsed.token) {
-                startTypingEngine();
-                charQueue.push(...parsed.token.split(''));
+                accumulatedText += parsed.token;
               }
             } else if (eventType === 'action') {
               actionData = parsed;
@@ -523,7 +941,7 @@
               if (parsed.thoughtMetadata) {
                 renderMetadata(parsed.thoughtMetadata);
               }
-              startTypingEngine();
+              finalizeAndDisplayResponse(accumulatedText);
             } else if (eventType === 'error') {
               throw new Error(parsed.message || 'Stream generation error');
             }
@@ -536,7 +954,6 @@
     } catch (err) {
       clearInterval(timerInterval);
       clearInterval(stepInterval);
-      if (typeInterval) clearInterval(typeInterval);
 
       if (err.name === 'AbortError') {
         // Handled cleanly by stop action
@@ -555,6 +972,10 @@
       activeStopHandler = null;
       setButtonState(false);
       scrollToBottom();
+      if (isInVoiceMode && voiceCaptionBot) {
+        voiceCaptionBot.textContent = 'กรุณาติดต่อผู้เปิดเซิฟเวอร์';
+      }
+      speakResponse('กรุณาติดต่อผู้เปิดเซิฟเวอร์', rowEl);
     }
   }
 
@@ -597,10 +1018,175 @@
   // Handle Clear Chat
   if (btnClear) {
     btnClear.addEventListener('click', () => {
+      stopSpeaking();
       feed.innerHTML = '';
       dialogueHistory = [];
       if (hero) hero.classList.remove('is-hidden');
       if (input) input.focus();
+    });
+  }
+
+  // Handle Voice Toggle Button
+  if (btnVoiceToggle) {
+    updateVoiceToggleUI();
+    btnVoiceToggle.addEventListener('click', () => {
+      isVoiceEnabled = !isVoiceEnabled;
+      localStorage.setItem('belton_voice_enabled', isVoiceEnabled);
+      updateVoiceToggleUI();
+      if (!isVoiceEnabled) {
+        stopSpeaking();
+      }
+    });
+  }
+
+  // Setup Web Speech Recognition (STT in Thai)
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'th-TH';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      isListening = true;
+      if (btnMic) btnMic.classList.add('is-listening');
+      if (voiceStatusPill) {
+        voiceStatusPill.style.display = 'flex';
+        const textSpan = voiceStatusPill.querySelector('.voice-status-text');
+        if (textSpan) textSpan.textContent = 'กำลังรับฟังเสียง... (พูดคำถามได้เลยครับ)';
+      }
+      if (isInVoiceMode) {
+        setVoiceOrbState('listening');
+      }
+    };
+
+    recognition.onresult = (event) => {
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+
+      const text = finalTranscript || interimTranscript;
+      if (input && text) {
+        input.value = text;
+      }
+      if (isInVoiceMode && voiceCaptionUser && text) {
+        voiceCaptionUser.textContent = 'คุณ: ' + text;
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.warn('Speech Recognition Error:', event.error);
+      if (voiceStatusPill) {
+        const textSpan = voiceStatusPill.querySelector('.voice-status-text');
+        if (textSpan) textSpan.textContent = 'ไม่พบเสียงพูด หรือกรุณาอนุญาตการใช้ไมโครโฟน';
+        setTimeout(() => {
+          if (!isListening && voiceStatusPill) voiceStatusPill.style.display = 'none';
+        }, 2500);
+      }
+      if (btnMic) btnMic.classList.remove('is-listening');
+      isListening = false;
+      if (isInVoiceMode) {
+        setVoiceOrbState('idle', 'ไม่พบเสียงพูด (แตะวงกลมเพื่อพูดคุยต่อ)');
+      }
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      if (btnMic) btnMic.classList.remove('is-listening');
+      if (voiceStatusPill) voiceStatusPill.style.display = 'none';
+
+      const spokenQuery = input ? input.value.trim() : '';
+
+      if (spokenQuery && !isThinking) {
+        if (input) input.value = '';
+        if (isInVoiceMode) {
+          setVoiceOrbState('thinking');
+        }
+        sendMessage(spokenQuery);
+      } else if (isInVoiceMode && !isThinking) {
+        // Continuous hands-free loop: if silence timed out, seamlessly restart listening
+        setTimeout(() => {
+          if (isInVoiceMode && !isThinking && voiceOrbState === 'listening') {
+            startVoiceModeListening();
+          }
+        }, 500);
+      }
+    };
+  }
+
+  // Handle Microphone Button Click -> Directly Launch Fullscreen VOICE LIVE Mode
+  if (btnMic) {
+    btnMic.addEventListener('click', (e) => {
+      e.preventDefault();
+      openVoiceMode();
+    });
+  }
+
+  // Fullscreen Voice Mode Event Listeners
+  if (btnLaunchVoiceMode) {
+    btnLaunchVoiceMode.addEventListener('click', openVoiceMode);
+  }
+
+  if (btnExitVoiceMode) {
+    btnExitVoiceMode.addEventListener('click', closeVoiceMode);
+  }
+
+  if (btnVoiceModeMicToggle) {
+    btnVoiceModeMicToggle.addEventListener('click', () => {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        setVoiceOrbState('idle', 'ไมโครโฟนหยุดชั่วคราว (แตะเพื่อเปิดไมค์)');
+      } else {
+        startVoiceModeListening();
+      }
+    });
+  }
+
+  function updateVoiceGenderUI() {
+    if (!voiceGenderLabel) return;
+    const isMale = selectedVoice === 'th-TH-NiwatNeural';
+    voiceGenderLabel.textContent = isMale ? 'เสียง: ชาย (Niwat)' : 'เสียง: หญิง (Premwadee)';
+  }
+
+  if (btnVoiceGenderToggle) {
+    updateVoiceGenderUI();
+    btnVoiceGenderToggle.addEventListener('click', () => {
+      selectedVoice = selectedVoice === 'th-TH-NiwatNeural' ? 'th-TH-PremwadeeNeural' : 'th-TH-NiwatNeural';
+      localStorage.setItem('belton_selected_voice', selectedVoice);
+      updateVoiceGenderUI();
+      if (currentAudio) {
+        stopSpeaking();
+      }
+    });
+  }
+
+  if (btnVoiceModeInterrupt) {
+    btnVoiceModeInterrupt.addEventListener('click', () => {
+      stopSpeaking();
+      startVoiceModeListening();
+    });
+  }
+
+  if (voiceOrbWrapper) {
+    voiceOrbWrapper.addEventListener('click', () => {
+      if (voiceOrbState === 'speaking') {
+        // Tap to interrupt
+        stopSpeaking();
+        startVoiceModeListening();
+      } else if (voiceOrbState === 'idle' || voiceOrbState === 'listening') {
+        if (isListening && recognition) {
+          recognition.stop();
+        } else {
+          startVoiceModeListening();
+        }
+      }
     });
   }
 

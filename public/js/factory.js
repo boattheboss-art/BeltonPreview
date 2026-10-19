@@ -371,7 +371,7 @@
           if (lastModelMtime === null) {
             lastModelMtime = data.mtime;
           } else if (data.mtime !== lastModelMtime) {
-            console.log('⚡ New export from Blender detected! Live reloading...', data.mtime);
+            console.log(' New export from Blender detected! Live reloading...', data.mtime);
             lastModelMtime = data.mtime;
             loadFullFactoryGLB();
           }
@@ -773,7 +773,7 @@
           copilotModelWeights = await res.json();
           copilotVocab = copilotModelWeights.vocab || [];
           copilotWord2Idx = copilotModelWeights.word2idx || {};
-          console.log(`🧠 [Belton In-House Neural AI] Connected & Loaded PyTorch Weights (${copilotModelWeights.metadata?.model_name || 'v5.5'} - 21 Intents, 229 Tokens) 100% Active!`);
+          console.log(` [Belton In-House Neural AI] Connected & Loaded PyTorch Weights (${copilotModelWeights.metadata?.model_name || 'v5.5'} - 21 Intents, 229 Tokens) 100% Active!`);
           window.__BELTON_NEURAL_BRAIN__ = {
             isReady: true,
             weights: copilotModelWeights,
@@ -955,7 +955,7 @@
 
       const hasGPU = await window.BeltonWebLLM.checkWebGPUSupport();
       if (!hasGPU) {
-        console.warn('ℹ️ WebGPU not supported on this browser/device.');
+        console.warn(' WebGPU not supported on this browser/device.');
         updateStatusBadge();
         return;
       }
@@ -979,7 +979,7 @@
       if (webllmBanner) {
         webllmBanner.classList.remove('is-hidden');
         if (progressBar) progressBar.classList.add('is-loading');
-        if (webllmProgressText) webllmProgressText.textContent = '📦 กำลังโหลดสมองกล Qwen 2.5 1.5B (WebGPU บน RTX 3050)...';
+        if (webllmProgressText) webllmProgressText.textContent = ' กำลังโหลดสมองกล Qwen 2.5 1.5B (WebGPU บน RTX 3050)...';
       }
       updateStatusBadge();
 
@@ -987,19 +987,19 @@
         const raw = report.text || '';
         const m = raw.match(/\[(\d+)\/(\d+)\]/);
         if (m) {
-          return `💾 โหลด Shard โมเดล 1.5B (${m[1]}/${m[2]})...`;
+          return ` โหลด Shard โมเดล 1.5B (${m[1]}/${m[2]})...`;
         }
         if (raw.includes('Start to fetch params') || raw.includes('fetch params')) {
-          return '📦 กำลังดาวน์โหลดไฟล์โมเดล Qwen 2.5 1.5B...';
+          return ' กำลังดาวน์โหลดไฟล์โมเดล Qwen 2.5 1.5B...';
         }
         if (raw.includes('cache')) {
-          return '💾 กำลังดึงไฟล์แคช 1.5B ในเครื่อง...';
+          return ' กำลังดึงไฟล์แคช 1.5B ในเครื่อง...';
         }
         if (raw.includes('GPU') || raw.includes('compile') || raw.includes('wasm')) {
-          return '⚡ กำลังคอมไพล์ Shader 1.5B เข้าสู่ WebGPU...';
+          return ' กำลังคอมไพล์ Shader 1.5B เข้าสู่ WebGPU...';
         }
         if (raw.includes('Finish') || report.progress === 1) {
-          return '✨ สมองกล Qwen 2.5 1.5B พร้อมทำงาน!';
+          return ' สมองกล Qwen 2.5 1.5B พร้อมทำงาน!';
         }
         return raw.length > 52 ? raw.slice(0, 50) + '...' : raw;
       }
@@ -1018,13 +1018,13 @@
 
         if (webllmBanner) {
           if (progressBar) progressBar.classList.remove('is-loading');
-          if (webllmProgressText) webllmProgressText.textContent = '✨ สมองกล Qwen 2.5 1.5B พร้อมทำงาน!';
+          if (webllmProgressText) webllmProgressText.textContent = ' สมองกล Qwen 2.5 1.5B พร้อมทำงาน!';
           setTimeout(() => {
             webllmBanner.classList.add('is-hidden');
           }, 2500);
         }
         updateStatusBadge();
-        console.log('🎉 Belton Standalone WebLLM (Qwen 2.5 1.5B) is active 100%!');
+        console.log(' Belton Standalone WebLLM (Qwen 2.5 1.5B) is active 100%!');
       } catch (err) {
         console.warn('WebLLM init error:', err);
         if (webllmBanner) webllmBanner.classList.add('is-hidden');
@@ -1034,7 +1034,7 @@
 
     // Standalone Qwen 2.5 1.5B Architecture (Edge NN decommissioned)
     updateStatusBadge();
-    console.log('🤖 [AI Copilot] Running 100% Standalone Qwen 2.5 1.5B WebGPU Engine (All 12 Domains Unified)');
+    console.log(' [AI Copilot] Running 100% Standalone Qwen 2.5 1.5B WebGPU Engine (All 12 Domains Unified)');
 
     // Pre-warm WebLLM immediately in background so it downloads/caches before user opens chat
     setTimeout(() => {
@@ -1082,7 +1082,7 @@
           sessionStorage.removeItem('belton_copilot_50_dialogue_history');
         } catch (err) {}
         updateStatusBadge();
-        appendMessage('bot', '🧹 <b>ล้างประวัติความจำการสนทนาเรียบร้อยครับ!</b><br>ระบบพร้อมเริ่มต้นบริบทใหม่ (0/50 ข้อความ)');
+        appendMessage('bot', ' <b>ล้างประวัติความจำการสนทนาเรียบร้อยครับ!</b><br>ระบบพร้อมเริ่มต้นบริบทใหม่ (0/50 ข้อความ)');
       });
     }
 
@@ -1421,7 +1421,7 @@
         targetNum = (lastM % 50) + 1;
         intent = 0; // Show machine status
         isBacktracked = true;
-        backtrackNote = `ทวนประวัติก่อนหน้า (เครื่อง #${lastM}) ➔ วิเคราะห์เครื่องถัดไปในไลน์ผลิต (ACA-DISP-${targetNum < 10 ? '0' + targetNum : targetNum})`;
+        backtrackNote = `ทวนประวัติก่อนหน้า (เครื่อง #${lastM})  วิเคราะห์เครื่องถัดไปในไลน์ผลิต (ACA-DISP-${targetNum < 10 ? '0' + targetNum : targetNum})`;
         return { intent, targetNum, isBacktracked, backtrackNote, telemetryFocus };
       }
 
@@ -1430,7 +1430,7 @@
         targetNum = (lastM <= 1) ? 50 : (lastM - 1);
         intent = 0; // Show machine status
         isBacktracked = true;
-        backtrackNote = `ทวนประวัติก่อนหน้า (เครื่อง #${lastM}) ➔ วิเคราะห์เครื่องก่อนหน้าในไลน์ผลิต (ACA-DISP-${targetNum < 10 ? '0' + targetNum : targetNum})`;
+        backtrackNote = `ทวนประวัติก่อนหน้า (เครื่อง #${lastM})  วิเคราะห์เครื่องก่อนหน้าในไลน์ผลิต (ACA-DISP-${targetNum < 10 ? '0' + targetNum : targetNum})`;
         return { intent, targetNum, isBacktracked, backtrackNote, telemetryFocus };
       }
 
@@ -1441,7 +1441,7 @@
         targetNum = lastM;
         intent = 3; // NAVIGATE_CAMERA
         isBacktracked = true;
-        backtrackNote = `ทวนประวัติย้อนหลังพบการสนทนาถึงเครื่อง ACA-DISP-${lastM < 10 ? '0' + lastM : lastM} ➔ นำทางกล้องอัตโนมัติ`;
+        backtrackNote = `ทวนประวัติย้อนหลังพบการสนทนาถึงเครื่อง ACA-DISP-${lastM < 10 ? '0' + lastM : lastM}  นำทางกล้องอัตโนมัติ`;
         return { intent, targetNum, isBacktracked, backtrackNote, telemetryFocus };
       }
 
@@ -1464,7 +1464,7 @@
         targetNum = lastM;
         intent = 1; // ASK_DEFECT_CAUSE
         isBacktracked = true;
-        backtrackNote = `ทวนประวัติการสนทนาอ้างอิงเครื่อง ACA-DISP-${lastM < 10 ? '0' + lastM : lastM} ➔ วินิจฉัยสาเหตุและแนวทางแก้ไข (SOP)`;
+        backtrackNote = `ทวนประวัติการสนทนาอ้างอิงเครื่อง ACA-DISP-${lastM < 10 ? '0' + lastM : lastM}  วินิจฉัยสาเหตุและแนวทางแก้ไข (SOP)`;
         return { intent, targetNum, isBacktracked, backtrackNote, telemetryFocus };
       }
 
@@ -1486,7 +1486,7 @@
         else if (isCpk) telemetryFocus = 'cpk';
         else if (isMass) telemetryFocus = 'mass';
         else if (isNeedle) telemetryFocus = 'needle';
-        backtrackNote = `ทวนประวัติย้อนหลังเชื่อมโยงเครื่อง ACA-DISP-${lastM < 10 ? '0' + lastM : lastM} ➔ ดึงค่า Telemetry เจาะจง`;
+        backtrackNote = `ทวนประวัติย้อนหลังเชื่อมโยงเครื่อง ACA-DISP-${lastM < 10 ? '0' + lastM : lastM}  ดึงค่า Telemetry เจาะจง`;
         return { intent, targetNum, isBacktracked, backtrackNote, telemetryFocus };
       }
 
@@ -1504,27 +1504,27 @@
             intent = 1;
             targetNum = prevMachine;
             isBacktracked = true;
-            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามเครื่อง ACA-DISP-${prevMachine < 10 ? '0' + prevMachine : prevMachine} ➔ ขยายความรายละเอียดเชิงลึกและแนวทางแก้ไข (SOP)`;
+            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามเครื่อง ACA-DISP-${prevMachine < 10 ? '0' + prevMachine : prevMachine}  ขยายความรายละเอียดเชิงลึกและแนวทางแก้ไข (SOP)`;
             return { intent, targetNum, isBacktracked, backtrackNote, telemetryFocus };
           } else if (prevIntent === 6) {
             intent = 6;
             isBacktracked = true;
-            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามกระบวนการ Coil Winding ➔ เจาะลึกรายละเอียดพารามิเตอร์การผลิต`;
+            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามกระบวนการ Coil Winding  เจาะลึกรายละเอียดพารามิเตอร์การผลิต`;
             return { intent, targetNum: 0, isBacktracked, backtrackNote, telemetryFocus };
           } else if (prevIntent === 7) {
             intent = 7;
             isBacktracked = true;
-            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามกระบวนการ FCOF ➔ เจาะลึกรายละเอียดขั้นตอนการประกอบแผงวงจร`;
+            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามกระบวนการ FCOF  เจาะลึกรายละเอียดขั้นตอนการประกอบแผงวงจร`;
             return { intent, targetNum: 0, isBacktracked, backtrackNote, telemetryFocus };
           } else if (prevIntent === 8) {
             intent = 8;
             isBacktracked = true;
-            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามกระบวนการ APFA ➔ เจาะลึกรายละเอียดชุดแขนหมุนและตลับลูกปืน`;
+            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามกระบวนการ APFA  เจาะลึกรายละเอียดชุดแขนหมุนและตลับลูกปืน`;
             return { intent, targetNum: 0, isBacktracked, backtrackNote, telemetryFocus };
           } else if (prevIntent === 5) {
             intent = 5;
             isBacktracked = true;
-            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามสุขภาพภาพรวม Cleanroom ➔ สรุปแผนเฝ้าระวังเชิงรุก`;
+            backtrackNote = `วิเคราะห์ประวัติพบการสอบถามสุขภาพภาพรวม Cleanroom  สรุปแผนเฝ้าระวังเชิงรุก`;
             return { intent, targetNum: 0, isBacktracked, backtrackNote, telemetryFocus };
           }
         }
@@ -1561,7 +1561,7 @@
         copilotContext.lastMachineNum = null;
         copilotContext.lastTopic = null;
         updateStatusBadge();
-        appendMessage('bot', '🧹 <b>ล้างประวัติความจำการสนทนาเรียบร้อยครับ!</b><br>ระบบพร้อมเริ่มต้นบริบทใหม่ (0/50 ข้อความ)');
+        appendMessage('bot', ' <b>ล้างประวัติความจำการสนทนาเรียบร้อยครับ!</b><br>ระบบพร้อมเริ่มต้นบริบทใหม่ (0/50 ข้อความ)');
         fetch('/api/copilot-log', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1578,7 +1578,7 @@
           const tx = targetMachine.pos.x;
           const tz = targetMachine.pos.z + 1.8;
           window.__teleport(tx, tz, Math.PI);
-          showToast('📍 COPILOT TELEPORT', `วาร์ปมาที่เครื่อง ACA-DISP-${mNum < 10 ? '0' + mNum : mNum}`);
+          showToast(' COPILOT TELEPORT', `วาร์ปมาที่เครื่อง ACA-DISP-${mNum < 10 ? '0' + mNum : mNum}`);
         }
       }
 
@@ -1608,7 +1608,7 @@
       const nnPred = forwardCopilotNN(text);
       const inferMs = (performance.now() - tInferStart).toFixed(1);
       if (nnPred) {
-        console.log(`🧠 [In-House Neural Inference] Query: "${text}" ➔ Intent: "${nnPred.intent}" (${nnPred.confidence}%), Target: #${nnPred.targetNum} [${inferMs}ms]`);
+        console.log(` [In-House Neural Inference] Query: "${text}"  Intent: "${nnPred.intent}" (${nnPred.confidence}%), Target: #${nnPred.targetNum} [${inferMs}ms]`);
         if (!userExplicitNum && nnPred.targetNum >= 1 && nnPred.targetNum <= 50) {
           activeMachineNum = nnPred.targetNum;
         }
@@ -1631,14 +1631,14 @@
       if (!window.BeltonWebLLM || !window.BeltonWebLLM.isModelReady()) {
         const hasGPU = await (window.BeltonWebLLM ? window.BeltonWebLLM.checkWebGPUSupport() : Promise.resolve(false));
         if (!hasGPU) {
-          contentSpan.innerHTML = `⚠️ <b>ไม่สามารถเรียกใช้งาน WebGPU บนเบราว์เซอร์ได้</b><br><br>กรุณาตรวจสอบว่าเปิดใช้งาน Hardware Acceleration ในเบราว์เซอร์แล้ว (Settings > System > Use graphics acceleration when available) และใช้เบราว์เซอร์ที่รองรับ WebGPU เช่น Google Chrome หรือ Microsoft Edge เพื่อให้โมเดล Qwen 2.5 ประมวลผลบนการ์ดจอ RTX 3050 ครับ`;
+          contentSpan.innerHTML = ` <b>ไม่สามารถเรียกใช้งาน WebGPU บนเบราว์เซอร์ได้</b><br><br>กรุณาตรวจสอบว่าเปิดใช้งาน Hardware Acceleration ในเบราว์เซอร์แล้ว (Settings > System > Use graphics acceleration when available) และใช้เบราว์เซอร์ที่รองรับ WebGPU เช่น Google Chrome หรือ Microsoft Edge เพื่อให้โมเดล Qwen 2.5 ประมวลผลบนการ์ดจอ RTX 3050 ครับ`;
           if (cursorSpan && cursorSpan.parentNode) cursorSpan.parentNode.removeChild(cursorSpan);
           updateStatusBadge();
           return;
         }
 
         contentSpan.innerHTML = `
-          <div style="font-size:13px;font-weight:600;color:#8b5cf6;margin-bottom:6px;">⏳ กำลังเชื่อมต่อสมองกล Qwen 2.5 (WebGPU บน RTX 3050)...</div>
+          <div style="font-size:13px;font-weight:600;color:#8b5cf6;margin-bottom:6px;"> กำลังเชื่อมต่อสมองกล Qwen 2.5 (WebGPU บน RTX 3050)...</div>
           <div id="qwenInlineStatus" style="font-size:12px;color:#94a3b8;margin-bottom:8px;">กำลังดาวน์โหลดและคอมไพล์ Shader เข้าสู่การ์ดจอ...</div>
           <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;width:100%;border:1px solid rgba(139,92,246,0.25);">
             <div id="qwenInlineBar" style="width:0%;height:100%;background:linear-gradient(90deg,#8b5cf6,#06b6d4);transition:width 0.2s;"></div>
@@ -1660,7 +1660,7 @@
           updateStatusBadge();
         } catch (initErr) {
           console.error("WebLLM Init failed:", initErr);
-          contentSpan.innerHTML = `❌ <b>เกิดข้อผิดพลาดในการโหลดโมเดล Qwen 2.5:</b><br><code style="font-size:11px;color:#ef4444;">${initErr.message || initErr}</code><br><br>กรุณาลองรีเฟรชหน้าเว็บใหม่ครับ`;
+          contentSpan.innerHTML = ` <b>เกิดข้อผิดพลาดในการโหลดโมเดล Qwen 2.5:</b><br><code style="font-size:11px;color:#ef4444;">${initErr.message || initErr}</code><br><br>กรุณาลองรีเฟรชหน้าเว็บใหม่ครับ`;
           if (cursorSpan && cursorSpan.parentNode) cursorSpan.parentNode.removeChild(cursorSpan);
           updateStatusBadge();
           return;
@@ -1725,7 +1725,7 @@
         if (cursorSpan && cursorSpan.parentNode) {
           cursorSpan.parentNode.removeChild(cursorSpan);
         }
-        contentSpan.innerHTML = `⚠️ <b>เกิดข้อผิดพลาดในการประมวลผล WebGPU:</b><br><code style="font-size:11px;color:#ef4444;">${streamErr.message || streamErr}</code><br><br>กรุณากดส่งคำถามอีกครั้งครับ`;
+        contentSpan.innerHTML = ` <b>เกิดข้อผิดพลาดในการประมวลผล WebGPU:</b><br><code style="font-size:11px;color:#ef4444;">${streamErr.message || streamErr}</code><br><br>กรุณากดส่งคำถามอีกครั้งครับ`;
       }
     }
   }
@@ -2183,7 +2183,7 @@
       const res = await fetch('models/dispensing_model_weights.json?v=' + Date.now());
       if (res.ok) {
         dispensingAiWeights = await res.json();
-        console.log('⚡ [AI Dispensing] Loaded PyTorch edge neural network weights from JSON.');
+        console.log(' [AI Dispensing] Loaded PyTorch edge neural network weights from JSON.');
       }
     } catch (e) {
       console.warn('[AI Dispensing] Using analytical model fallback:', e);
@@ -2489,7 +2489,7 @@
         tctx.fillText(m.tag, 8, 25);
         tctx.fillStyle = '#FFFFFF';
         tctx.font = 'bold 13px sans-serif';
-        tctx.fillText('🚨 BROKEN', 80, 25);
+        tctx.fillText(' BROKEN', 80, 25);
       } else if (isWarn) {
         tctx.fillStyle = '#FF9500';
         tctx.beginPath();
@@ -2503,7 +2503,7 @@
         tctx.fillText(m.tag, 8, 25);
         tctx.fillStyle = '#FFFFFF';
         tctx.font = 'bold 13px sans-serif';
-        tctx.fillText('⚠️ WARN', 90, 25);
+        tctx.fillText(' WARN', 90, 25);
       } else {
         tctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
         tctx.beginPath();
@@ -2988,7 +2988,7 @@
         const m = dispensingMachines[inspectedMachineIndex] || dispensingMachines[0];
         // Stand right in front of the machine looking directly into the workcell
         window.__teleport(m.pos.x, m.pos.z + 1.35, 0);
-        showToast('📍 TELEPORTED', `Camera positioned at ${m.tag} (${m.locShort})`);
+        showToast(' TELEPORTED', `Camera positioned at ${m.tag} (${m.locShort})`);
       });
     }
 
@@ -3045,10 +3045,10 @@
     }
     if (kpiVolStatus) {
       if (m.statusClass === 'status-optimal') {
-        kpiVolStatus.textContent = '✓ Within Nominal Tolerance (Target: 12.50 mg)';
+        kpiVolStatus.textContent = ' Within Nominal Tolerance (Target: 12.50 mg)';
         kpiVolStatus.style.color = '#34d399';
       } else if (m.statusClass === 'status-danger') {
-        kpiVolStatus.textContent = '✗ Underfill Risk - Micro-Nozzle Scaling Detected';
+        kpiVolStatus.textContent = ' Underfill Risk - Micro-Nozzle Scaling Detected';
         kpiVolStatus.style.color = '#f43f5e';
       } else {
         kpiVolStatus.textContent = '▲ Viscosity Rising - Dynamic Pressure Offset Active';
@@ -3133,11 +3133,11 @@
       if (isOptimal) {
         rxDescEl.textContent = `AI Analysis: Supply air pressure (${m.currentPressureKpa.toFixed(1)} kPa) and adhesive viscosity (${m.viscosity.toLocaleString()} mPa·s) are optimal. Micro-nozzle wear is exceptionally low (${(m.needleWear * 100).toFixed(0)}%). Continuous production approved.`;
       } else if (isDanger) {
-        rxDescEl.textContent = `🚨 Critical AI Diagnosis: Cumulative micro-nozzle wear reached ${(m.needleWear * 100).toFixed(0)}% (>75%) with deposit accumulation. High void defect risk. Automated Safe Hold active — technician must replace micro-nozzle.`;
+        rxDescEl.textContent = ` Critical AI Diagnosis: Cumulative micro-nozzle wear reached ${(m.needleWear * 100).toFixed(0)}% (>75%) with deposit accumulation. High void defect risk. Automated Safe Hold active — technician must replace micro-nozzle.`;
       } else if (m.num === 14) {
-        rxDescEl.textContent = `⚠️ Predictive AI Alert: Adhesive has resided in barrel for 148 minutes. Viscosity elevated to ${m.viscosity.toLocaleString()} mPa·s. Dynamic pneumatic compensation active. Prepare fresh syringe within 15 minutes to prevent curing.`;
+        rxDescEl.textContent = ` Predictive AI Alert: Adhesive has resided in barrel for 148 minutes. Viscosity elevated to ${m.viscosity.toLocaleString()} mPa·s. Dynamic pneumatic compensation active. Prepare fresh syringe within 15 minutes to prevent curing.`;
       } else {
-        rxDescEl.textContent = `⚠️ Predictive AI Alert: Heated fixture plate temperature drifted down to ${m.preheatTempC.toFixed(1)}°C, slowing adhesive cure rate. Recommend technician inspect heating element (Heater Plate).`;
+        rxDescEl.textContent = ` Predictive AI Alert: Heated fixture plate temperature drifted down to ${m.preheatTempC.toFixed(1)}°C, slowing adhesive cure rate. Recommend technician inspect heating element (Heater Plate).`;
       }
     }
 
@@ -3253,7 +3253,7 @@
 
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 11px sans-serif';
-      ctx.fillText('✓ Uniform Bond Line', 165, 48);
+      ctx.fillText(' Uniform Bond Line', 165, 48);
     } else if (isDanger) {
       // Broken void gap
       ctx.fillStyle = 'rgba(239, 68, 68, 0.6)';
@@ -3279,7 +3279,7 @@
       ctx.setLineDash([]);
       ctx.fillStyle = '#f43f5e';
       ctx.font = 'bold 11px sans-serif';
-      ctx.fillText('❌ Fillet Void (NG)', 175, 44);
+      ctx.fillText(' Fillet Void (NG)', 175, 44);
     } else {
       // Overflow flash
       ctx.fillStyle = 'rgba(245, 158, 11, 0.85)';
@@ -3296,7 +3296,7 @@
       ctx.stroke();
       ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 11px sans-serif';
-      ctx.fillText('⚠️ Adhesive Flash (WARN)', 160, 42);
+      ctx.fillText(' Adhesive Flash (WARN)', 160, 42);
     }
   }
 
@@ -3431,7 +3431,7 @@
             const tm = dispensingMachines[mNum - 1];
             if (typeof window.__teleport === 'function') {
               window.__teleport(tm.pos.x, tm.pos.z + 1.8, Math.PI);
-              showToast('📍 COPILOT TARGET', `วาร์ปมาที่เครื่อง ACA-DISP-${mNum < 10 ? '0' + mNum : mNum}`);
+              showToast(' COPILOT TARGET', `วาร์ปมาที่เครื่อง ACA-DISP-${mNum < 10 ? '0' + mNum : mNum}`);
             }
           }
         }

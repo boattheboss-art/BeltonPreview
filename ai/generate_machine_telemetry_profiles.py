@@ -75,22 +75,22 @@ for r in rows:
     preheat = d['avg_preheat'] or 60.0
     
     if mnum == 27 or d['machine_status'] == 'MAINTENANCE_HOLD':
-        diag = "🚨 วิกฤต: ปลายเข็มสึกหรอแตะ 0.79-0.96 เกินขีดจำกัด (>0.75) หัวเข็มอุดตันเรื้อรัง กาวหยอดขาด Underfill ต่ำกว่า 12.5 mg ระบบตัด Safety Hold หยุดจ่ายชิ้นงานอัตโนมัติ"
+        diag = " วิกฤต: ปลายเข็มสึกหรอแตะ 0.79-0.96 เกินขีดจำกัด (>0.75) หัวเข็มอุดตันเรื้อรัง กาวหยอดขาด Underfill ต่ำกว่า 12.5 mg ระบบตัด Safety Hold หยุดจ่ายชิ้นงานอัตโนมัติ"
         action = "ช่างซ่อมบำรุงกำลังเข้าเปลี่ยนหัวเข็ม 32G Ultra-Micro Nozzle ชุดใหม่ พร้อม Calibrate กล้อง Vision ใหม่อีกครั้ง"
         status_label = "วิกฤต (Safety Hold)"
         status_color = "#ef4444"
     elif mnum == 14:
-        diag = f"⚠️ เฝ้าระวัง: อุณหภูมิ Pre-heat สวิงขึ้น {preheat:.1f} °C และอายุกาวในหลอดสะสม {d['max_pot_life']:.0f} นาที (ความหนืดกาวสูงขึ้น 8,620 mPa·s)"
+        diag = f" เฝ้าระวัง: อุณหภูมิ Pre-heat สวิงขึ้น {preheat:.1f} °C และอายุกาวในหลอดสะสม {d['max_pot_life']:.0f} นาที (ความหนืดกาวสูงขึ้น 8,620 mPa·s)"
         action = "AI กำลังชดเชยแรงดันลมไดนามิกให้อยู่ แนะนำ Operator เตรียมเบิกกาวหลอดใหม่มาเปลี่ยนก่อนครบ 240 นาที"
         status_label = "เฝ้าระวัง (Watchlist)"
         status_color = "#f59e0b"
     elif mnum == 38:
-        diag = f"⚠️ เฝ้าระวัง: แรงดันลมตกเหลือ {pressure:.1f} kPa เสี่ยงเกิดฟองอากาศ Micro-void และแนวฟิเลต์กาว (Fillet Width) เริ่มบางลง"
+        diag = f" เฝ้าระวัง: แรงดันลมตกเหลือ {pressure:.1f} kPa เสี่ยงเกิดฟองอากาศ Micro-void และแนวฟิเลต์กาว (Fillet Width) เริ่มบางลง"
         action = "แนะนำให้ฝ่ายซ่อมบำรุงตรวจเช็กข้อต่อท่อลม CDA และวาล์วปรับแรงดัน Regulator"
         status_label = "เฝ้าระวัง (Watchlist)"
         status_color = "#f59e0b"
     else:
-        diag = f"✅ ทำงานปกติ 100%: แรงดันลม {pressure:.1f} kPa และปริมาณกาว {avg_m:.2f} mg อยู่ในเกณฑ์ Cpk Nominal สม่ำเสมอ"
+        diag = f" ทำงานปกติ 100%: แรงดันลม {pressure:.1f} kPa และปริมาณกาว {avg_m:.2f} mg อยู่ในเกณฑ์ Cpk Nominal สม่ำเสมอ"
         action = "ทำงานต่อเนื่องตามรอบการผลิตปกติ ไม่พบความเสี่ยงใดๆ"
         status_label = "ปกติ (Active 100%)"
         status_color = "#10b981"
