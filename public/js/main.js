@@ -1,8 +1,5 @@
 /**
- * BELTON — Master Controller & Authentication Gateway
- * - Single [Login] CTA button in Hero & Nav
- * - Validates: Username 'admin', Password '60632'
- * - Redirects to belton_live_preview (http://localhost:8080)
+ * BELTON — Master Controller
  */
 import { createBentonScene, createBgSplineScene, prefetchAsset } from './robot3d.js';
 import { soundEngine } from './audio.js';
@@ -21,22 +18,21 @@ function init() {
   const siteHeader = document.getElementById('siteHeader');
   const heroOverlayContent = document.getElementById('heroOverlayContent');
   const audioToggleBtn = document.getElementById('audioToggleBtn');
-  const navGetStartedBtn = document.getElementById('navGetStartedBtn');
-  const heroLoginBtn = document.getElementById('heroLoginBtn');
   const scrollDownBtn = document.getElementById('scrollDownBtn');
 
-  // Modal Elements
-  const loginModal = document.getElementById('loginModal');
-  const modalCloseBtn = document.getElementById('modalCloseBtn');
-  const modalBackdrop = document.getElementById('modalBackdrop');
-  const cyberLoginForm = document.getElementById('cyberLoginForm');
-  const loginUsername = document.getElementById('loginUsername');
-  const loginPassword = document.getElementById('loginPassword');
-  const loginErrorMsg = document.getElementById('loginErrorMsg');
-  const loginFormContainer = document.getElementById('loginFormContainer');
-  const authSuccessCard = document.getElementById('authSuccessCard');
-
   let scene = null;
+
+  document.body.classList.add('is-logged-in');
+
+  // Always guarantee navigation bar and hero content appear promptly without waiting on 3D network load
+  setTimeout(() => {
+    if (siteHeader) {
+      siteHeader.classList.add('intro-visible', 'just-authenticated');
+    }
+    if (heroOverlayContent) {
+      heroOverlayContent.classList.add('intro-visible');
+    }
+  }, 1200);
 
   // ═════════════════════════════════════════════════════════════════
   // STEP 0: FULLSCREEN 3D SPLINE BACKGROUND INITIALIZATION (z-0)
@@ -49,7 +45,7 @@ function init() {
   prefetchAsset();
   const scenePromise = createBentonScene('bentonCanvas');
 
-  const STAR_LOAD_TIME = 1000; // 1.0s preloader star spin
+  const STAR_LOAD_TIME = 800; // 0.8s preloader star spin
 
   setTimeout(() => {
     // ═══════════════════════════════════════════════════════════════
@@ -62,47 +58,24 @@ function init() {
     if (bgBeltonText) bgBeltonText.classList.add('play-intro');
 
     // ═══════════════════════════════════════════════════════════════
-    // STEP 3: LETTERS FINISH (1.5s) -> FADE IN LOCKED MODEL (1.2s) -> PLAY ZOOM
+    // STEP 3: LETTERS FINISH (1.2s) -> FADE IN LOCKED MODEL -> PLAY ZOOM
     // ═══════════════════════════════════════════════════════════════
-    const LETTERS_COMPLETE_DELAY = 1500;
+    const LETTERS_COMPLETE_DELAY = 1200;
 
     setTimeout(async () => {
-      // 1. Ensure Spline 3D scene is ready and camera is locked at close-up pose
-      scene = await scenePromise;
+      try {
+        scene = await scenePromise;
+      } catch (_) {}
 
-      // 2. Smoothly & gradually fade in 3D model while camera is LOCKED stationary (1.2s fade-in)
       if (bentonCanvas) {
         bentonCanvas.classList.add('is-visible');
       }
 
-      // 3. Once fully visible (1.2s) -> UNLOCK and PLAY the live camera zoom-out!
       setTimeout(() => {
         if (scene && scene.startZoomAnimation) {
           scene.startZoomAnimation();
         }
-
-        // 4. Reveal Navigation Bar & Bottom CTA Buttons as zoom completes
-        setTimeout(() => {
-          if (siteHeader) {
-            siteHeader.classList.add('intro-visible');
-            if (sessionStorage.getItem('belton_logged_in') === 'true') {
-              siteHeader.classList.add('just-authenticated');
-            }
-          }
-          if (heroOverlayContent) heroOverlayContent.classList.add('intro-visible');
-        }, 1400);
-
-        // Failsafe reveal for navbar in case 3D scene takes longer to settle
-        setTimeout(() => {
-          if (siteHeader && !siteHeader.classList.contains('intro-visible')) {
-            siteHeader.classList.add('intro-visible');
-            if (sessionStorage.getItem('belton_logged_in') === 'true') {
-              siteHeader.classList.add('just-authenticated');
-            }
-          }
-        }, 3800);
-
-      }, 1200); // 1.2s gradual fade-in time
+      }, 900);
 
     }, LETTERS_COMPLETE_DELAY);
 
@@ -137,202 +110,6 @@ function init() {
       if (features) {
         features.scrollIntoView({ behavior: 'smooth' });
         soundEngine.playUiClick();
-      }
-    });
-  }
-
-  // ═════════════════════════════════════════════════════════════════
-  // 1. AUTHENTICATION STATE & TOP NAV FLOW
-  // ═════════════════════════════════════════════════════════════════
-  let isLoginOpen = false;
-
-  function applyLoggedInState(triggerAnimation = false) {
-    sessionStorage.setItem('belton_logged_in', 'true');
-    document.body.classList.add('is-logged-in');
-    if (navGetStartedBtn) {
-      navGetStartedBtn.textContent = 'LOGOUT';
-      navGetStartedBtn.classList.add('btn-logout-state');
-    }
-    if (heroLoginBtn) {
-      heroLoginBtn.style.display = 'none';
-    }
-    if (triggerAnimation && siteHeader) {
-      siteHeader.classList.remove('just-authenticated');
-      void siteHeader.offsetWidth; // Force CSS reflow
-      siteHeader.classList.add('just-authenticated');
-    }
-  }
-
-  function applyLoggedOutState() {
-    sessionStorage.removeItem('belton_logged_in');
-    document.body.classList.remove('is-logged-in');
-    if (siteHeader) siteHeader.classList.remove('just-authenticated');
-    if (navGetStartedBtn) {
-      navGetStartedBtn.textContent = 'LOGIN';
-      navGetStartedBtn.classList.remove('btn-logout-state');
-    }
-    if (heroLoginBtn) {
-      heroLoginBtn.style.display = '';
-      heroLoginBtn.textContent = 'LOGIN';
-    }
-    soundEngine.playUiClick();
-  }
-
-  // Auto-restore login state if active in session
-  if (sessionStorage.getItem('belton_logged_in') === 'true') {
-    applyLoggedInState(false);
-  }
-
-  function openLoginModal() {
-    if (sessionStorage.getItem('belton_logged_in') === 'true') {
-      window.location.href = window.beltonUrl('/explorer');
-      return;
-    }
-    isLoginOpen = true;
-    document.body.classList.add('is-login-open');
-    if (loginModal) {
-      loginModal.classList.add('is-open');
-      loginModal.setAttribute('aria-hidden', 'false');
-      if (loginFormContainer) loginFormContainer.style.display = 'block';
-      if (authSuccessCard) authSuccessCard.classList.remove('active');
-      if (loginErrorMsg) loginErrorMsg.style.display = 'none';
-      if (loginUsername) {
-        loginUsername.value = '';
-        setTimeout(() => loginUsername.focus(), 250);
-      }
-      if (loginPassword) loginPassword.value = '';
-      soundEngine.playUiClick();
-    }
-  }
-
-  function closeLoginModal() {
-    isLoginOpen = false;
-    document.body.classList.remove('is-login-open');
-    if (loginModal) {
-      loginModal.classList.remove('is-open');
-      loginModal.setAttribute('aria-hidden', 'true');
-      soundEngine.playUiClick();
-    }
-  }
-
-  if (heroLoginBtn) {
-    heroLoginBtn.addEventListener('click', () => {
-      if (sessionStorage.getItem('belton_logged_in') === 'true') {
-        window.location.href = window.beltonUrl('/explorer');
-      } else {
-        openLoginModal();
-      }
-    });
-  }
-
-  const logoutConfirmModal = document.getElementById('logoutConfirmModal');
-  const logoutModalBackdrop = document.getElementById('logoutModalBackdrop');
-  const logoutModalDesc = document.getElementById('logoutModalDesc');
-  const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
-  const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
-
-  let logoutTypewriterTimer = null;
-  const logoutPromptText = 'Are you sure you want to end your authenticated session and return to guest mode?';
-
-  function playLogoutTypewriter() {
-    if (!logoutModalDesc) return;
-    clearInterval(logoutTypewriterTimer);
-    logoutModalDesc.innerHTML = '<span class="logout-typewriter-cursor"></span>';
-    let charIdx = 0;
-    logoutTypewriterTimer = setInterval(() => {
-      if (charIdx < logoutPromptText.length) {
-        charIdx++;
-        logoutModalDesc.innerHTML = logoutPromptText.slice(0, charIdx) + '<span class="logout-typewriter-cursor"></span>';
-      } else {
-        clearInterval(logoutTypewriterTimer);
-        setTimeout(() => {
-          if (logoutModalDesc) logoutModalDesc.textContent = logoutPromptText;
-        }, 1200);
-      }
-    }, 20);
-  }
-
-  function openLogoutConfirmModal() {
-    if (!logoutConfirmModal) {
-      applyLoggedOutState();
-      return;
-    }
-    logoutConfirmModal.classList.add('is-open');
-    logoutConfirmModal.setAttribute('aria-hidden', 'false');
-    playLogoutTypewriter();
-    soundEngine.playUiClick();
-  }
-
-  function closeLogoutConfirmModal() {
-    if (!logoutConfirmModal) return;
-    clearInterval(logoutTypewriterTimer);
-    logoutConfirmModal.classList.remove('is-open');
-    logoutConfirmModal.setAttribute('aria-hidden', 'true');
-    soundEngine.playUiClick();
-  }
-
-  if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', closeLogoutConfirmModal);
-  if (logoutModalBackdrop) logoutModalBackdrop.addEventListener('click', closeLogoutConfirmModal);
-
-  if (confirmLogoutBtn) {
-    confirmLogoutBtn.addEventListener('click', () => {
-      closeLogoutConfirmModal();
-      applyLoggedOutState();
-    });
-  }
-
-  if (navGetStartedBtn) {
-    navGetStartedBtn.addEventListener('click', () => {
-      if (sessionStorage.getItem('belton_logged_in') === 'true') {
-        openLogoutConfirmModal();
-      } else {
-        openLoginModal();
-      }
-    });
-  }
-
-  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeLoginModal);
-  if (modalBackdrop) modalBackdrop.addEventListener('click', closeLoginModal);
-
-  // ═════════════════════════════════════════════════════════════════
-  // 2. LOGIN SUBMISSION & ANIMATED TOP NAV REVEAL
-  // ═════════════════════════════════════════════════════════════════
-  function handleLoginSuccess() {
-    soundEngine.playAccessGranted();
-
-    // Close Login Modal and return 3D robot to center
-    if (loginModal) {
-      loginModal.classList.remove('is-open');
-      loginModal.setAttribute('aria-hidden', 'true');
-    }
-    document.body.classList.remove('is-login-open');
-
-    // Reveal top navigation bar & 3D model link with dynamic slide-down animation
-    applyLoggedInState(true);
-  }
-
-  // Submit Login Form
-  if (cyberLoginForm) {
-    cyberLoginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const username = loginUsername ? loginUsername.value.trim() : '';
-      const password = loginPassword ? loginPassword.value.trim() : '';
-
-      // Check credentials: Username '60632', Password '60632'
-      if (username.toLowerCase() === '60632' && password === '60632') {
-        if (loginErrorMsg) loginErrorMsg.style.display = 'none';
-        handleLoginSuccess();
-      } else {
-        // Error: Invalid credentials
-        if (loginErrorMsg) {
-          loginErrorMsg.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
-          loginErrorMsg.style.display = 'block';
-        }
-        soundEngine.playUiClick();
-        if (loginPassword) {
-          loginPassword.value = '';
-          loginPassword.focus();
-        }
       }
     });
   }

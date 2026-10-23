@@ -31,38 +31,6 @@
         link.classList.remove('active');
       }
     });
-
-    // Bind logout buttons
-    const logoutBtns = document.querySelectorAll('.btn-belton-logout, #factoryLogoutBtn');
-    logoutBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        if (!document.getElementById('logoutConfirmModal')) {
-          e.preventDefault();
-          sessionStorage.removeItem('belton_logged_in');
-          window.location.href = window.beltonUrl('/');
-        }
-      });
-    });
-
-    // Check login state for home page
-    const loginBtn = document.getElementById('beltonHomeAuthBtn');
-    if (loginBtn) {
-      const isLoggedIn = sessionStorage.getItem('belton_logged_in') === 'true';
-      if (isLoggedIn) {
-        loginBtn.textContent = 'LOGOUT';
-        loginBtn.classList.remove('btn-login');
-        loginBtn.classList.add('btn-logout');
-        loginBtn.onclick = (e) => {
-          e.preventDefault();
-          sessionStorage.removeItem('belton_logged_in');
-          window.location.reload();
-        };
-      } else {
-        loginBtn.textContent = 'LOGIN';
-        loginBtn.classList.remove('btn-logout');
-        loginBtn.classList.add('btn-login');
-      }
-    }
   }
 
   if (document.readyState === 'loading') {

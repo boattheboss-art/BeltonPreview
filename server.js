@@ -23,7 +23,7 @@ rootApp.use(BASE_PATH || '/', app);
 app.use(express.json());
 app.use((req, res, next) => {
     const time = new Date().toLocaleTimeString('th-TH');
-    if (!req.url.startsWith('/api/copilot-log')) {
+    if (!req.url.startsWith('/api/copilot-log') && !/\.(jpg|jpeg|png|webp|mp3|wav)$/i.test(req.path)) {
         console.log(`[${time}] ${req.method} ${req.url}`);
     }
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
@@ -295,10 +295,13 @@ app.get(/^\/(index|explorer|product|manufacturing|factory|copilot)\.html$/, (req
 
 app.use(express.static(publicDir, {
     index: false,
-    etag: false,
-    maxAge: 0,
-    setHeaders: (res) => {
-        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    etag: true,
+    setHeaders: (res, filePath) => {
+        if (/\.(glb|splinecode|wasm|jpg|jpeg|png|webp|mp3|wav|woff2)$/i.test(filePath)) {
+            res.set('Cache-Control', 'public, max-age=86400');
+        } else {
+            res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        }
     }
 }));
 

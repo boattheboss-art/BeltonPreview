@@ -218,8 +218,8 @@
         // Enhance materials, shadows, and glass transparency
         factoryModel.traverse(child => {
           if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
+            child.castShadow = false;
+            child.receiveShadow = false;
 
             const cName = (child.name || '').toLowerCase();
             // Remove / hide overhead ceiling to allow cutaway architectural Digital Twin view
@@ -377,7 +377,7 @@
           }
         }
       } catch (e) {}
-    }, 2000);
+    }, 15000);
   }
 
   // =========================================================================
@@ -385,17 +385,17 @@
   // =========================================================================
   function setupLighting() {
     // Soft cool-white ambient fill
-    const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.85);
+    const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.98);
     scene.add(ambientLight);
 
     // Ground bounce hemisphere light
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.45);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.58);
     scene.add(hemiLight);
 
     // Main cleanroom directional light with soft shadow mapping
     const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.35);
     dirLight1.position.set(35, 45, 20);
-    dirLight1.castShadow = true;
+    dirLight1.castShadow = false;
     dirLight1.shadow.mapSize.width = 2048;
     dirLight1.shadow.mapSize.height = 2048;
     dirLight1.shadow.camera.near = 1.0;
@@ -650,9 +650,8 @@
       powerPreference: 'high-performance'
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(1);
+    renderer.shadowMap.enabled = false;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
 
@@ -3305,6 +3304,10 @@
   // =========================================================================
   function animate() {
     requestAnimationFrame(animate);
+    if (document.hidden) {
+      prevTime = performance.now();
+      return;
+    }
 
     const delta = Math.min((performance.now() - prevTime) * 0.001, 0.1);
     prevTime = performance.now();

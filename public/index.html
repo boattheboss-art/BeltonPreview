@@ -33,10 +33,18 @@
         pre.classList.add('flash-out');
         setTimeout(function() { pre.style.display = 'none'; }, 600);
       }
+      var hdr = document.getElementById('siteHeader');
+      if (hdr) hdr.classList.add('intro-visible', 'just-authenticated');
+      var bgTxt = document.getElementById('bgBeltonText');
+      if (bgTxt) bgTxt.classList.add('play-intro');
+      var heroTxt = document.getElementById('heroOverlayContent');
+      if (heroTxt) heroTxt.classList.add('intro-visible');
+      var rbtCanvas = document.getElementById('bentonCanvas');
+      if (rbtCanvas) rbtCanvas.classList.add('is-visible');
     }, 1500);
   </script>
 </head>
-<body>
+<body class="is-logged-in">
   <!-- STEP 1: SPINNING STAR LOADING SCREEN (No progress bar) -->
   <div id="sitePreloader" class="site-preloader">
     <div class="preloader-star-wrapper">
@@ -47,7 +55,8 @@
     </div>
   </div>
 
-  <!-- STEP 0: Fullscreen Spline 3D Background Environment (z-index 0 / behind everything) -->
+  <!-- STEP 0: Fullscreen Spline 3D Background Environment or Low-Spec CSS Grid (z-index 0) -->
+  <div id="bgCyberGrid" class="bg-cyber-grid" aria-hidden="true"></div>
   <canvas id="bgSplineCanvas" class="bg-spline-canvas" aria-hidden="true"></canvas>
 
   <!-- STEP 2: Background "BELTON" Typography (z-1 pointer-events-none) -->
@@ -86,7 +95,6 @@
         <button id="audioToggleBtn" class="audio-toggle-pill" aria-label="Toggle Audio" title="Sound Effects">
           <span style="font-family: var(--font-mono, monospace); font-size: 0.8rem; letter-spacing: 1.2px; font-weight: 600;">AUDIO</span>
         </button>
-        <button id="navGetStartedBtn" class="btn-get-started">LOGIN</button>
       </div>
     </nav>
   </header>
@@ -103,70 +111,13 @@
         <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
       </svg>
 
-      <!-- Hero Subtitle & Single Login CTA -->
+      <!-- Hero Subtitle -->
       <div id="heroOverlayContent" class="hero-overlay-content">
         <p class="hero-subtitle">Rajamangala University of Technology Thanyaburi</p>
         <div class="hero-cta-group">
         </div>
       </div>
     </main>
-  </div>
-
-  <!-- Interactive Sci-Fi Access Terminal Modal -->
-  <div id="loginModal" class="modal access-terminal-modal" aria-hidden="true" role="dialog">
-    <div id="modalBackdrop" class="modal-backdrop"></div>
-    <div class="modal-container access-terminal-card">
-      <button id="modalCloseBtn" class="modal-close-btn" aria-label="Close terminal"></button>
-
-        <h2 class="modal-title">LOGIN</h2>
-
-        <form id="cyberLoginForm" class="login-form">
-          <div id="loginErrorMsg" class="login-error-msg" style="display: none;"></div>
-
-          <div class="form-field">
-            <label for="loginUsername" class="form-label">USERNAME</label>
-            <input type="text" id="loginUsername" class="form-input" placeholder="User" autocomplete="username" required />
-          </div>
-
-          <div class="form-field">
-            <label for="loginPassword" class="form-label">PASSWORD</label>
-            <input type="password" id="loginPassword" class="form-input" placeholder="password" autocomplete="current-password" required />
-          </div>
-
-          <button type="submit" class="btn-initialize-session" style="width: 100%; margin-top: 0.9rem;">
-           CONFIRM
-          </button>
-        </form>
-      </div>
-
-      <div id="authSuccessCard" class="auth-success-card">
-        <div class="auth-icon"></div>
-        <h3 style="color: #ffffff; font-size: 1.3rem; letter-spacing: 1px;">ACCESS GRANTED</h3>
-        <p id="authWelcomeMsg" style="color: #4ade80; font-size: 0.88rem; margin-top: 0.4rem;">Identity authenticated. Initializing workspace...</p>
-        <button type="button" id="authSuccessCloseBtn" class="btn-initialize-session" style="margin-top: 1.2rem; width: 100%;">
-          CONTINUE TO WORKSPACE
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Luxury Confirm Logout Modal (Pure Frosted White Glass) -->
-  <div id="logoutConfirmModal" class="modal logout-modal" aria-hidden="true" role="dialog">
-    <div id="logoutModalBackdrop" class="modal-backdrop"></div>
-    <div class="modal-container logout-modal-card">
-      <div class="terminal-header-line">
-        <span class="modal-badge">// SECURITY PROTOCOL</span>
-        <span class="terminal-status-dot"></span>
-      </div>
-      <h2 class="modal-title" id="logoutModalTitle">TERMINATE SESSION?</h2>
-      <p class="logout-modal-desc" id="logoutModalDesc">
-        <!-- Letter-by-letter stream will populate here -->
-      </p>
-      <div class="logout-modal-actions">
-        <button type="button" id="cancelLogoutBtn" class="btn-modal-secondary">CANCEL</button>
-        <button type="button" id="confirmLogoutBtn" class="btn-modal-white">CONFIRM LOGOUT</button>
-      </div>
-    </div>
   </div>
 
   <script type="module" src="js/main.js"></script>

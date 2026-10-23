@@ -65,13 +65,23 @@ const toolsDefinition = [
     type: 'function',
     function: {
       name: 'search_training_slides',
-      description: 'Search the official Belton & Seagate training slides database (669 pages) for Seagate Workmanship Standards (Raw material, Hookup, FCOF, Tray washing, ACA, Coil winding, Broken wire, Expose wire, Solder ball, Defect criteria), Cleanroom procedures, FCOF/ACA/APFA/Coil Winding manufacturing steps, ESD controls, gowning rules, contamination standards, and penalties. Call this whenever specific technical knowledge, Seagate defect criteria, or slide citations are needed.',
+      description: 'Search the official Belton, Seagate, Western Digital (WD), Hitachi, BYD, Innolight engineering documents (700+ Process Instructions PI and Workmanship Standards SPE, 6000+ pages) for specifications, assembly steps, defect acceptance/rejection criteria, Cleanroom procedures, and standards. Call this whenever technical knowledge, specific customer requirements (Seagate, WD, Hitachi, BYD), PI/SPE procedures, or citations are needed.',
       parameters: {
         type: 'object',
         properties: {
           query: {
             type: 'string',
-            description: 'Search keyword or query in Thai or English (e.g. Broken wire, SPE-01-08-01, Wet tray, FCOF, silicone, ESD, การแต่งตัว, บทลงโทษ, 80%)'
+            description: 'Search keyword, question, or document code (e.g. Broken wire, PI-01-02-0001, SPE-01-08-01, Hookup WD, BYD PCBA, wet tray, FCOF, silicone, ESD, gowning order, 80%)'
+          },
+          customer: {
+            type: 'string',
+            enum: ['all', 'Seagate', 'Western Digital', 'Hitachi', 'BYD', 'Innolight', 'BTW', 'General'],
+            description: 'Optional filter by customer/brand if specified in the user query.'
+          },
+          doc_type: {
+            type: 'string',
+            enum: ['all', 'PI', 'SPE'],
+            description: 'Optional filter by document type: PI (Process Instruction) or SPE (Workmanship Standards).'
           }
         },
         required: ['query']

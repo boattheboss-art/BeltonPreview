@@ -1352,11 +1352,6 @@
           <li><a href="/copilot" class="belton-nav-link nav-ai-glow" data-nav="copilot">BELTON AI</a></li>
         </ul>
       </nav>
-      <div class="belton-nav-actions">
-        <button type="button" class="belton-nav-btn btn-logout btn-belton-logout" title="ออกจากระบบ และกลับสู่หน้าแรก">
-          LOGOUT
-        </button>
-      </div>
     </header>
 
     <!-- Secondary Floating 3D Tools Toolbar -->
@@ -1746,7 +1741,7 @@
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(innerWidth, innerHeight); 
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(1);
         container.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -3023,21 +3018,28 @@
             hCtx.restore();
         }
 
-        const mpH = new Hands({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
-        mpH.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.60, minTrackingConfidence: 0.60 });
-        mpH.onResults(onHR);
-
+        let mpH = null;
         let mpCamera = null;
         function startCamera() {
-            if (!mpCamera) {
-                mpCamera = new Camera(videoEl, { onFrame: async () => { await mpH.send({ image: videoEl }); }, width: 640, height: 480 });
-                mpCamera.start();
+            if (!mpCamera && typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
+                try {
+                    if (!mpH) {
+                        mpH = new Hands({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
+                        mpH.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.60, minTrackingConfidence: 0.60 });
+                        mpH.onResults(onHR);
+                    }
+                    mpCamera = new Camera(videoEl, { onFrame: async () => { await mpH.send({ image: videoEl }); }, width: 640, height: 480 });
+                    mpCamera.start();
+                } catch (err) {
+                    console.warn('AR Camera init error:', err);
+                }
             }
         }
 
         // ======================== RENDER LOOP ========================
         function animate() {
             requestAnimationFrame(animate);
+            if (document.hidden) return;
 
             if (controls.enabled) controls.update();
 

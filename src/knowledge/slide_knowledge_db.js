@@ -27,7 +27,7 @@ function loadAllSlides(forceReload = false) {
     if (!inMemorySlides) {
       const database = getDb();
       inMemorySlides = database.prepare(`
-        SELECT doc_code, doc_name, filename, page_number, title, content, char_count
+        SELECT doc_code, doc_name, customer, doc_type, filename, page_number, title, content, char_count
         FROM slide_pages
         ORDER BY doc_code, page_number
       `).all();
@@ -82,18 +82,80 @@ const HIGH_PRIORITY_TERMS = [
 ];
 
 /**
- * Smart Search across all 669 Belton & Seagate training slides
- * Sub-millisecond execution, robust Thai segmentation, priority scoring
+ * Smart Search across all 7,000+ Belton, Seagate, Western Digital, Hitachi, BYD, Innolight pages
+ * Uses SQLite FTS5 BM25 index with fallback to in-memory scored ranking
  * @param {string} query - The search query (Thai or English)
  * @param {number} limit - Maximum number of results to return (default: 3)
+ * @param {object} options - Optional filters { customer, doc_type }
  */
-function searchSlideKnowledge(query, limit = 3) {
+function searchSlideKnowledge(query, limit = 3, options = {}) {
   if (!query || typeof query !== 'string' || query.trim().length === 0) {
     return [];
   }
 
+  const { customer, doc_type } = options;
+  const lowerQ = query.toLowerCase().trim();
+
+  // 1. High-Performance SQLite FTS5 Full-Text Search
+  try {
+    const database = getDb();
+    const hasFts = database.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='slide_pages_fts'").get();
+    if (hasFts) {
+      const tokens = [];
+      const codeMatch = lowerQ.match(/(?:PI|SPE)-[0-9]{2}-[0-9]{2}[A-Za-z]?-[0-9]{2,4}|(?:PI|SPE)-[0-9]{2}-[0-9]{2}[A-Za-z]?-[0-9]{2}/i);
+      if (codeMatch) {
+        tokens.push('"' + codeMatch[0].replace(/"/g, '') + '"');
+      }
+
+      for (const kw of DOMAIN_KEYWORDS) {
+        if (lowerQ.includes(kw.toLowerCase())) {
+          tokens.push('"' + kw + '"');
+        }
+      }
+
+      const words = lowerQ.replace(/[^\w\s\u0E00-\u0E7F]/g, ' ').split(/\s+/).filter(w => w.length >= 2);
+      const cleanWords = words.filter(w => !['hi', 'hello', 'how', 'what', 'why', 'and', 'the', 'for', 'of', 'is', 'to', 'in'].includes(w.toLowerCase()));
+      cleanWords.slice(0, 5).forEach(w => tokens.push('"' + w + '"*'));
+
+      if (tokens.length === 0) {
+        tokens.push('"' + lowerQ.slice(0, 20).replace(/["*]/g, '') + '"*');
+      }
+
+      const ftsMatchString = tokens.slice(0, 8).join(' OR ');
+      let sql = `SELECT doc_code, doc_name, customer, doc_type, page_number, title, snippet(slide_pages_fts, 6, '', '', '...', 35) as snippet, bm25(slide_pages_fts) as rank FROM slide_pages_fts WHERE slide_pages_fts MATCH ?`;
+      const params = [ftsMatchString];
+
+      if (customer && customer !== 'all') {
+        sql += ' AND customer = ?';
+        params.push(customer);
+      }
+      if (doc_type && doc_type !== 'all') {
+        sql += ' AND doc_type = ?';
+        params.push(doc_type);
+      }
+
+      sql += ' ORDER BY CASE WHEN lower(doc_code) = lower(?) THEN 0 ELSE 1 END, rank LIMIT ?';
+      params.push(codeMatch ? codeMatch[0] : lowerQ, limit);
+
+      const ftsResults = database.prepare(sql).all(...params);
+      if (ftsResults.length > 0) {
+        return ftsResults.map(item => ({
+          doc_code: item.doc_code,
+          doc_name: item.doc_name,
+          customer: item.customer,
+          doc_type: item.doc_type,
+          page_number: item.page_number,
+          title: item.title,
+          snippet: item.snippet || ''
+        }));
+      }
+    }
+  } catch (err) {
+    console.warn('[SlideKnowledgeDB] SQLite FTS5 search fallback to in-memory:', err.message);
+  }
+
+  // 2. Fallback to in-memory array search
   const slides = loadAllSlides();
-  const lowerQ = query.toLowerCase();
 
   // Extract domain keywords from Thai and English query with boundary safety
   const tokens = new Set();
@@ -111,16 +173,9 @@ function searchSlideKnowledge(query, limit = 3) {
     }
   }
 
-  // Extract alphanumeric tokens (excluding common English stopwords/greetings)
-  const COMMON_STOPWORDS = new Set([
-    'hi', 'hello', 'hey', 'yo', 'ok', 'is', 'it', 'in', 'on', 'at', 'to', 'for', 'of',
-    'and', 'or', 'an', 'as', 'by', 'if', 'so', 'no', 'do', 'go', 'up', 'my', 'me', 'we',
-    'you', 'he', 'she', 'they', 'what', 'how', 'why', 'can', 'the', 'this', 'that'
-  ]);
   const engWords = lowerQ.match(/[a-z0-9%_-]{2,}/g) || [];
-  engWords.filter(w => !COMMON_STOPWORDS.has(w)).forEach(w => tokens.add(w));
+  engWords.filter(w => !['hi','hello','how','what','why','and','the','for','of','is'].includes(w)).forEach(w => tokens.add(w));
 
-  // If no known keywords matched, extract 2-4 char ngrams from Thai text
   if (tokens.size === 0) {
     const thaiMatches = lowerQ.match(/[\u0E00-\u0E7F]+/g) || [];
     for (const tm of thaiMatches) {
@@ -146,7 +201,15 @@ function searchSlideKnowledge(query, limit = 3) {
     const sContent = (s.content || '').toLowerCase();
     const sDocCode = (s.doc_code || '').toLowerCase();
 
-    // Exact doc_code match bonus (e.g. SPE-01-08-01, TM-00-00-05)
+    // Customer or DocType filters if specified
+    if (customer && customer !== 'all' && s.customer && s.customer.toLowerCase() !== customer.toLowerCase()) {
+      return { ...s, score: -1 };
+    }
+    if (doc_type && doc_type !== 'all' && s.doc_type && s.doc_type.toLowerCase() !== doc_type.toLowerCase()) {
+      return { ...s, score: -1 };
+    }
+
+    // Exact doc_code match bonus
     if (lowerQ.includes(sDocCode)) {
       score += 200;
     }
@@ -157,7 +220,6 @@ function searchSlideKnowledge(query, limit = 3) {
         if (sTitle.includes(dt)) {
           score += 350;
         } else if (sContent.split('\n').some(l => /^\s*\d+\.\d+/i.test(l) && l.toLowerCase().includes(dt))) {
-          // Defect section header inside slide content (e.g. 6.1.9 Misalignment Damper)
           score += 350;
         }
         if (sContent.includes(dt)) score += 80;
@@ -170,38 +232,20 @@ function searchSlideKnowledge(query, limit = 3) {
 
     if (isGowningOrderQuery) {
       if (sDocCode === 'tm-00-00-05_3') {
-        if (s.page_number === 1) {
-          score += 650; // Master 10-step sequence summary slide
-        } else if (s.page_number >= 2 && s.page_number <= 11) {
-          score += 420; // Individual gowning step slides
-        }
+        if (s.page_number === 1) score += 650;
+        else if (s.page_number >= 2 && s.page_number <= 11) score += 420;
       }
-      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 33) {
-        score += 480; // Overview 5-stage sequence slide
-      }
-      // Deprioritize sticky roller slide 37 if user is asking about wearing suit
-      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 37 && !/(ลูกกลิ้ง|roller|sticky)/i.test(lowerQ)) {
-        score -= 600;
-      }
+      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 33) score += 480;
     }
 
     if (isDegowningOrderQuery) {
       if (sDocCode === 'tm-00-00-05_3') {
-        if (s.page_number === 12) {
-          score += 650; // Master 10-step degowning summary slide
-        } else if (s.page_number >= 13 && s.page_number <= 22) {
-          score += 420; // Individual degowning step slides
-        }
+        if (s.page_number === 12) score += 650;
+        else if (s.page_number >= 13 && s.page_number <= 22) score += 420;
       }
-      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 33) {
-        score += 480;
-      }
-      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 37 && !/(ลูกกลิ้ง|roller|sticky)/i.test(lowerQ)) {
-        score -= 600;
-      }
+      if (sDocCode === 'tm-00-00-05_1' && s.page_number === 33) score += 480;
     }
 
-    // Exact phrase match bonus
     if (sContent.includes(lowerQ)) score += 80;
 
     for (const t of tokens) {
@@ -238,7 +282,6 @@ function searchSlideKnowledge(query, limit = 3) {
       }
       text = (bestPos > 0 ? '...' : '') + text.substring(bestPos, bestPos + 1100) + '...';
 
-      // If enriched rejection note was cut off, ensure it is appended
       if (item.content.includes('[สรุปเกณฑ์ปฏิเสธ') && !text.includes('[สรุปเกณฑ์ปฏิเสธ')) {
         const noteMatch = item.content.match(/\[สรุปเกณฑ์ปฏิเสธ.*?$/s);
         if (noteMatch) {
@@ -250,6 +293,8 @@ function searchSlideKnowledge(query, limit = 3) {
     return {
       doc_code: item.doc_code,
       doc_name: item.doc_name,
+      customer: item.customer || 'General',
+      doc_type: item.doc_type || 'SPE',
       page_number: item.page_number,
       title: item.title,
       snippet: text
@@ -286,7 +331,7 @@ function loadAllExamQuestions(forceReload = false) {
 }
 
 /**
- * Match user query against the 180 official Seagate Master Exam questions
+ * Match user query against the official Seagate Master Exam questions
  */
 function searchExamQuestion(query) {
   if (!query || typeof query !== 'string') return null;
@@ -294,8 +339,6 @@ function searchExamQuestion(query) {
   if (exams.length === 0) return null;
 
   const lowerQ = query.toLowerCase();
-  
-  // Check if query looks like an exam question or statement verification
   const isExamLike = /^\s*\d+\.|\bหมายถึง\b|\bเกณฑ์สเปคกำหนดว่า\b|\bยอมรับได้\s*\(Accept\)|\bถือเป็นงานเสีย\s*\(Reject\)|\bถูกหรือผิด\b|\bตรวจข้อสอบ\b/i.test(query);
   if (!isExamLike) return null;
 
@@ -307,9 +350,6 @@ function searchExamQuestion(query) {
 
   for (const eq of exams) {
     let score = 0;
-    const eqLower = eq.full_question.toLowerCase();
-
-    // Check defect name / title similarity
     const defectMatch = eq.question_text.match(/^([^หมายถึง]+)หมายถึง/);
     if (defectMatch) {
       const defectName = defectMatch[1].trim().toLowerCase();
@@ -322,7 +362,6 @@ function searchExamQuestion(query) {
       score += 80;
     }
 
-    // Keyword overlap
     const words = eq.question_text.split(/[\s,()]+/).filter(w => w.length >= 3);
     for (const w of words) {
       if (lowerQ.includes(w.toLowerCase())) score += 5;

@@ -57,7 +57,7 @@ async function executeTool(name, args) {
 
     case 'search_training_slides': {
       const query = args.query || '';
-      const results = searchSlideKnowledge(query, 3);
+      const results = searchSlideKnowledge(query, 3, { customer: args.customer, doc_type: args.doc_type });
       if (results.length === 0) {
         return { message: `ไม่พบข้อมูลสไลด์ที่ตรงกับคำค้นหา "${query}"` };
       }

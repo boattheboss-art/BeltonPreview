@@ -120,8 +120,32 @@ body.is-locked {
 }
 
 /* ==========================================================================
-   STEP 0: FULLSCREEN SPLINE 3D BACKGROUND (VERY BACK LAYER z-0)
+   STEP 0: FULLSCREEN SPLINE 3D BACKGROUND OR ZERO-GPU CSS CYBER GRID (z-0)
    ========================================================================== */
+.bg-cyber-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #05070e;
+  background-image: 
+    linear-gradient(rgba(230, 20, 50, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230, 20, 50, 0.12) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(220, 20, 50, 0.22) 0%, rgba(5, 7, 14, 0.95) 75%);
+  background-size: 54px 54px, 54px 54px, 100% 100%;
+  background-position: center center;
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  contain: strict;
+}
+
+.bg-cyber-grid.is-visible {
+  opacity: 1;
+}
+
 .bg-spline-canvas {
   position: fixed;
   top: 0;
@@ -376,14 +400,14 @@ body.is-logged-in .nav-container {
 }
 
 .nav-links {
-  display: none;
+  display: flex;
   align-items: center;
   gap: 10px;
   list-style: none;
   margin: 0;
   padding: 0;
-  opacity: 0;
-  transform: translateY(-10px) scale(0.95);
+  opacity: 1;
+  transform: translateY(0) scale(1);
   transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

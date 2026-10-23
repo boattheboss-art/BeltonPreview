@@ -198,14 +198,22 @@
   const finaleKicker = document.getElementById('finaleKicker');
   const finaleTitle = document.getElementById('finaleTitle');
 
+  // Helper: Resolve asset URL for root or mounted subpath (e.g. /belton-preview)
+  function resolveAssetUrl(relPath) {
+    if (typeof window !== 'undefined' && typeof window.beltonUrl === 'function') {
+      return window.beltonUrl(relPath);
+    }
+    return relPath;
+  }
+
   // Audio Objects & SFX
   let currentAudio = new Audio();
   currentAudio.preload = 'auto';
   let isMuted = false;
   let audioUnlocked = false;
 
-  const sfxOpen = new Audio('sao_open.wav');
-  const sfxClick = new Audio('sao_click.wav');
+  const sfxOpen = new Audio(resolveAssetUrl('sao_open.wav'));
+  const sfxClick = new Audio(resolveAssetUrl('sao_click.wav'));
   sfxOpen.preload = 'auto';
   sfxClick.preload = 'auto';
 
@@ -256,18 +264,18 @@
   // Helper: Format frame URL
   const getFrameUrl = (folder, index) => {
     const padIndex = String(index).padStart(4, '0');
-    return `${folder}/frame_${padIndex}${FRAME_EXTENSION}`;
+    return resolveAssetUrl(`${folder}/frame_${padIndex}${FRAME_EXTENSION}`);
   };
 
   // Helper: Linear Interpolation
   const lerp = (start, end, factor) => start + (end - start) * factor;
 
-  // Resize Canvas to Native HiDPI 2K Resolution
+  // Resize Canvas to Native Display Resolution (1x for smooth low-spec GPU performance)
   const resizeCanvas = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = 1;
     canvas.width = window.innerWidth * dpr;
     canvas.height = window.innerHeight * dpr;
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     lastDrawnIndex = -1;
@@ -281,7 +289,7 @@
 
     try {
       currentAudio.pause();
-      currentAudio.src = config.audioSrc;
+      currentAudio.src = resolveAssetUrl(config.audioSrc);
       currentAudio.currentTime = 0;
       currentAudio.muted = isMuted;
 
@@ -306,61 +314,95 @@
     } catch (e) {}
   };
 
-  // Preload Images for a specific product
+  const productLoadingState = { A: false, B: false, C: false, D: false };
+
+  // Preload Images using Keyframe Skeleton first, then dense fill
+  // Guarantees full 360-degree rotation coverage within 1 second so scrolling never freezes!
   const preloadProductFrames = (productKey, onProgress, onComplete) => {
     const folder = PRODUCTS_CONFIG[productKey].folder;
     const cache = productFrameCaches[productKey];
 
-    if (cache.length >= TOTAL_FRAMES) {
+    if (cache.length >= TOTAL_FRAMES && cache[0] && cache[0].complete) {
       if (onComplete) onComplete();
       return;
     }
+    if (productLoadingState[productKey]) {
+      if (onComplete) onComplete();
+      return;
+    }
+    productLoadingState[productKey] = true;
 
-    let loaded = 0;
+    // 1. Build priority queue: Keyframes across the full 240 frames first, then intermediate frames
+    const keyframeIndices = [];
+    const denseIndices = [];
+    const STEP = 10;
+    for (let i = 1; i <= TOTAL_FRAMES; i += STEP) {
+      keyframeIndices.push(i);
+    }
+    if (keyframeIndices[keyframeIndices.length - 1] !== TOTAL_FRAMES) {
+      keyframeIndices.push(TOTAL_FRAMES);
+    }
+    const keyframeSet = new Set(keyframeIndices);
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
+      if (!keyframeSet.has(i)) {
+        denseIndices.push(i);
+      }
+    }
+    const loadQueue = [...keyframeIndices, ...denseIndices];
+    const KEYFRAMES_COUNT = keyframeIndices.length;
+
+    const CONCURRENCY = 6;
+    let queueIdx = 0;
+    let loaded = 0;
+    let keyframesLoaded = 0;
+    let readyFired = false;
+
+    const loadNext = () => {
+      if (queueIdx >= loadQueue.length) return;
+      const idx = loadQueue[queueIdx++];
       const img = new Image();
-      img.src = getFrameUrl(folder, i);
+      img.decoding = 'async';
+      cache[idx - 1] = img;
 
-      img.onload = () => {
+      const handleDone = () => {
         loaded++;
-        if (onProgress) onProgress(loaded, TOTAL_FRAMES);
-        if (loaded >= TOTAL_FRAMES && onComplete) onComplete();
+        if (keyframeSet.has(idx)) {
+          keyframesLoaded++;
+        }
+        if (onProgress) onProgress(loaded, KEYFRAMES_COUNT);
+        if (!readyFired && (keyframesLoaded >= KEYFRAMES_COUNT || loaded >= KEYFRAMES_COUNT)) {
+          readyFired = true;
+          if (onComplete) onComplete();
+        }
+        if (loaded === 1 || loaded % 4 === 0) {
+          lastDrawnIndex = -1;
+          renderFrame();
+        }
+        loadNext();
       };
 
-      img.onerror = () => {
-        loaded++;
-        if (loaded >= TOTAL_FRAMES && onComplete) onComplete();
-      };
+      img.onload = handleDone;
+      img.onerror = handleDone;
+      img.src = getFrameUrl(folder, idx);
+    };
 
-      cache.push(img);
+    for (let c = 0; c < CONCURRENCY; c++) {
+      loadNext();
     }
   };
 
-  // Initial Preload -> Direct Launch
+  // Initial Preload -> Direct Launch (Product B, C, D load on-demand when selected to save RAM)
   const initApp = () => {
     preloadProductFrames('A', (loaded, total) => {
       if (loadStatus) {
-        const pct = Math.round((loaded / total) * 100);
+        const pct = Math.min(100, Math.round((loaded / total) * 100));
         loadStatus.innerText = `LOADING 2K MASTER ${pct}%`;
       }
     }, () => {
       setTimeout(() => {
         if (preloader) preloader.classList.add('fade-out');
         startCinematicIntro('A');
-      }, 150);
-
-      // Preload Product B, C, D progressively in background
-      setTimeout(() => {
-        preloadProductFrames('B', null, () => {
-          console.log('[System] Product B 2K Frames Ready.');
-          preloadProductFrames('C', null, () => {
-            console.log('[System] Product C 2K Frames Ready.');
-            preloadProductFrames('D', null, () => {
-              console.log('[System] Product D 2K Frames Ready.');
-            });
-          });
-        });
-      }, 300);
+      }, 100);
     });
   };
 
@@ -523,14 +565,41 @@
       floatFrame = scrollProgress * (TOTAL_FRAMES - 1);
     }
 
+    if (!isIntroPlaying && Math.abs(floatFrame - lastDrawnIndex) < 0.01) {
+      return;
+    }
+
     const frameBase = Math.floor(floatFrame);
     const frameNext = Math.min(TOTAL_FRAMES - 1, frameBase + 1);
     const frameSubAlpha = floatFrame - frameBase; // Sub-frame interpolation fraction [0..1]
 
-    const imgCurrent = currentCache[frameBase] || productFrameCaches['A'][frameBase];
-    const imgNext = currentCache[frameNext] || productFrameCaches['A'][frameNext];
+    let imgCurrent = currentCache[frameBase];
+    if (!imgCurrent || !imgCurrent.complete || imgCurrent.naturalWidth === 0) {
+      // Nearest-neighbor frame search: Look both forward and backward to find the closest loaded frame
+      for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
+        const prev = frameBase - offset;
+        if (prev >= 0 && currentCache[prev] && currentCache[prev].complete && currentCache[prev].naturalWidth > 0) {
+          imgCurrent = currentCache[prev];
+          break;
+        }
+        const next = frameBase + offset;
+        if (next < TOTAL_FRAMES && currentCache[next] && currentCache[next].complete && currentCache[next].naturalWidth > 0) {
+          imgCurrent = currentCache[next];
+          break;
+        }
+      }
+    }
+    if (!imgCurrent || !imgCurrent.complete || imgCurrent.naturalWidth === 0) {
+      imgCurrent = productFrameCaches['A']?.[frameBase];
+    }
+
+    let imgNext = currentCache[frameNext];
+    if (!imgNext || !imgNext.complete || imgNext.naturalWidth === 0) {
+      imgNext = imgCurrent;
+    }
 
     if (!imgCurrent || !imgCurrent.complete || imgCurrent.naturalWidth === 0) return;
+    lastDrawnIndex = floatFrame;
 
     const canvasW = window.innerWidth;
     const canvasH = window.innerHeight;
@@ -655,11 +724,27 @@
     }
   }, { once: true });
 
+  // Smoothly exit intro mode on any user scroll intent so the screen never feels locked or frozen
+  const exitIntroOnUserAction = () => {
+    if (isIntroPlaying) {
+      completeIntro();
+    }
+  };
+
+  window.addEventListener('wheel', exitIntroOnUserAction, { passive: true });
+  window.addEventListener('touchmove', exitIntroOnUserAction, { passive: true });
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Space'].includes(e.code)) {
+      exitIntroOnUserAction();
+    }
+  }, { passive: true });
+
   // Scroll Listener
   window.addEventListener('scroll', () => {
-    if (!isIntroPlaying) {
-      targetScrollY = window.scrollY || window.pageYOffset || 0;
+    if (isIntroPlaying) {
+      completeIntro();
     }
+    targetScrollY = window.scrollY || window.pageYOffset || 0;
   }, { passive: true });
 
   window.addEventListener('resize', resizeCanvas);

@@ -22,8 +22,13 @@ if errorlevel 1 (
 
 :: 2. Locate cloudflared binary
 set "BIN="
-if exist "C:\Program Files (x86)\cloudflared\cloudflared.exe" (
-    set "BIN=C:\Program Files (x86)\cloudflared\cloudflared.exe"
+if exist "%~dp0cloudflared.exe" (
+    set "BIN=%~dp0cloudflared.exe"
+)
+if not defined BIN (
+    if exist "C:\Program Files (x86)\cloudflared\cloudflared.exe" (
+        set "BIN=C:\Program Files (x86)\cloudflared\cloudflared.exe"
+    )
 )
 if not defined BIN (
     if exist "C:\Program Files\cloudflared\cloudflared.exe" (
